@@ -59,7 +59,18 @@ public class PlayState extends State implements InputProcessor{
         updateBackground();
         quokka.update(dt);
         cam.position.x = quokka.getPosition().x + 80;
+        if((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)){
 
+        }
+        else if(((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)){
+
+        }
+        else if((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x)){
+
+        }
+        else if(((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x)){
+
+        }
         for (EvilCloud cloud : clouds){
             if((cam.position.x - (cam.viewportWidth/2))>(cloud.getPosCloud().x + cloud.getTexture().getWidth())){
                 cloud.reposition(cloud.getPosCloud().x + ((EvilCloud.CLOUD_WIDTH  + CLOUD_SPACING) * CLOUD_COUNT), cloud.getPosCloud().y);

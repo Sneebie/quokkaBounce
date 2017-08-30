@@ -59,4 +59,5 @@ public class Quokka {
     public Vector3 getVelocity() {
         return velocity;
     }
+
 }
