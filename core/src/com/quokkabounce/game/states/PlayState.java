@@ -123,18 +123,7 @@ public class PlayState extends State implements InputProcessor{
     }
 
     private Vector3 resultVector(Vector3 velocity, Vector3 point1, Vector3 point2) {
-        Vector3 dir;
-        if(point2.x - point1.x < 0) {
-            dir = point1.sub(point2);
-        } else {
-            dir = point2.sub(point1);
-        }
-        double theta = Math.acos((velocity.dot(dir)) / (velocity.len() * dir.len()));
-        if(theta!=0 || theta!=Math.PI) {
-            theta=Math.PI-2*theta;
-        }
-        velocity.rotateRad(Double.valueOf(theta).floatValue(), 0, 0, 0); //this should be counterclockwise
-        return velocity;
+        return velocity.sub(point2.sub(point1).nor().scl(2*(velocity.dot(point2.sub(point1).nor()))));
     }
 
     @Override
