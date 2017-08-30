@@ -99,6 +99,24 @@ public class PlayState extends State implements InputProcessor{
         }
     }
 
+    private Vector3 resultVector(velocity, point1, point2) {
+        if(point2.x - point1.x < 0) {
+            Vector3 dir = point1.sub(point2 a_vec);
+        } else {
+            Vector3 dir = point2.sub(point1 a_vec);
+        }
+        float theta = Math.acos((velocity.dot(dir vector)) / (velocity.len() * dir.len()))
+        if(theta == 0 || theta == (Math.PI /2) || theta == Math.PI) {
+            theta = 0;
+        } else if(theta > 0 && theta < (Math.PI /2)) {
+            theta = Math.PI - 2*theta;
+        } else {
+            theta = Math.PI*3 - 2*theta;
+        }
+        velocity.rotateRad(theta, 0, 0, 0); //this should be counterclockwise
+        return velocity;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         return false;
