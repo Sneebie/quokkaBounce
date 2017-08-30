@@ -1,7 +1,6 @@
 package com.quokkabounce.game.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quokkabounce.game.QuokkaBounce;

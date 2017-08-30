@@ -37,11 +37,11 @@ public class PlayState extends State implements InputProcessor{
     public PlayState(GameStateManager gsm) {
         super(gsm);
         Gdx.input.setInputProcessor(this);
-        shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setColor(Color.BROWN);
         quokka = new Quokka(50,300);
         level1Background = new Texture("level1Background.png");
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH*VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER));
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setColor(Color.BROWN);
         level1BackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, BACKGROUND_Y_OFFSET);
         level1BackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth)+level1Background.getWidth(), BACKGROUND_Y_OFFSET);
         clouds = new Array<EvilCloud>();
@@ -71,7 +71,6 @@ public class PlayState extends State implements InputProcessor{
                 gsm.set(new PlayState(gsm));
             }
         }
-
         cam.update();
 
     }
@@ -91,6 +90,7 @@ public class PlayState extends State implements InputProcessor{
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.line(clickPos.x, clickPos.y, clickPos2.x, clickPos2.y);
         shapeRenderer.end();
+        shapeRenderer.setProjectionMatrix(cam.combined);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        clickPos = new Vector3(screenX, QuokkaBounce.HEIGHT - screenY, 0);
+        clickPos = new Vector3((cam.position.x - cam.viewportWidth / 2) + screenX, QuokkaBounce.HEIGHT - screenY, 0);
         quokka.jump();
         System.out.println("touchd down");
         return false;
@@ -151,7 +151,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        clickPos2 = new Vector3(screenX, QuokkaBounce.HEIGHT - screenY, 0);
+        clickPos2 = new Vector3((cam.position.x - cam.viewportWidth / 2) + screenX, QuokkaBounce.HEIGHT - screenY, 0);
         System.out.println("touchup");
         return false;
     }
