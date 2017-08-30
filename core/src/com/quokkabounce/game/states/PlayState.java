@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -28,6 +29,7 @@ public class PlayState extends State implements InputProcessor{
     private Random rand;
     private Vector2 level1BackgroundPos1, level1BackgroundPos2;
     private Vector3 clickPos, clickPos2;
+    private ShapeRenderer shapeRenderer;
 
     private Array<EvilCloud> clouds;
 
@@ -66,6 +68,7 @@ public class PlayState extends State implements InputProcessor{
         }
 
         cam.update();
+
     }
 
     @Override
@@ -79,6 +82,12 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
         sb.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(1, 1, 0, 1);
+        shapeRenderer.line(x, y, x2, y2);
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.circle(x, y, radius);
+        shapeRenderer.end();
     }
 
     @Override

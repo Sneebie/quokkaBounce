@@ -55,4 +55,8 @@ public class Quokka {
     public void dispose(){
         quokka.dispose();
     }
+
+    public Vector3 getVelocity() {
+        return velocity;
+    }
 }
