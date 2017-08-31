@@ -29,7 +29,7 @@ public class PlayState extends State implements InputProcessor{
     private Texture level1Background;
     private Random rand;
     private Vector2 level1BackgroundPos1, level1BackgroundPos2;
-    private Vector3 clickPos, clickPos2, testPos;
+    private Vector3 clickPos, clickPos2, velocityTemp, point1Temp, point2Temp;
     private ShapeRenderer shapeRenderer;
 
     private Array<EvilCloud> clouds;
@@ -48,7 +48,9 @@ public class PlayState extends State implements InputProcessor{
         rand = new Random();
         clickPos = new Vector3(0,0,0);
         clickPos2 = new Vector3(0,-100,0);
-
+        velocityTemp = new Vector3(0,0,0);
+        point1Temp = new Vector3(0,0,0);
+        point2Temp = new Vector3(0,0,0);
         for(int i=1; i<=CLOUD_COUNT; i++){
             clouds.add(new EvilCloud(i*(CLOUD_SPACING + EvilCloud.CLOUD_WIDTH), rand.nextInt(600)));
         }
@@ -137,7 +139,10 @@ public class PlayState extends State implements InputProcessor{
     }
 
     private Vector3 resultVector(Vector3 velocity, Vector3 point1, Vector3 point2) {
-        return velocity.sub(point2.sub(point1).nor().scl(2*(velocity.dot(point2.sub(point1).nor()))));
+        velocityTemp.set(velocity);
+        point1Temp.set(point1);
+        point2Temp.set(point2);
+        return velocityTemp.sub(point2Temp.sub(point1Temp).nor().scl(2*(velocityTemp.dot(point2Temp.sub(point1Temp).nor()))));
     }
 
     @Override
@@ -177,7 +182,6 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        testPos = new Vector3(screenX,screenY,0);
         return false;
     }
 
