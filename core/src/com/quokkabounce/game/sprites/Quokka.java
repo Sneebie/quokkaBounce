@@ -47,10 +47,6 @@ public class Quokka {
         return quokkaBounds;
     }
 
-    public void jump(){
-        velocity.y = 250;
-    }
-
     public void dispose(){
         quokka.dispose();
     }

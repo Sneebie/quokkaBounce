@@ -63,14 +63,14 @@ public class PlayState extends State implements InputProcessor{
         cam.position.x = quokka.getPosition().x + 80;
         if(((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))){
             if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
+                System.out.println(quokka.getVelocity());
                 quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                System.out.println("hit1");
+                System.out.println(quokka.getVelocity());
             }
         }
         else if((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))){
             if(quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
                 quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                System.out.println("hit2");
             }
         }
         for (EvilCloud cloud : clouds){
