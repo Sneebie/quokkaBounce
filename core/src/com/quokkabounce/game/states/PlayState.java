@@ -59,17 +59,15 @@ public class PlayState extends State implements InputProcessor{
         updateBackground();
         quokka.update(dt);
         cam.position.x = quokka.getPosition().x + 80;
-        if((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)){
-
+        if(((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))){
+            if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
+                System.out.println("hit1");
+            }
         }
-        else if(((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)){
-
-        }
-        else if((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x)){
-
-        }
-        else if(((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x)){
-
+        else if((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))){
+            if(quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
+                System.out.println("hit2");
+            }
         }
         for (EvilCloud cloud : clouds){
             if((cam.position.x - (cam.viewportWidth/2))>(cloud.getPosCloud().x + cloud.getTexture().getWidth())){
@@ -86,6 +84,16 @@ public class PlayState extends State implements InputProcessor{
 
     }
 
+    private float lineY(float x){
+        if(clickPos2.x > clickPos.x) {
+            final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
+            return (slope * (x - clickPos.x) + clickPos.y);
+        }
+        else{
+            final float slope = (clickPos.y - clickPos2.y) / (clickPos.x - clickPos2.x);
+            return (slope * (x - clickPos2.x) + clickPos2.y);
+        }
+    }
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
@@ -97,7 +105,6 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
         sb.end();
-        System.out.println(clickPos.x);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.line(clickPos.x, clickPos.y, clickPos2.x, clickPos2.y);
         shapeRenderer.end();
@@ -145,14 +152,12 @@ public class PlayState extends State implements InputProcessor{
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         clickPos = new Vector3((cam.position.x - cam.viewportWidth / 2) + screenX, QuokkaBounce.HEIGHT - screenY, 0);
         quokka.jump();
-        System.out.println("touchd down");
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         clickPos2 = new Vector3((cam.position.x - cam.viewportWidth / 2) + screenX, QuokkaBounce.HEIGHT - screenY, 0);
-        System.out.println("touchup");
         return false;
     }
 
