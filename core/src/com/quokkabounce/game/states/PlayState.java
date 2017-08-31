@@ -109,10 +109,13 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
         sb.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.line(clickPos.x, clickPos.y, clickPos2.x, clickPos2.y);
-        shapeRenderer.end();
+        cam.position.x = quokka.getPosition().x + 80;
         shapeRenderer.setProjectionMatrix(cam.combined);
+        cam.update();
+        shapeRenderer.updateMatrices();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.line(cam.unproject(clickPos), cam.unproject(clickPos2));
+        shapeRenderer.end();
     }
 
     @Override
@@ -155,13 +158,13 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        clickPos = new Vector3((cam.position.x - cam.viewportWidth / 2) + screenX, QuokkaBounce.HEIGHT - screenY, 0);
+        clickPos = new Vector3(screenX, screenY, 0);
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        clickPos2 = new Vector3((cam.position.x - cam.viewportWidth / 2) + screenX, QuokkaBounce.HEIGHT - screenY, 0);
+        clickPos2 = new Vector3(screenX, screenY, 0);
         return false;
     }
 
