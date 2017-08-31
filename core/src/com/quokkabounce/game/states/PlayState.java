@@ -77,9 +77,11 @@ public class PlayState extends State implements InputProcessor{
             }
             if(cloud.collides(quokka.getQuokkaBounds())){
                 gsm.set(new PlayState(gsm));
+                break;
             }
             if(quokka.getPosition().y==0){
                 gsm.set(new PlayState(gsm));
+                break;
             }
         }
         cam.update();
@@ -120,6 +122,7 @@ public class PlayState extends State implements InputProcessor{
         for(EvilCloud cloud : clouds){
             cloud.dispose();
         }
+        shapeRenderer.dispose();
     }
 
     private void updateBackground(){
