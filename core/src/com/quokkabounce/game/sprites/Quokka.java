@@ -60,4 +60,7 @@ public class Quokka {
         return velocity;
     }
 
+    public void setVelocity(Vector3 velocity) {
+        this.velocity = velocity;
+    }
 }
