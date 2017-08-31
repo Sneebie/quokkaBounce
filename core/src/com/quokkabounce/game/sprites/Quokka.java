@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector3;
  */
 
 public class Quokka {
-    private static final int GRAVITY = -15;
+    private static final int GRAVITY = -1;
     private static final int MOVEMENT = 100;
     private Vector3 position;
     private Vector3 velocity;

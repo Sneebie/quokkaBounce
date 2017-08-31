@@ -58,7 +58,7 @@ public class PlayState extends State implements InputProcessor{
     public void update(float dt) {
         updateBackground();
         quokka.update(dt);
-        cam.position.x = quokka.getPosition().x + 80;
+        //cam.position.x = quokka.getPosition().x + 80;
         if(((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))){
             if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
                 quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
@@ -84,7 +84,7 @@ public class PlayState extends State implements InputProcessor{
                 break;
             }
         }
-        cam.update();
+        //cam.update();
 
     }
 
@@ -100,6 +100,8 @@ public class PlayState extends State implements InputProcessor{
     }
     @Override
     public void render(SpriteBatch sb) {
+        //cam.position.x = quokka.getPosition().x + 80;
+        //cam.update();
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(level1Background, level1BackgroundPos1.x, level1BackgroundPos1.y);
@@ -109,12 +111,10 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
         sb.end();
-        cam.position.x = quokka.getPosition().x + 80;
         shapeRenderer.setProjectionMatrix(cam.combined);
-        cam.update();
         shapeRenderer.updateMatrices();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.line(cam.unproject(clickPos), cam.unproject(clickPos2));
+        shapeRenderer.line(cam.unproject(clickPos).x, cam.unproject(clickPos).y, cam.unproject(clickPos2).x,cam.unproject(clickPos2).y);
         shapeRenderer.end();
     }
 
@@ -159,12 +159,14 @@ public class PlayState extends State implements InputProcessor{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         clickPos = new Vector3(screenX, screenY, 0);
+        System.out.println("1 is " + cam.unproject(clickPos));
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         clickPos2 = new Vector3(screenX, screenY, 0);
+        System.out.println("2 is " + cam.unproject(clickPos2));
         return false;
     }
 
