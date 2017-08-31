@@ -29,7 +29,7 @@ public class PlayState extends State implements InputProcessor{
     private Texture level1Background;
     private Random rand;
     private Vector2 level1BackgroundPos1, level1BackgroundPos2;
-    private Vector3 clickPos, clickPos2;
+    private Vector3 clickPos, clickPos2, testPos;
     private ShapeRenderer shapeRenderer;
 
     private Array<EvilCloud> clouds;
@@ -47,7 +47,7 @@ public class PlayState extends State implements InputProcessor{
         clouds = new Array<EvilCloud>();
         rand = new Random();
         clickPos = new Vector3(0,0,0);
-        clickPos2 = new Vector3(0,0,0);
+        clickPos2 = new Vector3(0,-100,0);
 
         for(int i=1; i<=CLOUD_COUNT; i++){
             clouds.add(new EvilCloud(i*(CLOUD_SPACING + EvilCloud.CLOUD_WIDTH), rand.nextInt(600)));
@@ -109,10 +109,12 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
         sb.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.line(clickPos.x, clickPos.y, clickPos2.x, clickPos2.y);
-        shapeRenderer.end();
-        shapeRenderer.setProjectionMatrix(cam.combined);
+        if(clickPos2.y!=-100) {
+            shapeRenderer.setProjectionMatrix(cam.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.line(clickPos, clickPos2);
+            shapeRenderer.end();
+        }
     }
 
     @Override
@@ -155,13 +157,16 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        clickPos = new Vector3((cam.position.x - cam.viewportWidth / 2) + screenX, QuokkaBounce.HEIGHT - screenY, 0);
+        clickPos2.set(screenX, -100, 0);
+        clickPos.set(screenX, screenY, 0);
+        clickPos.set(cam.unproject(clickPos));
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        clickPos2 = new Vector3((cam.position.x - cam.viewportWidth / 2) + screenX, QuokkaBounce.HEIGHT - screenY, 0);
+        clickPos2.set(screenX, screenY, 0);
+        clickPos2.set(cam.unproject(clickPos2));
         return false;
     }
 
@@ -172,6 +177,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        testPos = new Vector3(screenX,screenY,0);
         return false;
     }
 
