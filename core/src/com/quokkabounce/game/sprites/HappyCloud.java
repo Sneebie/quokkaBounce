@@ -5,20 +5,20 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 /**
- * Created by Eric on 8/29/2017.
+ * Created by Eric on 9/1/2017.
  */
 
-public class EvilCloud extends Cloud{
-    private Texture evilCloud;
+public class HappyCloud extends Cloud{
+    private Texture happyCloud;
     private Vector2 posCloud;
     private Rectangle cloudBounds;
 
-    public EvilCloud(float x, float y){
+    public HappyCloud(float x, float y){
         setTexture();
 
         posCloud = new Vector2(x, y);
 
-        cloudBounds = new Rectangle(posCloud.x, posCloud.y, evilCloud.getWidth(), evilCloud.getHeight());
+        cloudBounds = new Rectangle(posCloud.x, posCloud.y, happyCloud.getWidth(), happyCloud.getHeight());
     }
 
     @Override
@@ -28,7 +28,7 @@ public class EvilCloud extends Cloud{
 
     @Override
     public Texture getTexture() {
-        return evilCloud;
+        return happyCloud;
     }
 
     @Override
@@ -44,12 +44,11 @@ public class EvilCloud extends Cloud{
 
     @Override
     public void dispose() {
-        evilCloud.dispose();
+        happyCloud.dispose();
     }
 
     @Override
     public void setTexture() {
-        evilCloud = new Texture("evilCloud.png");
+        happyCloud = new Texture("happyCloud.png");
     }
-
 }

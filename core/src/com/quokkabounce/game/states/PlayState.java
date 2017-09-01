@@ -11,8 +11,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.quokkabounce.game.QuokkaBounce;
 import com.quokkabounce.game.sprites.EvilCloud;
+import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Quokka;
 
+import java.awt.Menu;
 import java.util.Random;
 
 /**
@@ -20,17 +22,15 @@ import java.util.Random;
  */
 
 public class PlayState extends State implements InputProcessor{
-    private static final int CLOUD_SPACING = 125;
-    private static final int CLOUD_COUNT = 4;
     private static final int BACKGROUND_Y_OFFSET = 0;
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
     private Texture level1Background;
-    private Random rand;
     private Vector2 level1BackgroundPos1, level1BackgroundPos2;
     private Vector3 clickPos, clickPos2, velocityTemp, normal;
     private ShapeRenderer shapeRenderer;
+    private HappyCloud happyCloud;
 
     private Array<EvilCloud> clouds;
 
@@ -45,14 +45,12 @@ public class PlayState extends State implements InputProcessor{
         level1BackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, BACKGROUND_Y_OFFSET);
         level1BackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth)+level1Background.getWidth(), BACKGROUND_Y_OFFSET);
         clouds = new Array<EvilCloud>();
-        rand = new Random();
         clickPos = new Vector3(0,0,0);
         clickPos2 = new Vector3(0,-100,0);
         velocityTemp = new Vector3(0,0,0);
         normal = new Vector3(0,0,0);
-        for(int i=1; i<=CLOUD_COUNT; i++){
-            clouds.add(new EvilCloud(i*(CLOUD_SPACING + EvilCloud.CLOUD_WIDTH), rand.nextInt(600)));
-        }
+        clouds.add(new EvilCloud(400,400));
+        happyCloud = new HappyCloud(1000, 200);
     }
 
     @Override
@@ -61,9 +59,7 @@ public class PlayState extends State implements InputProcessor{
         cam.position.x = quokka.getPosition().x + 80;
         if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
             if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
-                System.out.println(quokka.getVelocity());
                 quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                System.out.println(quokka.getVelocity());
             }
         } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
             if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
@@ -72,9 +68,6 @@ public class PlayState extends State implements InputProcessor{
         }
         quokka.update(dt);
         for (EvilCloud cloud : clouds){
-            if((cam.position.x - (cam.viewportWidth/2))>(cloud.getPosCloud().x + cloud.getTexture().getWidth())){
-                cloud.reposition(cloud.getPosCloud().x + ((EvilCloud.CLOUD_WIDTH  + CLOUD_SPACING) * CLOUD_COUNT), cloud.getPosCloud().y);
-            }
             if(cloud.collides(quokka.getQuokkaBounds())){
                 gsm.set(new PlayState(gsm));
                 break;
@@ -83,6 +76,9 @@ public class PlayState extends State implements InputProcessor{
                 gsm.set(new PlayState(gsm));
                 break;
             }
+        }
+        if(happyCloud.collides(quokka.getQuokkaBounds())){
+            gsm.set(new MenuState(gsm));
         }
         cam.update();
 
@@ -108,6 +104,7 @@ public class PlayState extends State implements InputProcessor{
         for(EvilCloud cloud: clouds) {
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
+        sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
         sb.end();
         if(clickPos2.y!=-100) {
             shapeRenderer.setProjectionMatrix(cam.combined);
@@ -171,7 +168,6 @@ public class PlayState extends State implements InputProcessor{
         clickPos2.set(screenX, -100, 0);
         clickPos.set(screenX, screenY, 0);
         clickPos.set(cam.unproject(clickPos));
-        System.out.println("clickPos " + clickPos);
         return false;
     }
 
@@ -179,7 +175,6 @@ public class PlayState extends State implements InputProcessor{
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         clickPos2.set(screenX, screenY, 0);
         clickPos2.set(cam.unproject(clickPos2));
-        System.out.println("clickPos2 " + clickPos2);
         return false;
     }
 
