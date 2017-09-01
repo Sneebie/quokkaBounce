@@ -37,7 +37,7 @@ public class PlayState extends State implements InputProcessor{
     public PlayState(GameStateManager gsm) {
         super(gsm);
         Gdx.input.setInputProcessor(this);
-        quokka = new Quokka(50,300);
+        quokka = new Quokka(50,650);
         level1Background = new Texture("level1Background.png");
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH*VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER));
         shapeRenderer = new ShapeRenderer();
@@ -133,6 +133,14 @@ public class PlayState extends State implements InputProcessor{
         }
         if(cam.position.x - (cam.viewportWidth / 2) > level1BackgroundPos2.x + level1Background.getWidth()){
             level1BackgroundPos2.add(level1Background.getWidth() * 2, 0);
+        }
+        if((cam.position.x +(cam.viewportWidth / 2) < level1BackgroundPos1.x + level1Background.getWidth())&&(cam.position.x + (cam.viewportWidth / 2) < level1BackgroundPos2.x + level1Background.getWidth())) {
+            if(level1BackgroundPos2.x > level1BackgroundPos1.x){
+                level1BackgroundPos2.sub(level1Background.getWidth()*2, 0);
+            }
+            else if(level1BackgroundPos1.x > level1BackgroundPos2.x){
+                level1BackgroundPos1.sub(level1Background.getWidth()*2, 0);
+            }
         }
     }
 
