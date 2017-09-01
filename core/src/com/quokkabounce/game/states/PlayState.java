@@ -2,6 +2,7 @@ package com.quokkabounce.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -28,7 +29,7 @@ public class PlayState extends State implements InputProcessor{
     private Texture level1Background;
     private Random rand;
     private Vector2 level1BackgroundPos1, level1BackgroundPos2;
-    private Vector3 clickPos, clickPos2;
+    private Vector3 clickPos, clickPos2, velocityTemp, normal;
     private ShapeRenderer shapeRenderer;
 
     private Array<EvilCloud> clouds;
@@ -39,11 +40,16 @@ public class PlayState extends State implements InputProcessor{
         quokka = new Quokka(50,300);
         level1Background = new Texture("level1Background.png");
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH*VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER));
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setColor(Color.BROWN);
         level1BackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, BACKGROUND_Y_OFFSET);
         level1BackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth)+level1Background.getWidth(), BACKGROUND_Y_OFFSET);
         clouds = new Array<EvilCloud>();
         rand = new Random();
-
+        clickPos = new Vector3(0,0,0);
+        clickPos2 = new Vector3(0,-100,0);
+        velocityTemp = new Vector3(0,0,0);
+        normal = new Vector3(0,0,0);
         for(int i=1; i<=CLOUD_COUNT; i++){
             clouds.add(new EvilCloud(i*(CLOUD_SPACING + EvilCloud.CLOUD_WIDTH), rand.nextInt(600)));
         }
@@ -52,25 +58,46 @@ public class PlayState extends State implements InputProcessor{
     @Override
     public void update(float dt) {
         updateBackground();
-        quokka.update(dt);
         cam.position.x = quokka.getPosition().x + 80;
-
+        if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
+            if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                System.out.println(quokka.getVelocity());
+                quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                System.out.println(quokka.getVelocity());
+            }
+        } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+            if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+            }
+        }
+        quokka.update(dt);
         for (EvilCloud cloud : clouds){
             if((cam.position.x - (cam.viewportWidth/2))>(cloud.getPosCloud().x + cloud.getTexture().getWidth())){
                 cloud.reposition(cloud.getPosCloud().x + ((EvilCloud.CLOUD_WIDTH  + CLOUD_SPACING) * CLOUD_COUNT), cloud.getPosCloud().y);
             }
             if(cloud.collides(quokka.getQuokkaBounds())){
                 gsm.set(new PlayState(gsm));
+                break;
             }
             if(quokka.getPosition().y==0){
                 gsm.set(new PlayState(gsm));
+                break;
             }
         }
-
         cam.update();
 
     }
 
+    private float lineY(float x){
+        if(clickPos2.x > clickPos.x) {
+            final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
+            return (slope * (x - clickPos.x) + clickPos.y);
+        }
+        else{
+            final float slope = (clickPos.y - clickPos2.y) / (clickPos.x - clickPos2.x);
+            return (slope * (x - clickPos2.x) + clickPos2.y);
+        }
+    }
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
@@ -82,12 +109,12 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
         sb.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(1, 1, 0, 1);
-        shapeRenderer.line(x, y, x2, y2);
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.circle(x, y, radius);
-        shapeRenderer.end();
+        if(clickPos2.y!=-100) {
+            shapeRenderer.setProjectionMatrix(cam.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.line(clickPos, clickPos2);
+            shapeRenderer.end();
+        }
     }
 
     @Override
@@ -97,6 +124,7 @@ public class PlayState extends State implements InputProcessor{
         for(EvilCloud cloud : clouds){
             cloud.dispose();
         }
+        shapeRenderer.dispose();
     }
 
     private void updateBackground(){
@@ -108,22 +136,11 @@ public class PlayState extends State implements InputProcessor{
         }
     }
 
-    private Vector3 resultVector(velocity, point1, point2) {
-        if(point2.x - point1.x < 0) {
-            Vector3 dir = point1.sub(point2 a_vec);
-        } else {
-            Vector3 dir = point2.sub(point1 a_vec);
-        }
-        float theta = Math.acos((velocity.dot(dir vector)) / (velocity.len() * dir.len()))
-        if(theta == 0 || theta == (Math.PI /2) || theta == Math.PI) {
-            theta = 0;
-        } else if(theta > 0 && theta < (Math.PI /2)) {
-            theta = Math.PI - 2*theta;
-        } else {
-            theta = Math.PI*3 - 2*theta;
-        }
-        velocity.rotateRad(theta, 0, 0, 0); //this should be counterclockwise
-        return velocity;
+    private Vector3 resultVector(Vector3 velocity, Vector3 point1, Vector3 point2) {
+        velocityTemp.set(velocity);
+        normal.set(point1.y-point2.y,point2.x-point1.x,0);
+        normal.nor();
+        return velocityTemp.sub((normal).scl(2*(velocityTemp.dot(normal))));
     }
 
     @Override
@@ -143,18 +160,18 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        clickPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-        cam.unproject(clickPos);
-        quokka.jump();
-        System.out.println("touchd down");
+        clickPos2.set(screenX, -100, 0);
+        clickPos.set(screenX, screenY, 0);
+        clickPos.set(cam.unproject(clickPos));
+        System.out.println("clickPos " + clickPos);
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        clickPos2 = new Vector3(screenX, screenY, 0);
-        cam.unproject(clickPos2);
-        System.out.println("touchup");
+        clickPos2.set(screenX, screenY, 0);
+        clickPos2.set(cam.unproject(clickPos2));
+        System.out.println("clickPos2 " + clickPos2);
         return false;
     }
 
