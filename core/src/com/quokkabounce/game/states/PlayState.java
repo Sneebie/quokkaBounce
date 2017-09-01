@@ -28,7 +28,7 @@ public class PlayState extends State implements InputProcessor{
     private Quokka quokka;
     private Texture level1Background;
     private Vector2 level1BackgroundPos1, level1BackgroundPos2;
-    private Vector3 clickPos, clickPos2, velocityTemp, normal;
+    private Vector3 clickPos, clickPos2, velocityTemp, normal, clickPosTemp;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
 
@@ -41,12 +41,12 @@ public class PlayState extends State implements InputProcessor{
         level1Background = new Texture("level1Background.png");
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH*VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER));
         shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setColor(Color.BROWN);
         level1BackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, BACKGROUND_Y_OFFSET);
         level1BackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth)+level1Background.getWidth(), BACKGROUND_Y_OFFSET);
         clouds = new Array<EvilCloud>();
         clickPos = new Vector3(0,0,0);
         clickPos2 = new Vector3(0,-100,0);
+        clickPosTemp = new Vector3(0,-100,0);
         velocityTemp = new Vector3(0,0,0);
         normal = new Vector3(0,0,0);
         clouds.add(new EvilCloud(400,400));
@@ -107,9 +107,17 @@ public class PlayState extends State implements InputProcessor{
         sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
         sb.end();
         if(clickPos2.y!=-100) {
+            shapeRenderer.setColor(Color.BROWN);
             shapeRenderer.setProjectionMatrix(cam.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.line(clickPos, clickPos2);
+            shapeRenderer.end();
+        }
+        else if (clickPosTemp.y!=-100){
+            shapeRenderer.setColor(Color.YELLOW);
+            shapeRenderer.setProjectionMatrix(cam.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.line(clickPos, clickPosTemp);
             shapeRenderer.end();
         }
     }
@@ -175,11 +183,25 @@ public class PlayState extends State implements InputProcessor{
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         clickPos2.set(screenX, screenY, 0);
         clickPos2.set(cam.unproject(clickPos2));
+        if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
+            while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+            }
+        } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+            while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+            }
+        }
+        clickPosTemp.set(0,-100,0);
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        clickPosTemp.set(screenX, screenY, 0);
+        clickPosTemp.set(cam.unproject(clickPosTemp));
         return false;
     }
 
