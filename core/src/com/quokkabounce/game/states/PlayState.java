@@ -29,7 +29,7 @@ public class PlayState extends State implements InputProcessor{
     private Texture level1Background;
     private Random rand;
     private Vector2 level1BackgroundPos1, level1BackgroundPos2;
-    private Vector3 clickPos, clickPos2, velocityTemp, point1Temp, point2Temp;
+    private Vector3 clickPos, clickPos2, velocityTemp, normal;
     private ShapeRenderer shapeRenderer;
 
     private Array<EvilCloud> clouds;
@@ -49,8 +49,7 @@ public class PlayState extends State implements InputProcessor{
         clickPos = new Vector3(0,0,0);
         clickPos2 = new Vector3(0,-100,0);
         velocityTemp = new Vector3(0,0,0);
-        point1Temp = new Vector3(0,0,0);
-        point2Temp = new Vector3(0,0,0);
+        normal = new Vector3(0,0,0);
         for(int i=1; i<=CLOUD_COUNT; i++){
             clouds.add(new EvilCloud(i*(CLOUD_SPACING + EvilCloud.CLOUD_WIDTH), rand.nextInt(600)));
         }
@@ -59,20 +58,19 @@ public class PlayState extends State implements InputProcessor{
     @Override
     public void update(float dt) {
         updateBackground();
-        quokka.update(dt);
         cam.position.x = quokka.getPosition().x + 80;
-        if(((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))){
-            if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
+        if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
+            if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
                 System.out.println(quokka.getVelocity());
                 quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                 System.out.println(quokka.getVelocity());
             }
-        }
-        else if((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))){
-            if(quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
+        } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+            if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
                 quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
             }
         }
+        quokka.update(dt);
         for (EvilCloud cloud : clouds){
             if((cam.position.x - (cam.viewportWidth/2))>(cloud.getPosCloud().x + cloud.getTexture().getWidth())){
                 cloud.reposition(cloud.getPosCloud().x + ((EvilCloud.CLOUD_WIDTH  + CLOUD_SPACING) * CLOUD_COUNT), cloud.getPosCloud().y);
@@ -140,9 +138,9 @@ public class PlayState extends State implements InputProcessor{
 
     private Vector3 resultVector(Vector3 velocity, Vector3 point1, Vector3 point2) {
         velocityTemp.set(velocity);
-        point1Temp.set(point1);
-        point2Temp.set(point2);
-        return velocityTemp.sub(point2Temp.sub(point1Temp).nor().scl(2*(velocityTemp.dot(point2Temp.sub(point1Temp).nor()))));
+        normal.set(point1.y-point2.y,point2.x-point1.x,0);
+        normal.nor();
+        return velocityTemp.sub((normal).scl(2*(velocityTemp.dot(normal))));
     }
 
     @Override
@@ -165,6 +163,7 @@ public class PlayState extends State implements InputProcessor{
         clickPos2.set(screenX, -100, 0);
         clickPos.set(screenX, screenY, 0);
         clickPos.set(cam.unproject(clickPos));
+        System.out.println("clickPos " + clickPos);
         return false;
     }
 
@@ -172,6 +171,7 @@ public class PlayState extends State implements InputProcessor{
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         clickPos2.set(screenX, screenY, 0);
         clickPos2.set(cam.unproject(clickPos2));
+        System.out.println("clickPos2 " + clickPos2);
         return false;
     }
 
