@@ -26,31 +26,32 @@ public class PlayState extends State implements InputProcessor{
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
-    private Texture level1Background;
-    private Vector2 level1BackgroundPos1, level1BackgroundPos2;
+    private Texture levelBackground;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2;
     private Vector3 clickPos, clickPos2, velocityTemp, normal, clickPosTemp;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
+    private boolean shouldFall;
 
     private Array<EvilCloud> clouds;
 
-    public PlayState(GameStateManager gsm) {
-        super(gsm);
+    public PlayState(GameStateManager gsm, int level) {
+        super(gsm, level);
+        levelBackground = new Texture("level2Background.png");
+        clouds = new Array<EvilCloud>();
+        levelInit(level);
+        shouldFall = false;
         Gdx.input.setInputProcessor(this);
         quokka = new Quokka(50,650);
-        level1Background = new Texture("level1Background.png");
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH*VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER));
         shapeRenderer = new ShapeRenderer();
-        level1BackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, BACKGROUND_Y_OFFSET);
-        level1BackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth)+level1Background.getWidth(), BACKGROUND_Y_OFFSET);
-        clouds = new Array<EvilCloud>();
+        levelBackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, BACKGROUND_Y_OFFSET);
+        levelBackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth)+levelBackground.getWidth(), BACKGROUND_Y_OFFSET);
         clickPos = new Vector3(0,0,0);
         clickPos2 = new Vector3(0,-100,0);
         clickPosTemp = new Vector3(0,-100,0);
         velocityTemp = new Vector3(0,0,0);
         normal = new Vector3(0,0,0);
-        clouds.add(new EvilCloud(400,400));
-        happyCloud = new HappyCloud(1000, 200);
     }
 
     @Override
@@ -66,19 +67,20 @@ public class PlayState extends State implements InputProcessor{
                 quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
             }
         }
-        quokka.update(dt);
+        if(shouldFall) {
+            quokka.update(dt);
+        }
         for (EvilCloud cloud : clouds){
             if(cloud.collides(quokka.getQuokkaBounds())){
-                gsm.set(new PlayState(gsm));
-                break;
-            }
-            if(quokka.getPosition().y==0){
-                gsm.set(new PlayState(gsm));
+                gsm.set(new PlayState(gsm, level));
                 break;
             }
         }
+        if(quokka.getPosition().y==0){
+            gsm.set(new PlayState(gsm, level));
+        }
         if(happyCloud.collides(quokka.getQuokkaBounds())){
-            gsm.set(new MenuState(gsm));
+            gsm.set(new MenuState(gsm, level + 1));
         }
         cam.update();
 
@@ -98,8 +100,8 @@ public class PlayState extends State implements InputProcessor{
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        sb.draw(level1Background, level1BackgroundPos1.x, level1BackgroundPos1.y);
-        sb.draw(level1Background, level1BackgroundPos2.x, level1BackgroundPos2.y);
+        sb.draw(levelBackground, levelBackgroundPos1.x, levelBackgroundPos1.y);
+        sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
         sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
         for(EvilCloud cloud: clouds) {
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
@@ -124,7 +126,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public void dispose() {
-        level1Background.dispose();
+        levelBackground.dispose();
         quokka.dispose();
         for(EvilCloud cloud : clouds){
             cloud.dispose();
@@ -132,19 +134,31 @@ public class PlayState extends State implements InputProcessor{
         shapeRenderer.dispose();
     }
 
+    public void levelInit(int level){
+        if(level==1) {
+            levelBackground = new Texture("level1Background.png");
+            happyCloud = new HappyCloud(800,200);
+        }
+        else if (level==2){
+            levelBackground = new Texture("level2Background.png");
+            clouds.add(new EvilCloud(400, 400));
+            happyCloud = new HappyCloud(1000, 200);
+        }
+    }
+
     private void updateBackground(){
-        if(cam.position.x - (cam.viewportWidth / 2) > level1BackgroundPos1.x + level1Background.getWidth()) {
-            level1BackgroundPos1.add(level1Background.getWidth() * 2, 0);
+        if(cam.position.x - (cam.viewportWidth / 2) > levelBackgroundPos1.x + levelBackground.getWidth()) {
+            levelBackgroundPos1.add(levelBackground.getWidth() * 2, 0);
         }
-        if(cam.position.x - (cam.viewportWidth / 2) > level1BackgroundPos2.x + level1Background.getWidth()){
-            level1BackgroundPos2.add(level1Background.getWidth() * 2, 0);
+        if(cam.position.x - (cam.viewportWidth / 2) > levelBackgroundPos2.x + levelBackground.getWidth()){
+            levelBackgroundPos2.add(levelBackground.getWidth() * 2, 0);
         }
-        if((cam.position.x +(cam.viewportWidth / 2) < level1BackgroundPos1.x + level1Background.getWidth())&&(cam.position.x + (cam.viewportWidth / 2) < level1BackgroundPos2.x + level1Background.getWidth())) {
-            if(level1BackgroundPos2.x > level1BackgroundPos1.x){
-                level1BackgroundPos2.sub(level1Background.getWidth()*2, 0);
+        if((cam.position.x +(cam.viewportWidth / 2) < levelBackgroundPos1.x + levelBackground.getWidth())&&(cam.position.x + (cam.viewportWidth / 2) < levelBackgroundPos2.x + levelBackground.getWidth())) {
+            if(levelBackgroundPos2.x > levelBackgroundPos1.x){
+                levelBackgroundPos2.sub(levelBackground.getWidth()*2, 0);
             }
-            else if(level1BackgroundPos1.x > level1BackgroundPos2.x){
-                level1BackgroundPos1.sub(level1Background.getWidth()*2, 0);
+            else if(levelBackgroundPos1.x > levelBackgroundPos2.x){
+                levelBackgroundPos1.sub(levelBackground.getWidth()*2, 0);
             }
         }
     }
@@ -173,6 +187,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        shouldFall = true;
         clickPos2.set(screenX, -100, 0);
         clickPos.set(screenX, screenY, 0);
         clickPos.set(cam.unproject(clickPos));
