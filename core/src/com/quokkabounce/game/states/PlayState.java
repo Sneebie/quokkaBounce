@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -13,6 +14,7 @@ import com.quokkabounce.game.QuokkaBounce;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Quokka;
+import com.quokkabounce.game.sprites.Wall;
 
 import java.awt.Menu;
 import java.util.Random;
@@ -34,11 +36,13 @@ public class PlayState extends State implements InputProcessor{
     private boolean shouldFall;
 
     private Array<EvilCloud> clouds;
+    private Array<Wall> walls;
 
     public PlayState(GameStateManager gsm, int level) {
         super(gsm, level);
         levelBackground = new Texture("level2Background.png");
         clouds = new Array<EvilCloud>();
+        walls = new Array<Wall>();
         levelInit(level);
         shouldFall = false;
         Gdx.input.setInputProcessor(this);
@@ -76,6 +80,32 @@ public class PlayState extends State implements InputProcessor{
                 break;
             }
         }
+        for(Wall wall : walls){
+            if(wall.collides(quokka.getQuokkaBounds())){
+                Vector3 botLeft = new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY(), 0);
+                Vector3 topLeft = new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0);
+                Vector3 topRight = new Vector3(wall.getWallBounds().getX() + wall.getWallBounds().getWidth(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0);
+                Vector3 botRight = new Vector3(wall.getWallBounds().getX() + wall.getWallBounds().getWidth(), wall.getWallBounds().getY(), 0);
+                Vector3 quokkaCenter = new Vector3(quokka.getQuokkaBounds().x + quokka.getQuokkaBounds().getWidth() / 2, quokka.getQuokkaBounds().y + quokka.getQuokkaBounds().getHeight() / 2, 0);
+                Vector3 closestPoint = minDistance(quokkaCenter, minDistance(quokkaCenter, botLeft, topLeft), minDistance(quokkaCenter, topRight, botRight));
+                Array<Vector3> coordArray = new Array<Vector3>();
+                if(!closestPoint.epsilonEquals(botLeft, MathUtils.FLOAT_ROUNDING_ERROR)){
+                    coordArray.add(botLeft);
+                }
+                if(!closestPoint.epsilonEquals(topLeft, MathUtils.FLOAT_ROUNDING_ERROR)){
+                    coordArray.add(topLeft);
+                }
+                if(!closestPoint.epsilonEquals(botLeft, MathUtils.FLOAT_ROUNDING_ERROR)){
+                    coordArray.add(topRight);
+                }
+
+                if(!closestPoint.epsilonEquals(botLeft, MathUtils.FLOAT_ROUNDING_ERROR)){
+                    coordArray.add(botRight);
+                }
+                Vector3 closestPoint2 = minDistance(quokkaCenter, minDistance(quokkaCenter, coordArray.get(0), coordArray.get(1)), coordArray.get(2));
+                quokka.setVelocity(resultVector(quokka.getVelocity(), closestPoint, closestPoint2));
+            }
+        }
         if(quokka.getPosition().y==0){
             gsm.set(new PlayState(gsm, level));
         }
@@ -86,6 +116,14 @@ public class PlayState extends State implements InputProcessor{
 
     }
 
+    private Vector3 minDistance (Vector3 pointCheck, Vector3 point1, Vector3 point2){
+        if(Math.sqrt(Math.pow(point2.y - pointCheck.y, 2) + Math.pow(point2.x - pointCheck.x , 2)) > Math.sqrt(Math.pow(point1.y - pointCheck.y, 2) + Math.pow(point1.x - pointCheck.x , 2))){
+            return point1;
+        }
+        else{
+            return point2;
+        }
+    }
     private float lineY(float x){
         if(clickPos2.x > clickPos.x) {
             final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);

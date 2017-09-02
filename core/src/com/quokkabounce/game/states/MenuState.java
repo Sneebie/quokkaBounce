@@ -27,7 +27,7 @@ public class MenuState extends State{
         buttons = new Array<Button>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         buttons.add(new Button(new Texture("level1Button.png"), 200, 200, 1));
-        if(level >= 2){
+        if(permaLevel >= 2){
             buttons.add(new Button(new Texture("level2Button.png"), 700, 300, 2));
         }
         levelSelectBackground = new Texture("levelSelectBackground.png");
@@ -38,8 +38,6 @@ public class MenuState extends State{
             Vector3 touchInput = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             touchInput.set(cam.unproject(touchInput));
             for(Button button : buttons){
-                System.out.println(touchInput.x);
-                System.out.println(touchInput.y);
                 if(button.getButtonBounds().contains(touchInput.x, touchInput.y)){
                     gsm.set(new PlayState(gsm, button.getLevel()));
                     break;
