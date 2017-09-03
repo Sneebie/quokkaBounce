@@ -9,11 +9,15 @@ import com.badlogic.gdx.math.Vector3;
  */
 
 public class Quokka {
-    private static final int GRAVITY = -13;
+    private int gravity = -13;
     private Vector3 position;
     private Vector3 velocity;
     private Texture quokka;
     private Rectangle quokkaBounds;
+
+    public int getGravity() {
+        return gravity;
+    }
 
     public Quokka(float x, float y){
         position = new Vector3(x,y,0);
@@ -24,7 +28,7 @@ public class Quokka {
 
     public void update(float dt){
         if (position.y > 0) {
-            velocity.add(0, GRAVITY, 0);
+            velocity.add(0, gravity, 0);
         }
         velocity.scl(dt);
         position.add(velocity.x, velocity.y, 0);
@@ -57,5 +61,9 @@ public class Quokka {
 
     public void setVelocity(Vector3 velocity) {
         this.velocity.set(velocity);
+    }
+
+    public void setGravity(int gravity) {
+        this.gravity = gravity;
     }
 }

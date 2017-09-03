@@ -15,6 +15,7 @@ import com.quokkabounce.game.QuokkaBounce;
 import com.quokkabounce.game.sprites.BonusQuokka;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
+import com.quokkabounce.game.sprites.Obstacle;
 import com.quokkabounce.game.sprites.Quokka;
 import com.quokkabounce.game.sprites.Wall;
 
@@ -40,6 +41,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<EvilCloud> clouds;
     private Array<Wall> walls;
     private Array<BonusQuokka> bonusQuokkas;
+    private Array<Obstacle> gravitySwitches;
     private BooleanArray collectedQuokkas;
 
     public PlayState(GameStateManager gsm, int level) {
@@ -49,6 +51,7 @@ public class PlayState extends State implements InputProcessor{
         walls = new Array<Wall>();
         bonusQuokkas = new Array<BonusQuokka>();
         collectedQuokkas = new BooleanArray();
+        gravitySwitches = new Array<Obstacle>();
         levelInit(level);
         shouldFall = false;
         Gdx.input.setInputProcessor(this);
@@ -118,6 +121,11 @@ public class PlayState extends State implements InputProcessor{
                     collectedQuokkas.set(bonusQuokkas.indexOf(bonusQuokka, false), true);
                     bonusQuokka.dispose();
                 }
+            }
+        }
+        for(Obstacle gravitySwitch : gravitySwitches){
+            if(gravitySwitch.collides(quokka.getQuokkaBounds())){
+                quokka.setGravity(-1*quokka.getGravity());
             }
         }
         if(quokka.getPosition().y==0){
