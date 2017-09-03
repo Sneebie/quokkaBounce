@@ -10,7 +10,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BooleanArray;
 import com.quokkabounce.game.QuokkaBounce;
+import com.quokkabounce.game.sprites.BonusQuokka;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Quokka;
@@ -37,12 +39,16 @@ public class PlayState extends State implements InputProcessor{
 
     private Array<EvilCloud> clouds;
     private Array<Wall> walls;
+    private Array<BonusQuokka> bonusQuokkas;
+    private BooleanArray collectedQuokkas;
 
     public PlayState(GameStateManager gsm, int level) {
         super(gsm, level);
         levelBackground = new Texture("level2Background.png");
         clouds = new Array<EvilCloud>();
         walls = new Array<Wall>();
+        bonusQuokkas = new Array<BonusQuokka>();
+        collectedQuokkas = new BooleanArray();
         levelInit(level);
         shouldFall = false;
         Gdx.input.setInputProcessor(this);
@@ -106,6 +112,14 @@ public class PlayState extends State implements InputProcessor{
                 quokka.setVelocity(resultVector(quokka.getVelocity(), closestPoint, closestPoint2));
             }
         }
+        for(BonusQuokka bonusQuokka : bonusQuokkas){
+            if(bonusQuokka.collides(quokka.getQuokkaBounds())){
+                if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
+                    collectedQuokkas.set(bonusQuokkas.indexOf(bonusQuokka, false), true);
+                    bonusQuokka.dispose();
+                }
+            }
+        }
         if(quokka.getPosition().y==0){
             gsm.set(new PlayState(gsm, level));
         }
@@ -141,6 +155,11 @@ public class PlayState extends State implements InputProcessor{
         sb.draw(levelBackground, levelBackgroundPos1.x, levelBackgroundPos1.y);
         sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
         sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
+        for(BonusQuokka bonusQuokka : bonusQuokkas){
+            if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
+                sb.draw(bonusQuokka.getTexture(), bonusQuokka.getPosQuokka().x, bonusQuokka.getPosQuokka().y);
+            }
+        }
         for(EvilCloud cloud: clouds) {
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
@@ -169,19 +188,31 @@ public class PlayState extends State implements InputProcessor{
         for(EvilCloud cloud : clouds){
             cloud.dispose();
         }
+        happyCloud.dispose();
+        for(Wall wall : walls){
+            wall.dispose();
+        }
+        for(BonusQuokka bonusQuokka : bonusQuokkas){
+            bonusQuokka.dispose();
+        }
         shapeRenderer.dispose();
     }
 
     public void levelInit(int level){
-        if(level==1) {
-            levelBackground = new Texture("level1Background.png");
-            happyCloud = new HappyCloud(800,200);
+        switch(level){
+            case 1:
+                levelBackground = new Texture("level1Background.png");
+                happyCloud = new HappyCloud(800,200);
+                bonusQuokkas.add(new BonusQuokka(20,200));
+                break;
+            case 2:
+                levelBackground = new Texture("level2Background.png");
+                clouds.add(new EvilCloud(400, 400));
+                happyCloud = new HappyCloud(1000, 200);
+                bonusQuokkas.add(new BonusQuokka(20,200));
+                break;
         }
-        else if (level==2){
-            levelBackground = new Texture("level2Background.png");
-            clouds.add(new EvilCloud(400, 400));
-            happyCloud = new HappyCloud(1000, 200);
-        }
+        collectedQuokkas.setSize(bonusQuokkas.size);
     }
 
     private void updateBackground(){
