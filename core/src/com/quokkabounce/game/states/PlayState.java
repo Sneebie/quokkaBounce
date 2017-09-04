@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -36,7 +35,7 @@ public class PlayState extends State implements InputProcessor{
     private Vector3 clickPos, clickPos2, velocityTemp, normal, clickPosTemp;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
-    private boolean shouldFall;
+    private boolean shouldFall, touchingWall;
 
     private Array<EvilCloud> clouds;
     private Array<Wall> walls;
@@ -54,6 +53,7 @@ public class PlayState extends State implements InputProcessor{
         gravitySwitches = new Array<Obstacle>();
         levelInit(level);
         shouldFall = false;
+        touchingWall = false;
         Gdx.input.setInputProcessor(this);
         quokka = new Quokka(50,650);
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH*VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER));
@@ -91,28 +91,28 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Wall wall : walls){
             if(wall.collides(quokka.getQuokkaBounds())){
-                Vector3 botLeft = new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY(), 0);
-                Vector3 topLeft = new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0);
-                Vector3 topRight = new Vector3(wall.getWallBounds().getX() + wall.getWallBounds().getWidth(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0);
-                Vector3 botRight = new Vector3(wall.getWallBounds().getX() + wall.getWallBounds().getWidth(), wall.getWallBounds().getY(), 0);
-                Vector3 quokkaCenter = new Vector3(quokka.getQuokkaBounds().x + quokka.getQuokkaBounds().getWidth() / 2, quokka.getQuokkaBounds().y + quokka.getQuokkaBounds().getHeight() / 2, 0);
-                Vector3 closestPoint = minDistance(quokkaCenter, minDistance(quokkaCenter, botLeft, topLeft), minDistance(quokkaCenter, topRight, botRight));
-                Array<Vector3> coordArray = new Array<Vector3>();
-                if(!closestPoint.epsilonEquals(botLeft, MathUtils.FLOAT_ROUNDING_ERROR)){
-                    coordArray.add(botLeft);
+                if(!touchingWall) {
+                    touchingWall = true;
+                    Vector3 tempVelocity = new Vector3();
+                    tempVelocity.set(quokka.getVelocity());
+                    tempVelocity.scl(dt);
+                    if (quokka.getQuokkaBounds().x + quokka.getTexture().getWidth() - tempVelocity.x < wall.getWallBounds().getX()) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY(), 0), new Vector3(new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0))));
+                        System.out.println("left");
+                    } else if (quokka.getQuokkaBounds().x + tempVelocity.x > wall.getWallBounds().getX() + wall.getTexture().getWidth()) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(wall.getWallBounds().getX() + wall.getTexture().getWidth(), wall.getWallBounds().getY(), 0), new Vector3(new Vector3(wall.getWallBounds().getX() + wall.getTexture().getWidth(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0))));
+                        System.out.println("right");
+                    } else if (quokka.getQuokkaBounds().y + quokka.getQuokkaBounds().getHeight() - tempVelocity.y < wall.getWallBounds().getY()) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY(), 0), new Vector3(new Vector3(wall.getWallBounds().getX() + wall.getTexture().getWidth(), wall.getWallBounds().getY(), 0))));
+                        System.out.println("bottom");
+                    } else{
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0), new Vector3(wall.getWallBounds().getX() + wall.getWallBounds().getWidth(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0)));
+                        System.out.println("top");
+                    }
                 }
-                if(!closestPoint.epsilonEquals(topLeft, MathUtils.FLOAT_ROUNDING_ERROR)){
-                    coordArray.add(topLeft);
-                }
-                if(!closestPoint.epsilonEquals(botLeft, MathUtils.FLOAT_ROUNDING_ERROR)){
-                    coordArray.add(topRight);
-                }
-
-                if(!closestPoint.epsilonEquals(botLeft, MathUtils.FLOAT_ROUNDING_ERROR)){
-                    coordArray.add(botRight);
-                }
-                Vector3 closestPoint2 = minDistance(quokkaCenter, minDistance(quokkaCenter, coordArray.get(0), coordArray.get(1)), coordArray.get(2));
-                quokka.setVelocity(resultVector(quokka.getVelocity(), closestPoint, closestPoint2));
+            }
+            else{
+                touchingWall = false;
             }
         }
         for(BonusQuokka bonusQuokka : bonusQuokkas){
@@ -171,6 +171,12 @@ public class PlayState extends State implements InputProcessor{
         for(EvilCloud cloud: clouds) {
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
         }
+        for(Obstacle gravitySwitch: gravitySwitches){
+            sb.draw(gravitySwitch.getTexture(), gravitySwitch.getPosObstacle().x, gravitySwitch.getPosObstacle().y);
+        }
+        for(Wall wall : walls){
+            sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
+        }
         sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
         sb.end();
         if(clickPos2.y!=-100) {
@@ -203,6 +209,9 @@ public class PlayState extends State implements InputProcessor{
         for(BonusQuokka bonusQuokka : bonusQuokkas){
             bonusQuokka.dispose();
         }
+        for(Obstacle gravitySwitch : gravitySwitches){
+            gravitySwitch.dispose();
+        }
         shapeRenderer.dispose();
     }
 
@@ -218,6 +227,7 @@ public class PlayState extends State implements InputProcessor{
                 clouds.add(new EvilCloud(400, 400));
                 happyCloud = new HappyCloud(1000, 200);
                 bonusQuokkas.add(new BonusQuokka(20,200));
+                walls.add(new Wall(200,400));
                 break;
         }
         collectedQuokkas.setSize(bonusQuokkas.size);
