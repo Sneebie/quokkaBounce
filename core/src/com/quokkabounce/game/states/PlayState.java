@@ -35,7 +35,7 @@ public class PlayState extends State implements InputProcessor{
     private Vector3 clickPos, clickPos2, velocityTemp, normal, clickPosTemp;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
-    private boolean shouldFall, touchingWall;
+    private boolean shouldFall, touchingWall, lineCheck;
 
     private Array<EvilCloud> clouds;
     private Array<Wall> walls;
@@ -53,6 +53,7 @@ public class PlayState extends State implements InputProcessor{
         gravitySwitches = new Array<Obstacle>();
         levelInit(level);
         shouldFall = false;
+        lineCheck = false;
         touchingWall = false;
         Gdx.input.setInputProcessor(this);
         quokka = new Quokka(50,650);
@@ -71,13 +72,15 @@ public class PlayState extends State implements InputProcessor{
     public void update(float dt) {
         updateBackground();
         cam.position.x = quokka.getPosition().x + 80;
-        if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
-            if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
-                quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-            }
-        } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
-            if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
-                quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+        if(lineCheck) {
+            if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
+                if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                    quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                }
+            } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+                if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                    quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                }
             }
         }
         if(shouldFall) {
@@ -138,14 +141,6 @@ public class PlayState extends State implements InputProcessor{
 
     }
 
-    private Vector3 minDistance (Vector3 pointCheck, Vector3 point1, Vector3 point2){
-        if(Math.sqrt(Math.pow(point2.y - pointCheck.y, 2) + Math.pow(point2.x - pointCheck.x , 2)) > Math.sqrt(Math.pow(point1.y - pointCheck.y, 2) + Math.pow(point1.x - pointCheck.x , 2))){
-            return point1;
-        }
-        else{
-            return point2;
-        }
-    }
     private float lineY(float x){
         if(clickPos2.x > clickPos.x) {
             final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
@@ -275,6 +270,7 @@ public class PlayState extends State implements InputProcessor{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         shouldFall = true;
+        lineCheck = false;
         clickPos2.set(screenX, -100, 0);
         clickPos.set(screenX, screenY, 0);
         clickPos.set(cam.unproject(clickPos));
@@ -283,6 +279,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        lineCheck = true;
         clickPos2.set(screenX, screenY, 0);
         clickPos2.set(cam.unproject(clickPos2));
         if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
