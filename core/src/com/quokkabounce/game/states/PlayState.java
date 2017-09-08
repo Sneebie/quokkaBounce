@@ -14,6 +14,7 @@ import com.quokkabounce.game.QuokkaBounce;
 import com.quokkabounce.game.sprites.BonusQuokka;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
+import com.quokkabounce.game.sprites.Hawk;
 import com.quokkabounce.game.sprites.Obstacle;
 import com.quokkabounce.game.sprites.Quokka;
 import com.quokkabounce.game.sprites.Wall;
@@ -27,6 +28,7 @@ import java.util.Random;
 
 public class PlayState extends State implements InputProcessor{
     private static final int BACKGROUND_Y_OFFSET = 0;
+    private static final int HAWKSIGHT = 500;
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
@@ -38,6 +40,7 @@ public class PlayState extends State implements InputProcessor{
     private boolean shouldFall, touchingWall, lineCheck;
 
     private Array<EvilCloud> clouds;
+    private Array<Hawk> hawks;
     private Array<Wall> walls;
     private Array<BonusQuokka> bonusQuokkas;
     private Array<Obstacle> gravitySwitches;
@@ -48,6 +51,7 @@ public class PlayState extends State implements InputProcessor{
         levelBackground = new Texture("level2Background.png");
         clouds = new Array<EvilCloud>();
         walls = new Array<Wall>();
+        hawks = new Array<Hawk>();
         bonusQuokkas = new Array<BonusQuokka>();
         collectedQuokkas = new BooleanArray();
         gravitySwitches = new Array<Obstacle>();
@@ -81,6 +85,18 @@ public class PlayState extends State implements InputProcessor{
                 if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
                     quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                 }
+            }
+        }
+        for(Hawk hawk : hawks){
+            if(hawk.collides(quokka.getQuokkaBounds())){
+                gsm.set(new PlayState(gsm, level));
+                break;
+            }
+            if(true){
+                hawk.move(false, dt, quokka.getPosition());
+            }
+            else{
+                hawk.move(true, dt, quokka.getPosition());
             }
         }
         if(shouldFall) {
@@ -128,7 +144,7 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Obstacle gravitySwitch : gravitySwitches){
             if(gravitySwitch.collides(quokka.getQuokkaBounds())){
-                quokka.setGravity(-1*quokka.getGravity());
+                quokka.setGravity(-1 * quokka.getGravity());
             }
         }
         if(quokka.getPosition().y==0){
@@ -172,6 +188,9 @@ public class PlayState extends State implements InputProcessor{
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
         }
+        for (Hawk hawk : hawks){
+            sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
+        }
         sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
         sb.end();
         if(clickPos2.y!=-100) {
@@ -207,6 +226,9 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle gravitySwitch : gravitySwitches){
             gravitySwitch.dispose();
         }
+        for(Hawk hawk : hawks){
+            hawk.dispose();
+        }
         shapeRenderer.dispose();
     }
 
@@ -216,6 +238,7 @@ public class PlayState extends State implements InputProcessor{
                 levelBackground = new Texture("level1Background.png");
                 happyCloud = new HappyCloud(800,200);
                 bonusQuokkas.add(new BonusQuokka(20,200));
+                hawks.add(new Hawk(50, 100));
                 break;
             case 2:
                 levelBackground = new Texture("level2Background.png");
