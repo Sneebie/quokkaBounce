@@ -25,7 +25,7 @@ import com.quokkabounce.game.sprites.Wall;
 
 public class PlayState extends State implements InputProcessor{
     private static final int BACKGROUND_Y_OFFSET = 0;
-    private static final int HAWKSIGHT = 500;
+    private static final int HAWKSIGHT = 200;
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;

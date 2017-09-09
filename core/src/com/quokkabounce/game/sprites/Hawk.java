@@ -16,24 +16,25 @@ public class Hawk {
     private static final int ATTACKDELAY = 10;
     private static final int DTSCALE = 62;
 
-    private Texture hawkTexture;
-    private Rectangle hawkBounds;
     private int t, loopTime;
     private boolean alreadySpotted;
-    private Vector2 posHawk, velHawk;
 
-    public Rectangle getHawkBounds() {
-        return hawkBounds;
-    }
+    private Rectangle hawkBounds;
+    private Animation hawkAnimation;
+    private Vector2 posHawk, velHawk;
 
     public Hawk(float x, float y){
         loopTime = 0;
         t = 0;
-        hawkTexture = new Texture("hawk.png");
+        hawkAnimation = new Animation("hawkIdle", "hawk", 10, 0.5f);
         alreadySpotted = false;
         posHawk = new Vector2(Math.round(RADIUS * Math.cos(SPEED * t)) + x, Math.round(RADIUS * Math.sin(SPEED * t)) + y);
         velHawk = new Vector2(Math.round(SPEED * RADIUS * -1 * Math.sin(SPEED * t)), Math.round(SPEED * RADIUS * Math.cos(SPEED * t)));
-        hawkBounds = new Rectangle(posHawk.x, posHawk.y, hawkTexture.getWidth(), hawkTexture.getHeight());
+        hawkBounds = new Rectangle(posHawk.x, posHawk.y, hawkAnimation.getFrame().getWidth(), hawkAnimation.getFrame().getHeight());
+    }
+
+    public Rectangle getHawkBounds() {
+        return hawkBounds;
     }
 
     public Vector2 getPosHawk() {
@@ -41,7 +42,7 @@ public class Hawk {
     }
 
     public Texture getTexture() {
-        return hawkTexture;
+        return hawkAnimation.getFrame();
     }
 
     public boolean collides(Rectangle player) {
@@ -49,10 +50,13 @@ public class Hawk {
     }
 
     public void dispose() {
-        hawkTexture.dispose();
+        for(Texture frame : hawkAnimation.getFrames()) {
+            frame.dispose();
+        }
     }
 
     public void move(boolean spotsQuokka, float dt, Vector3 posQuokka){
+        hawkAnimation.update(dt);
         if(!spotsQuokka){
             alreadySpotted = false;
             t += DTSCALE * dt;
@@ -73,7 +77,7 @@ public class Hawk {
                 loopTime++;
             }
         }
-        hawkBounds.set(posHawk.x, posHawk.y, hawkTexture.getWidth(), hawkTexture.getHeight());
+        hawkBounds.set(posHawk.x, posHawk.y, hawkAnimation.getFrame().getWidth(), hawkAnimation.getFrame().getHeight());
     }
 
 }
