@@ -25,7 +25,7 @@ import com.quokkabounce.game.sprites.Wall;
 
 public class PlayState extends State implements InputProcessor{
     private static final int BACKGROUND_Y_OFFSET = 0;
-    private static final int HAWKSIGHT = 200;
+    private static final int HAWKSIGHT = 10;
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
@@ -239,6 +239,7 @@ public class PlayState extends State implements InputProcessor{
                 levelBackground = new Texture("level1Background.png");
                 happyCloud = new HappyCloud(800,200);
                 bonusQuokkas.add(new BonusQuokka(20,200));
+                hawks.add(new Hawk(200, 200));
                 break;
             case 2:
                 levelBackground = new Texture("level2Background.png");

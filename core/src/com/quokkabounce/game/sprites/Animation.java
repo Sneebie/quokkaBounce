@@ -18,7 +18,7 @@ public class Animation {
     public Animation(String folderName, String fileName, int frameCount, float cycleTime){
         frames = new Array<Texture>();
         frameChange = 1;
-        for(int i = 1; i <= frameCount; i++){
+        for(int i = 0; i < frameCount; i++){
             frames.add(new Texture(folderName + "/" + fileName + Integer.toString(i) + ".png"));
         }
         this.frameCount = frameCount;
@@ -38,10 +38,17 @@ public class Animation {
             currentFrameTime = 0;
         }
         if(frame >= frameCount - 1){
+            if(frameChange!= -1) {
+                maxFrameTime = maxFrameTime / 3;
+            }
             frameChange = -1;
         }
         if(frame <= 0){
+            if(frameChange!= 1) {
+                maxFrameTime = maxFrameTime * 3;
+            }
             frameChange = 1;
+            frame = 0;
         }
     }
 
