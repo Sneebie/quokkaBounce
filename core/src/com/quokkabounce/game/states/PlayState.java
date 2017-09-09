@@ -92,11 +92,11 @@ public class PlayState extends State implements InputProcessor{
                 gsm.set(new PlayState(gsm, level));
                 break;
             }
-            if(true){
-                hawk.move(false, dt, quokka.getPosition());
+            if(Math.sqrt(Math.pow(hawk.getHawkBounds().x + hawk.getHawkBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(hawk.getHawkBounds().y + hawk.getHawkBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT){
+                hawk.move(true, dt, quokka.getPosition());
             }
             else{
-                hawk.move(true, dt, quokka.getPosition());
+                hawk.move(false, dt, quokka.getPosition());
             }
         }
         if(shouldFall) {
