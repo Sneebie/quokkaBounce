@@ -26,9 +26,15 @@ public class MenuState extends State{
         }
         buttons = new Array<Button>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
-        buttons.add(new Button(new Texture("level1Button.png"), 200, 200, 1));
+        buttons.add(new Button(new Texture("level1Button.png"), 50, 100, 1));
         if(permaLevel >= 2){
-            buttons.add(new Button(new Texture("level2Button.png"), 700, 300, 2));
+            buttons.add(new Button(new Texture("level2Button.png"), 200, 400, 2));
+        }
+        if(permaLevel >= 3){
+            buttons.add(new Button(new Texture("level3Button.png"), 400, 100, 3));
+        }
+        if(permaLevel >= 4){
+            buttons.add(new Button(new Texture("level4Button.png"), 600, 450, 4));
         }
         levelSelectBackground = new Texture("levelSelectBackground.png");
     }
@@ -57,7 +63,7 @@ public class MenuState extends State{
         sb.begin();
         sb.draw(levelSelectBackground, cam.position.x - cam.viewportWidth / 2, 0, cam.viewportWidth, cam.viewportHeight);
         for (Button button : buttons){
-            sb.draw(button.getTexture(), button.getPosButton().x, QuokkaBounce.HEIGHT - button.getPosButton().y);
+            sb.draw(button.getTexture(), button.getPosButton().x, button.getPosButton().y);
         }
         sb.end();
     }

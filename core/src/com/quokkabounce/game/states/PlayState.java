@@ -116,12 +116,16 @@ public class PlayState extends State implements InputProcessor{
                     tempVelocity.set(quokka.getVelocity());
                     tempVelocity.scl(dt);
                     if (quokka.getQuokkaBounds().x + quokka.getTexture().getWidth() - tempVelocity.x < wall.getWallBounds().getX()) {
+                        System.out.println("left");
                         quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY(), 0), new Vector3(new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0))));
-                    } else if (quokka.getQuokkaBounds().x + tempVelocity.x > wall.getWallBounds().getX() + wall.getTexture().getWidth()) {
+                    } else if (quokka.getQuokkaBounds().x - tempVelocity.x > wall.getWallBounds().getX() + wall.getTexture().getWidth()) {
+                        System.out.println("right");
                         quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(wall.getWallBounds().getX() + wall.getTexture().getWidth(), wall.getWallBounds().getY(), 0), new Vector3(new Vector3(wall.getWallBounds().getX() + wall.getTexture().getWidth(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0))));
                     } else if (quokka.getQuokkaBounds().y + quokka.getQuokkaBounds().getHeight() - tempVelocity.y < wall.getWallBounds().getY()) {
+                        System.out.println("bot");
                         quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY(), 0), new Vector3(new Vector3(wall.getWallBounds().getX() + wall.getTexture().getWidth(), wall.getWallBounds().getY(), 0))));
                     } else{
+                        System.out.println("top");
                         quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(wall.getWallBounds().getX(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0), new Vector3(wall.getWallBounds().getX() + wall.getWallBounds().getWidth(), wall.getWallBounds().getY() + wall.getWallBounds().getHeight(), 0)));
                     }
                 }
@@ -147,6 +151,7 @@ public class PlayState extends State implements InputProcessor{
             gsm.set(new PlayState(gsm, level));
         }
         if(happyCloud.collides(quokka.getQuokkaBounds())){
+            System.out.println(level + 1);
             gsm.set(new MenuState(gsm, level + 1));
         }
         cam.update();
@@ -234,18 +239,26 @@ public class PlayState extends State implements InputProcessor{
                 levelBackground = new Texture("level1Background.png");
                 happyCloud = new HappyCloud(800,200);
                 bonusQuokkas.add(new BonusQuokka(20,200));
-                hawks.add(new Hawk(50, 100));
                 break;
             case 2:
                 levelBackground = new Texture("level2Background.png");
-                clouds.add(new EvilCloud(400, 400));
-                happyCloud = new HappyCloud(1000, 200);
+                walls.add(new Wall(500,-80));
+                walls.add(new Wall(1200,400));
+                walls.add(new Wall(1600, -180));
+                happyCloud = new HappyCloud(1700, 200);
                 bonusQuokkas.add(new BonusQuokka(20,200));
-                walls.add(new Wall(200,400));
                 break;
             case 3:
                 levelBackground = new Texture("level3Background.png");
-                happyCloud = new HappyCloud(1000,200);
+                clouds.add(new EvilCloud(200, 300));
+                walls.add(new Wall(800, 300));
+                walls.add(new Wall(1050, 300));
+                clouds.add(new EvilCloud(1460, 200));
+                happyCloud = new HappyCloud(1650,400);
+                break;
+            case 4:
+                levelBackground = new Texture("level1Background.png");
+                break;
         }
         collectedQuokkas.setSize(bonusQuokkas.size);
     }

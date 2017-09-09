@@ -13,9 +13,11 @@ public class Animation {
     private float currentFrameTime;
     private int frameCount;
     private int frame;
+    private int frameChange;
 
     public Animation(String folderName, String fileName, int frameCount, float cycleTime){
         frames = new Array<Texture>();
+        frameChange = 1;
         for(int i = 1; i <= frameCount; i++){
             frames.add(new Texture(folderName + "/" + fileName + Integer.toString(i) + ".png"));
         }
@@ -30,12 +32,16 @@ public class Animation {
 
     public void update(float dt){
         currentFrameTime += dt;
+        System.out.println(frame);
         if(currentFrameTime > maxFrameTime){
-            frame++;
+            frame += frameChange;
             currentFrameTime = 0;
         }
-        if(frame >= frameCount){
-            frame = 0;
+        if(frame >= frameCount - 1){
+            frameChange = -1;
+        }
+        if(frame <= 0){
+            frameChange = 1;
         }
     }
 
