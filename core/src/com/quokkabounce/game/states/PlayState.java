@@ -25,7 +25,7 @@ import com.quokkabounce.game.sprites.Wall;
 
 public class PlayState extends State implements InputProcessor{
     private static final int BACKGROUND_Y_OFFSET = 0;
-    private static final int HAWKSIGHT = 200;
+    private static final int HAWKSIGHT = 400;
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
@@ -242,26 +242,29 @@ public class PlayState extends State implements InputProcessor{
                 break;
             case 2:
                 levelBackground = new Texture("level2Background.png");
-                walls.add(new Wall(500,-130));
-                walls.add(new Wall(1200,400));
-                walls.add(new Wall(1600, -230));
-                happyCloud = new HappyCloud(1700, 200);
+                walls.add(new Wall(500,-180));
+                walls.add(new Wall(1400,400));
+                happyCloud = new HappyCloud(2060, 200);
                 bonusQuokkas.add(new BonusQuokka(20,200));
                 break;
             case 3:
                 levelBackground = new Texture("level3Background.png");
                 clouds.add(new EvilCloud(200, 300));
-                walls.add(new Wall(800, 300));
-                walls.add(new Wall(1050, 300));
-                clouds.add(new EvilCloud(1460, 200));
-                happyCloud = new HappyCloud(1650,400);
+                walls.add(new Wall(900, 450));
+                clouds.add(new EvilCloud(1500, 150));
+                happyCloud = new HappyCloud(1710,400);
                 break;
             case 4:
                 levelBackground = new Texture("level1Background.png");
                 walls.add(new Wall(300, -80));
                 clouds.add(new EvilCloud(450, 350));
-                walls.add(new Wall(850, 350));
-                happyCloud = new HappyCloud(1050, 400);
+                clouds.add(new EvilCloud(1200, 350));
+                happyCloud = new HappyCloud(1650, 150);
+                break;
+            case 5:
+                levelBackground = new Texture("level2Background.png");
+                hawks.add(new Hawk(400,150));
+                happyCloud = new HappyCloud(850, 300);
                 break;
         }
         collectedQuokkas.setSize(bonusQuokkas.size);

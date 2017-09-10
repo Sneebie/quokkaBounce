@@ -30,7 +30,7 @@ public class Hawk {
         alreadySpotted = false;
         posHawk = new Vector2(Math.round(RADIUS * Math.cos(SPEED * t)) + x, Math.round(RADIUS * Math.sin(SPEED * t)) + y);
         velHawk = new Vector2(Math.round(SPEED * RADIUS * -1 * Math.sin(SPEED * t)), Math.round(SPEED * RADIUS * Math.cos(SPEED * t)));
-        hawkBounds = new Rectangle(posHawk.x, posHawk.y, hawkAnimation.getFrame().getWidth(), hawkAnimation.getFrame().getHeight());
+        hawkBounds = new Rectangle(posHawk.x, posHawk.y + hawkAnimation.getFrame().getHeight() / 3, hawkAnimation.getFrame().getWidth(), hawkAnimation.getFrame().getHeight() + hawkAnimation.getFrame().getHeight() / 3);
     }
 
     public Rectangle getHawkBounds() {
@@ -74,6 +74,7 @@ public class Hawk {
                 velHawk.scl(1 / dt);
             }
             else{
+                System.out.println("looping");
                 loopTime++;
             }
         }

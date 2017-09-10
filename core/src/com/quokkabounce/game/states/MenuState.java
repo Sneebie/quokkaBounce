@@ -36,6 +36,9 @@ public class MenuState extends State{
         if(permaLevel >= 4){
             buttons.add(new Button(new Texture("level4Button.png"), 600, 450, 4));
         }
+        if(permaLevel >= 5){
+            buttons.add(new Button(new Texture("level4Button.png"), 800, 250, 5));
+        }
         levelSelectBackground = new Texture("levelSelectBackground.png");
     }
 
