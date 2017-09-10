@@ -21,7 +21,6 @@ public class Button {
 
         posButton = new Vector2(x, y);
 
-        System.out.println(posButton.y);
         buttonBounds = new Rectangle(posButton.x, posButton.y, buttonTexture.getWidth(), buttonTexture.getHeight());
     }
 

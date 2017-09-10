@@ -17,7 +17,7 @@ public class MenuState extends State{
     private Texture levelSelectBackground;
     private Array<Button> buttons;
     private static final double VIEWPORT_SCALER = 1.6;
-    private int permaLevel = 1;
+    private static int permaLevel;
 
     public MenuState(GameStateManager gsm, int level) {
         super(gsm, level);
