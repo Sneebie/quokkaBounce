@@ -10,11 +10,10 @@ import com.badlogic.gdx.math.Vector3;
  */
 
 public class Hawk {
-    private static final double SPEED = 0.1;
-    private static final double RADIUS = 10;
+    private static final double SPEED = 0.06;
+    private static final double RADIUS = 300;
     private static final double ATTACKSPEED = 1.5;
     private static final int ATTACKDELAY = 10;
-    private static final int DTSCALE = 62;
 
     private int t, loopTime;
     private boolean alreadySpotted;
@@ -59,8 +58,10 @@ public class Hawk {
         hawkAnimation.update(dt);
         if(!spotsQuokka){
             alreadySpotted = false;
-            t += DTSCALE * dt;
-            posHawk.set(Math.round(RADIUS * Math.cos(SPEED * t)) + posHawk.x, Math.round(RADIUS * Math.sin(SPEED * t)) + posHawk.y);
+            t += 1;
+            velHawk.set(Math.round(RADIUS * -1 * Math.sin(SPEED * t)), Math.round(RADIUS * Math.cos(SPEED * t)));
+            velHawk.scl(dt);
+            posHawk.add(velHawk);
         }
         else{
             if(!alreadySpotted) {
@@ -74,7 +75,6 @@ public class Hawk {
                 velHawk.scl(1 / dt);
             }
             else{
-                System.out.println("looping");
                 loopTime++;
             }
         }
