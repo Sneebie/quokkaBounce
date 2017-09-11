@@ -26,7 +26,7 @@ public class MenuState extends State{
         }
         buttons = new Array<Button>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
-        buttons.add(new Button(new Texture("level1Button.png"), 50, 100, 1));
+        buttons.add(new Button(new Texture("level1Button.png"), 50, 100, 8));
         if(permaLevel >= 2){
             buttons.add(new Button(new Texture("level2Button.png"), 200, 400, 2));
         }
