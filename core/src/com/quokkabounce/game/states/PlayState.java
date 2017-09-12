@@ -264,18 +264,18 @@ public class PlayState extends State implements InputProcessor{
             case 6:
                 levelBackground = new Texture("level3Background.png");
                 clouds.add(new EvilCloud(200, 50));
-                walls.add(new Wall (300, 400));
-                walls.add(new Wall(500, -80));
-                happyCloud = new HappyCloud(500, 200);
+                walls.add(new Wall (750, 300));
+                walls.add(new Wall(1150, -130));
+                happyCloud = new HappyCloud(1400, 200);
                 break;
             case 7:
                 levelBackground = new Texture("level1Background.png");
-                clouds.add(new EvilCloud(200, 150));
-                bonusQuokkas.add(new BonusQuokka(250, 50));
-                walls.add(new Wall(500, -180));
-                clouds.add(new EvilCloud(600, 300));
-                walls.add(new Wall(900, 400));
-                happyCloud = new HappyCloud(1100, 500);
+                clouds.add(new EvilCloud(250, 200));
+                bonusQuokkas.add(new BonusQuokka(650, 0));
+                walls.add(new Wall(900, -180));
+                clouds.add(new EvilCloud(1050, 300));
+                walls.add(new Wall(1500, 400));
+                happyCloud = new HappyCloud(1700, 500);
                 break;
             case 8:
                 levelBackground = new Texture("level2Background.png");
