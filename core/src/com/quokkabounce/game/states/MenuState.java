@@ -26,18 +26,33 @@ public class MenuState extends State{
         }
         buttons = new Array<Button>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
-        buttons.add(new Button(new Texture("level1Button.png"), 50, 100, 8));
+        buttons.add(new Button(new Texture("level1Button.png"), 0, 100, 1));
         if(permaLevel >= 2){
-            buttons.add(new Button(new Texture("level2Button.png"), 200, 400, 2));
+            buttons.add(new Button(new Texture("level2Button.png"), 0, 300, 2));
         }
         if(permaLevel >= 3){
-            buttons.add(new Button(new Texture("level3Button.png"), 400, 100, 3));
+            buttons.add(new Button(new Texture("level3Button.png"), 0, 500, 3));
         }
         if(permaLevel >= 4){
-            buttons.add(new Button(new Texture("level4Button.png"), 600, 450, 4));
+            buttons.add(new Button(new Texture("level4Button.png"), 300, 0, 4));
         }
         if(permaLevel >= 5){
-            buttons.add(new Button(new Texture("level4Button.png"), 800, 250, 5));
+            buttons.add(new Button(new Texture("level4Button.png"), 300, 300, 5));
+        }
+        if(permaLevel >= 6){
+            buttons.add(new Button(new Texture("level4Button.png"), 300, 600, 6));
+        }
+        if(permaLevel >= 7){
+            buttons.add(new Button(new Texture("level4Button.png"), 600, 0, 7));
+        }
+        if(permaLevel >= 8){
+            buttons.add(new Button(new Texture("level4Button.png"), 600, 300, 8));
+        }
+        if(permaLevel >= 9){
+            buttons.add(new Button(new Texture("level4Button.png"), 600, 600, 9));
+        }
+        if(permaLevel >= 9){
+            buttons.add(new Button(new Texture("level4Button.png"), 900, 0, 10));
         }
         levelSelectBackground = new Texture("levelSelectBackground.png");
     }
