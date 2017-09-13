@@ -35,7 +35,7 @@ public class PlayState extends State implements InputProcessor{
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, justHitTemp;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -58,6 +58,7 @@ public class PlayState extends State implements InputProcessor{
         lineDraw = false;
         lineCheck = false;
         touchingWall = false;
+        justHit = false;
         Gdx.input.setInputProcessor(this);
         quokka = new Quokka(50,650);
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH*VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER));
@@ -76,17 +77,37 @@ public class PlayState extends State implements InputProcessor{
         currentDT = dt;
         updateBackground();
         cam.position.x = quokka.getPosition().x + 80;
+        justHitTemp = false;
         if(lineCheck) {
-            if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
-                if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
-                    quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+            if(!justHit) {
+                if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
+                    if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        justHitTemp = true;
+                    }
+                } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+                    if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        justHitTemp = true;
+                    }
                 }
-            } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
-                if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
-                    quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+            }
+            else{
+                if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
+                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    }
+                } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    }
                 }
             }
         }
+        justHit = justHitTemp;
+        System.out.println(justHit);
         for(Hawk hawk : hawks){
             if(hawk.collides(quokka.getQuokkaBounds())){
                 gsm.set(new PlayState(gsm, level));
