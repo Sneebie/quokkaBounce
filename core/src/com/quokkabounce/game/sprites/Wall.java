@@ -21,6 +21,10 @@ public class Wall{
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
     }
 
+    public void setPosWall(float x, float y) {
+        posWall.set(x, y);
+    }
+
     public Vector2 getPosWall() {
         return posWall;
     }

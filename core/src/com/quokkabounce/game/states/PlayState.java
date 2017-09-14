@@ -15,8 +15,10 @@ import com.quokkabounce.game.sprites.BonusQuokka;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Hawk;
+import com.quokkabounce.game.sprites.MoveWall;
 import com.quokkabounce.game.sprites.Obstacle;
 import com.quokkabounce.game.sprites.Quokka;
+import com.quokkabounce.game.sprites.Switch;
 import com.quokkabounce.game.sprites.Wall;
 
 /**
@@ -42,6 +44,8 @@ public class PlayState extends State implements InputProcessor{
     private Array<Wall> walls;
     private Array<BonusQuokka> bonusQuokkas;
     private Array<Obstacle> gravitySwitches;
+    private Array<Switch> switches;
+    private Array<MoveWall> moveWalls;
     private BooleanArray collectedQuokkas;
 
     public PlayState(GameStateManager gsm, int level) {
@@ -53,6 +57,8 @@ public class PlayState extends State implements InputProcessor{
         bonusQuokkas = new Array<BonusQuokka>();
         collectedQuokkas = new BooleanArray();
         gravitySwitches = new Array<Obstacle>();
+        switches = new Array<Switch>();
+        moveWalls = new Array<MoveWall>();
         levelInit(level);
         shouldFall = false;
         lineDraw = false;
@@ -107,7 +113,6 @@ public class PlayState extends State implements InputProcessor{
             }
         }
         justHit = justHitTemp;
-        System.out.println(justHit);
         for(Hawk hawk : hawks){
             if(hawk.collides(quokka.getQuokkaBounds())){
                 gsm.set(new PlayState(gsm, level));
@@ -151,6 +156,28 @@ public class PlayState extends State implements InputProcessor{
                 touchingWall = false;
             }
         }
+        for(MoveWall moveWall : moveWalls){
+            if(moveWall.collides(quokka.getQuokkaBounds())){
+                if(!touchingWall) {
+                    touchingWall = true;
+                    Vector3 tempVelocity = new Vector3();
+                    tempVelocity.set(quokka.getVelocity());
+                    tempVelocity.scl(dt);
+                    if (quokka.getQuokkaBounds().x + quokka.getTexture().getWidth() - tempVelocity.x < moveWall.getWallBounds().getX()) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0))));
+                    } else if (quokka.getQuokkaBounds().x - tempVelocity.x > moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth()) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0))));
+                    } else if (quokka.getQuokkaBounds().y + quokka.getQuokkaBounds().getHeight() - tempVelocity.y < moveWall.getWallBounds().getY()) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY(), 0))));
+                    } else{
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0), new Vector3(moveWall.getWallBounds().getX() + moveWall.getWallBounds().getWidth(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0)));
+                    }
+                }
+            }
+            else{
+                touchingWall = false;
+            }
+        }
         for(BonusQuokka bonusQuokka : bonusQuokkas){
             if(bonusQuokka.collides(quokka.getQuokkaBounds())){
                 if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
@@ -162,6 +189,11 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle gravitySwitch : gravitySwitches){
             if(gravitySwitch.collides(quokka.getQuokkaBounds())){
                 quokka.setGravity(-1 * quokka.getGravity());
+            }
+        }
+        for(Switch wallSwitch : switches){
+            if(wallSwitch.collides(quokka.getQuokkaBounds())){
+                wallSwitch.getWall().setPosWall(wallSwitch.getWall().getPosWall().x + wallSwitch.getWallMove(), wallSwitch.getWall().getPosWall().y + wallSwitch.getWallMove());
             }
         }
         if(quokka.getPosition().y==0){
@@ -202,8 +234,14 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle gravitySwitch: gravitySwitches){
             sb.draw(gravitySwitch.getTexture(), gravitySwitch.getPosObstacle().x, gravitySwitch.getPosObstacle().y);
         }
+        for(Switch wallSwitch: switches){
+            sb.draw(wallSwitch.getTexture(), wallSwitch.getPosSwitch().x, wallSwitch.getPosSwitch().y);
+        }
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
+        }
+        for(MoveWall moveWall : moveWalls){
+            sb.draw(moveWall.getTexture(), moveWall.getPosWall().x, moveWall.getPosWall().y);
         }
         for (Hawk hawk : hawks){
             sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
@@ -242,6 +280,12 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Obstacle gravitySwitch : gravitySwitches){
             gravitySwitch.dispose();
+        }
+        for(Switch wallSwitch: switches){
+            wallSwitch.dispose();
+        }
+        for(MoveWall moveWall : moveWalls){
+            moveWall.dispose();
         }
         for(Hawk hawk : hawks){
             hawk.dispose();
