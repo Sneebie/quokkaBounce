@@ -18,7 +18,6 @@ import com.quokkabounce.game.sprites.Hawk;
 import com.quokkabounce.game.sprites.MoveWall;
 import com.quokkabounce.game.sprites.Obstacle;
 import com.quokkabounce.game.sprites.Quokka;
-import com.quokkabounce.game.sprites.Switch;
 import com.quokkabounce.game.sprites.Wall;
 
 /**
@@ -44,7 +43,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Wall> walls;
     private Array<BonusQuokka> bonusQuokkas;
     private Array<Obstacle> gravitySwitches;
-    private Array<Switch> switches;
+    private Array<Obstacle> switches;
     private Array<MoveWall> moveWalls;
     private BooleanArray collectedQuokkas;
 
@@ -57,7 +56,7 @@ public class PlayState extends State implements InputProcessor{
         bonusQuokkas = new Array<BonusQuokka>();
         collectedQuokkas = new BooleanArray();
         gravitySwitches = new Array<Obstacle>();
-        switches = new Array<Switch>();
+        switches = new Array<Obstacle>();
         moveWalls = new Array<MoveWall>();
         levelInit(level);
         shouldFall = false;
@@ -135,6 +134,23 @@ public class PlayState extends State implements InputProcessor{
             }
         }
         for(Wall wall : walls){
+            boolean moveWall = false;
+            if(wall.hasSwitch()) {
+                for (Obstacle wallSwitch : wall.getWallSwitches()) {
+                    if (wallSwitch.collides(quokka.getQuokkaBounds())) {
+                        switches.removeIndex(switches.indexOf(wallSwitch, false));
+                        wallSwitch.dispose();
+                        moveWall = true;
+                    }
+                }
+            }
+            if(moveWall) {
+                System.out.println(moveWall);
+            }
+            if(moveWall){
+                wall.setPosWall(wall.getPosWall().x, wall.getPosWall().y + wall.getWallMove());
+                wall.setWallBounds(wall.getPosWall().x, wall.getPosWall().y, wall.getTexture().getWidth(), wall.getTexture().getHeight());
+            }
             if(wall.collides(quokka.getQuokkaBounds())){
                 if(!touchingWall) {
                     touchingWall = true;
@@ -191,11 +207,6 @@ public class PlayState extends State implements InputProcessor{
                 quokka.setGravity(-1 * quokka.getGravity());
             }
         }
-        for(Switch wallSwitch : switches){
-            if(wallSwitch.collides(quokka.getQuokkaBounds())){
-                wallSwitch.getWall().setPosWall(wallSwitch.getWall().getPosWall().x + wallSwitch.getWallMove(), wallSwitch.getWall().getPosWall().y + wallSwitch.getWallMove());
-            }
-        }
         if(quokka.getPosition().y==0){
             gsm.set(new PlayState(gsm, level));
         }
@@ -234,8 +245,8 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle gravitySwitch: gravitySwitches){
             sb.draw(gravitySwitch.getTexture(), gravitySwitch.getPosObstacle().x, gravitySwitch.getPosObstacle().y);
         }
-        for(Switch wallSwitch: switches){
-            sb.draw(wallSwitch.getTexture(), wallSwitch.getPosSwitch().x, wallSwitch.getPosSwitch().y);
+        for(Obstacle wallSwitch: switches){
+            sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
         }
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
@@ -281,7 +292,7 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle gravitySwitch : gravitySwitches){
             gravitySwitch.dispose();
         }
-        for(Switch wallSwitch: switches){
+        for(Obstacle wallSwitch: switches){
             wallSwitch.dispose();
         }
         for(MoveWall moveWall : moveWalls){
@@ -297,8 +308,10 @@ public class PlayState extends State implements InputProcessor{
         switch(level){
             case 1:
                 levelBackground = new Texture("level1Background.png");
-                happyCloud = new HappyCloud(800,200);
-                bonusQuokkas.add(new BonusQuokka(20,200));
+                switches.add(new Obstacle(200, 100, "wallSwitch.png"));
+                walls.add(new Wall(400, -220, switches, -200));
+                walls.add(new Wall(400, 375));
+                happyCloud = new HappyCloud(10000,200);
                 break;
             case 2:
                 levelBackground = new Texture("level2Background.png");
@@ -308,6 +321,25 @@ public class PlayState extends State implements InputProcessor{
                 bonusQuokkas.add(new BonusQuokka(20,200));
                 break;
             case 3:
+                levelBackground = new Texture("level3Background.png");
+                walls.add(new Wall(350, -80));
+                walls.add(new Wall(850, -230));
+                clouds.add(new EvilCloud(1200, 460));
+                bonusQuokkas.add(new BonusQuokka(1200, 10));
+                happyCloud = new HappyCloud(500, 50);
+                break;
+            case 4:
+                levelBackground = new Texture("level1Background.png");
+                walls.add(new Wall(300,500));
+                walls.add(new Wall(300, -380));
+                walls.add(new Wall (600, -380));
+                bonusQuokkas.add(new BonusQuokka(600, 400));
+                clouds.add(new EvilCloud(800, 500));
+                walls.add(new Wall(1300, 600));
+                clouds.add(new EvilCloud(1300, 50));
+                happyCloud = new HappyCloud(1600, 300);
+                break;
+            /*case 3:
                 levelBackground = new Texture("level3Background.png");
                 clouds.add(new EvilCloud(200, 300));
                 walls.add(new Wall(900, 450));
@@ -349,15 +381,15 @@ public class PlayState extends State implements InputProcessor{
                     walls.add(new Wall(400 + 123 * i, 500));
                 }
                 happyCloud = new HappyCloud(1400, 5);
-                break;
-            case 9:
+                break;*/
+            case 6:
                 levelBackground = new Texture("level3Background.png");
                 walls.add(new Wall(350, 300));
                 bonusQuokkas.add(new BonusQuokka(500, 400));
                 walls.add(new Wall(750,300));
                 happyCloud = new HappyCloud(1250, 200);
                 break;
-            case 10:
+            case 9:
                 levelBackground = new Texture("level1Background.png");
                 walls.add(new Wall(300,600));
                 walls.add(new Wall(300, -280));
