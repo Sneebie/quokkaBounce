@@ -27,12 +27,13 @@ import com.quokkabounce.game.sprites.Wall;
 public class PlayState extends State implements InputProcessor{
     private static final int BACKGROUND_Y_OFFSET = 0;
     private static final int HAWKSIGHT = 400;
+    private static final int GOODGRAV = 500;
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
     private Texture levelBackground;
     private Vector2 levelBackgroundPos1, levelBackgroundPos2;
-    private Vector3 clickPos, clickPos2, velocityTemp, normal, clickPosTemp;
+    private Vector3 clickPos, clickPos2, velocityTemp, normal, clickPosTemp, planetDistance;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT;
@@ -44,6 +45,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<BonusQuokka> bonusQuokkas;
     private Array<Obstacle> gravitySwitches;
     private Array<Obstacle> switches;
+    private Array<Obstacle> planets;
     private Array<MoveWall> moveWalls;
     private BooleanArray collectedQuokkas;
 
@@ -57,6 +59,7 @@ public class PlayState extends State implements InputProcessor{
         collectedQuokkas = new BooleanArray();
         gravitySwitches = new Array<Obstacle>();
         switches = new Array<Obstacle>();
+        planets = new Array<Obstacle>();
         moveWalls = new Array<MoveWall>();
         levelInit(level);
         shouldFall = false;
@@ -75,6 +78,7 @@ public class PlayState extends State implements InputProcessor{
         clickPosTemp = new Vector3(0,-100,0);
         velocityTemp = new Vector3(0,0,0);
         normal = new Vector3(0,0,0);
+        planetDistance = new Vector3(0,0,0);
     }
 
     @Override
@@ -204,8 +208,17 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Obstacle gravitySwitch : gravitySwitches){
             if(gravitySwitch.collides(quokka.getQuokkaBounds())){
-                quokka.setGravity(-1 * quokka.getGravity());
+                quokka.setGravity(quokka.getGravity().x, -1 * quokka.getGravity().y, 0);
             }
+        }
+        for(Obstacle planet : planets){
+            planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2- planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
+            double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+            System.out.println(planetMagnitude);
+            if(planetMagnitude != 0) {
+                planetDistance.scl(Math.round(GOODGRAV / Math.pow(planetMagnitude, 3)));
+            }
+            quokka.getGravity().set(quokka.getGravity().x + planetDistance.x, quokka.getGravity().y + planetDistance.y, 0);
         }
         if(quokka.getPosition().y==0){
             gsm.set(new PlayState(gsm, level));
@@ -244,6 +257,9 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Obstacle gravitySwitch: gravitySwitches){
             sb.draw(gravitySwitch.getTexture(), gravitySwitch.getPosObstacle().x, gravitySwitch.getPosObstacle().y);
+        }
+        for(Obstacle planet : planets){
+            sb.draw(planet.getTexture(), planet.getPosObstacle().x, planet.getPosObstacle().y);
         }
         for(Obstacle wallSwitch: switches){
             sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
@@ -292,6 +308,9 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle gravitySwitch : gravitySwitches){
             gravitySwitch.dispose();
         }
+        for(Obstacle planet : planets){
+            planet.dispose();
+        }
         for(Obstacle wallSwitch: switches){
             wallSwitch.dispose();
         }
@@ -338,6 +357,11 @@ public class PlayState extends State implements InputProcessor{
                 walls.add(new Wall(1300, 600));
                 clouds.add(new EvilCloud(1300, 50));
                 happyCloud = new HappyCloud(1600, 300);
+                break;
+            case 5:
+                levelBackground = new Texture("spaceBackground.png");
+                planets.add(new Obstacle(200, 200, "greenPlanet.png"));
+                happyCloud = new HappyCloud(5200, 300);
                 break;
             /*case 3:
                 levelBackground = new Texture("level3Background.png");
