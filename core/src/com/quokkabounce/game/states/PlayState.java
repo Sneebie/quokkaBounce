@@ -27,7 +27,8 @@ import com.quokkabounce.game.sprites.Wall;
 public class PlayState extends State implements InputProcessor{
     private static final int BACKGROUND_Y_OFFSET = 0;
     private static final int HAWKSIGHT = 400;
-    private static final int GOODGRAV = 500;
+    private static final int GOODGRAV = -230;
+    private static final double GRAVPOW = 1;
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
@@ -216,9 +217,9 @@ public class PlayState extends State implements InputProcessor{
             double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
             System.out.println(planetMagnitude);
             if(planetMagnitude != 0) {
-                planetDistance.scl(Math.round(GOODGRAV / Math.pow(planetMagnitude, 3)));
+                planetDistance.scl(Math.round(GOODGRAV / Math.pow(planetMagnitude, GRAVPOW)));
             }
-            quokka.getGravity().set(quokka.getGravity().x + planetDistance.x, quokka.getGravity().y + planetDistance.y, 0);
+            quokka.getGravity().set(planetDistance.x, planetDistance.y, 0);
         }
         if(quokka.getPosition().y==0){
             gsm.set(new PlayState(gsm, level));
