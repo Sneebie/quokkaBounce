@@ -28,6 +28,7 @@ public class PlayState extends State implements InputProcessor{
     private static final int BACKGROUND_Y_OFFSET = 0;
     private static final int HAWKSIGHT = 400;
     private static final int GOODGRAV = -15;
+    private static final int PLANETSCALER = 20;
     private static final double GRAVPOW = 0.5;
     private static final double VIEWPORT_SCALER = 1.6;
 
@@ -149,9 +150,6 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
             }
-            if(moveWall) {
-                System.out.println(moveWall);
-            }
             if(moveWall){
                 wall.setPosWall(wall.getPosWall().x, wall.getPosWall().y + wall.getWallMove());
                 wall.setWallBounds(wall.getPosWall().x, wall.getPosWall().y, wall.getTexture().getWidth(), wall.getTexture().getHeight());
@@ -212,14 +210,18 @@ public class PlayState extends State implements InputProcessor{
                 quokka.setGravity(quokka.getGravity().x, -1 * quokka.getGravity().y, 0);
             }
         }
+        quokka.getGravity().set(0,0,0);
         for(Obstacle planet : planets){
             planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2- planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
             double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-            System.out.println(planetMagnitude);
             if(planetMagnitude != 0) {
                 planetDistance.scl(Math.round(GOODGRAV / Math.pow(planetMagnitude, GRAVPOW)));
             }
-            quokka.getGravity().set(planetDistance.x, planetDistance.y, 0);
+            quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
+        }
+        quokka.getGravity().set(quokka.getGravity().x / PLANETSCALER, quokka.getGravity().y / PLANETSCALER, 0);
+        if(quokka.getGravity().x == 0 && quokka.getGravity().y == 0){
+            quokka.getGravity().set(0, -13, 0);
         }
         if(quokka.getPosition().y==0){
             gsm.set(new PlayState(gsm, level));
@@ -362,6 +364,7 @@ public class PlayState extends State implements InputProcessor{
             case 5:
                 levelBackground = new Texture("spaceBackground.png");
                 planets.add(new Obstacle(200, 200, "greenPlanet.png"));
+                planets.add(new Obstacle(800, 500, "greenPlanet.png"));
                 happyCloud = new HappyCloud(5200, 300);
                 break;
             /*case 3:
