@@ -31,9 +31,6 @@ public class Quokka {
         }
         velocity.scl(dt);
         position.add(velocity.x, velocity.y, 0);
-        if(position.y < 0){
-            position.y=0;
-        }
         velocity.scl(1/dt);
         quokkaBounds.setPosition(position.x, position.y);
     }

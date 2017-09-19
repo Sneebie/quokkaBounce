@@ -25,17 +25,17 @@ import com.quokkabounce.game.sprites.Wall;
  */
 
 public class PlayState extends State implements InputProcessor{
-    private static final int BACKGROUND_Y_OFFSET = 0;
     private static final int HAWKSIGHT = 400;
     private static final int GOODGRAV = -15;
     private static final int PLANETSCALER = 20;
+    private static final double OCEANSLOW = 0.98;
     private static final double GRAVPOW = 0.5;
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
     private Texture levelBackground;
-    private Vector2 levelBackgroundPos1, levelBackgroundPos2;
-    private Vector3 clickPos, clickPos2, velocityTemp, normal, clickPosTemp, planetDistance;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4;
+    private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT;
@@ -73,12 +73,15 @@ public class PlayState extends State implements InputProcessor{
         quokka = new Quokka(50,650);
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH*VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER));
         shapeRenderer = new ShapeRenderer();
-        levelBackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, BACKGROUND_Y_OFFSET);
-        levelBackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth)+levelBackground.getWidth(), BACKGROUND_Y_OFFSET);
+        levelBackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, 0);
+        levelBackgroundPos3 = new Vector2(cam.position.x - cam.viewportWidth, -1 * levelBackground.getHeight());
+        levelBackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth) + levelBackground.getWidth(), 0);
+        levelBackgroundPos4 = new Vector2((cam.position.x - cam.viewportWidth) + levelBackground.getWidth(), -1 * levelBackground.getHeight());
         clickPos = new Vector3(0,0,0);
         clickPos2 = new Vector3(0,-100,0);
         clickPosTemp = new Vector3(0,-100,0);
         velocityTemp = new Vector3(0,0,0);
+        velocityTemp2 = new Vector3(0,0,0);
         normal = new Vector3(0,0,0);
         planetDistance = new Vector3(0,0,0);
     }
@@ -88,6 +91,9 @@ public class PlayState extends State implements InputProcessor{
         currentDT = dt;
         updateBackground();
         cam.position.x = quokka.getPosition().x + 80;
+        if(moveWalls.size!=0){
+            cam.position.y = quokka.getPosition().y;
+        }
         justHitTemp = false;
         if(lineCheck) {
             if(!justHit) {
@@ -223,8 +229,10 @@ public class PlayState extends State implements InputProcessor{
         if(quokka.getGravity().x == 0 && quokka.getGravity().y == 0){
             quokka.getGravity().set(0, -13, 0);
         }
-        if(quokka.getPosition().y==0){
-            gsm.set(new PlayState(gsm, level));
+        if(quokka.getPosition().y<=0){
+            if(moveWalls.size==0){
+                gsm.set(new PlayState(gsm, level));
+            }
         }
         if(happyCloud.collides(quokka.getQuokkaBounds())){
             gsm.set(new MenuState(gsm, level + 1));
@@ -249,6 +257,8 @@ public class PlayState extends State implements InputProcessor{
         sb.begin();
         sb.draw(levelBackground, levelBackgroundPos1.x, levelBackgroundPos1.y);
         sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
+        sb.draw(levelBackground, levelBackgroundPos3.x, levelBackgroundPos3.y);
+        sb.draw(levelBackground, levelBackgroundPos4.x, levelBackgroundPos4.y);
         sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
         for(BonusQuokka bonusQuokka : bonusQuokkas){
             if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
@@ -417,6 +427,10 @@ public class PlayState extends State implements InputProcessor{
                 walls.add(new Wall(750,300));
                 happyCloud = new HappyCloud(1250, 200);
                 break;
+            case 7: levelBackground = new Texture("level1Background.png");
+                moveWalls.add(new MoveWall(10000,10000,0,0,0));
+                happyCloud = new HappyCloud(10000, 10000);
+                break;
             case 9:
                 levelBackground = new Texture("level1Background.png");
                 walls.add(new Wall(300,600));
@@ -438,16 +452,40 @@ public class PlayState extends State implements InputProcessor{
     private void updateBackground(){
         if(cam.position.x - (cam.viewportWidth / 2) > levelBackgroundPos1.x + levelBackground.getWidth()) {
             levelBackgroundPos1.add(levelBackground.getWidth() * 2, 0);
+            levelBackgroundPos3.add(levelBackground.getWidth() * 2, 0);
         }
         if(cam.position.x - (cam.viewportWidth / 2) > levelBackgroundPos2.x + levelBackground.getWidth()){
             levelBackgroundPos2.add(levelBackground.getWidth() * 2, 0);
+            levelBackgroundPos4.add(levelBackground.getWidth() * 2, 0);
         }
         if((cam.position.x +(cam.viewportWidth / 2) < levelBackgroundPos1.x + levelBackground.getWidth())&&(cam.position.x + (cam.viewportWidth / 2) < levelBackgroundPos2.x + levelBackground.getWidth())) {
             if(levelBackgroundPos2.x > levelBackgroundPos1.x){
                 levelBackgroundPos2.sub(levelBackground.getWidth()*2, 0);
+                levelBackgroundPos4.sub(levelBackground.getWidth()*2, 0);
             }
             else if(levelBackgroundPos1.x > levelBackgroundPos2.x){
                 levelBackgroundPos1.sub(levelBackground.getWidth()*2, 0);
+                levelBackgroundPos3.sub(levelBackground.getWidth()*2, 0);
+            }
+        }
+        if(moveWalls.size!=0){
+            if(cam.position.y - (cam.viewportHeight / 2) > levelBackgroundPos1.y + levelBackground.getHeight()) {
+                levelBackgroundPos1.add(0, levelBackground.getHeight() * 2);
+                levelBackgroundPos2.add(0, levelBackground.getHeight() * 2);
+            }
+            if(cam.position.y - (cam.viewportHeight / 2) > levelBackgroundPos3.y + levelBackground.getHeight()){
+                levelBackgroundPos3.add(0, levelBackground.getHeight() * 2);
+                levelBackgroundPos4.add(0, levelBackground.getHeight() * 2);
+            }
+            if((cam.position.y +(cam.viewportHeight / 2) < levelBackgroundPos1.y + levelBackground.getHeight())&&(cam.position.y + (cam.viewportHeight / 2) < levelBackgroundPos3.y + levelBackground.getHeight())) {
+                if(levelBackgroundPos3.y > levelBackgroundPos1.y){
+                    levelBackgroundPos3.sub(0, levelBackground.getHeight() * 2);
+                    levelBackgroundPos4.sub(0, levelBackground.getHeight() * 2);
+                }
+                else if(levelBackgroundPos1.y > levelBackgroundPos3.y){
+                    levelBackgroundPos1.sub(0, levelBackground.getHeight() * 2);
+                    levelBackgroundPos2.sub(0, levelBackground.getHeight() * 2);
+                }
             }
         }
     }
@@ -456,7 +494,11 @@ public class PlayState extends State implements InputProcessor{
         velocityTemp.set(velocity);
         normal.set(point1.y-point2.y,point2.x-point1.x,0);
         normal.nor();
-        return velocityTemp.sub((normal).scl(2*(velocityTemp.dot(normal))));
+        velocityTemp2 = velocityTemp.sub((normal).scl(2*(velocityTemp.dot(normal))));
+        if(moveWalls.size!=0){
+            velocityTemp2.set(Math.round(velocityTemp2.x * OCEANSLOW), Math.round(velocityTemp2.y * OCEANSLOW), 0);
+        }
+        return velocityTemp2;
     }
 
     @Override
