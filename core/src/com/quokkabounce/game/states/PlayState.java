@@ -28,7 +28,7 @@ public class PlayState extends State implements InputProcessor{
     private static final int HAWKSIGHT = 400;
     private static final int GOODGRAV = -15;
     private static final int PLANETSCALER = 20;
-    private static final float DEPTHSCALER = 0.01f;
+    private static final float DEPTHSCALER = 0.0001f;
     private static final double OCEANSLOW = 0.98;
     private static final double GRAVPOW = 0.5;
     private static final double VIEWPORT_SCALER = 1.6;
@@ -256,14 +256,14 @@ public class PlayState extends State implements InputProcessor{
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
+        System.out.println(DEPTHSCALER * quokka.getPosition().y + 1);
         if(moveWalls.size!=0){
-            sb.setColor(DEPTHSCALER * quokka.getPosition().y - 1, DEPTHSCALER * quokka.getPosition().y - 1, DEPTHSCALER * quokka.getPosition().y - 1, 1f);
+            sb.setColor(DEPTHSCALER * (quokka.getPosition().y - 650) + 1, DEPTHSCALER * (quokka.getPosition().y - 650) + 1, DEPTHSCALER * (quokka.getPosition().y - 650) + 1, 1f);
         }
         sb.draw(levelBackground, levelBackgroundPos1.x, levelBackgroundPos1.y);
         sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
         sb.draw(levelBackground, levelBackgroundPos3.x, levelBackgroundPos3.y);
         sb.draw(levelBackground, levelBackgroundPos4.x, levelBackgroundPos4.y);
-        sb.setColor(1f, 1f, 1f, 1f);
         sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
         for(BonusQuokka bonusQuokka : bonusQuokkas){
             if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
@@ -307,6 +307,7 @@ public class PlayState extends State implements InputProcessor{
             shapeRenderer.line(clickPos, clickPosTemp);
             shapeRenderer.end();
         }
+        sb.setColor(1f, 1f, 1f, 1f);
     }
 
     @Override
