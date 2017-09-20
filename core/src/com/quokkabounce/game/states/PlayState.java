@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BooleanArray;
 import com.quokkabounce.game.QuokkaBounce;
 import com.quokkabounce.game.sprites.BonusQuokka;
+import com.quokkabounce.game.sprites.Button;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Hawk;
@@ -34,6 +35,7 @@ public class PlayState extends State implements InputProcessor{
     private static final double VIEWPORT_SCALER = 1.6;
 
     private Quokka quokka;
+    private Button backButton;
     private Texture levelBackground;
     private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4;
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance;
@@ -92,6 +94,8 @@ public class PlayState extends State implements InputProcessor{
         currentDT = dt;
         updateBackground();
         cam.position.x = quokka.getPosition().x + 80;
+        backButton.getPosButton().x = cam.position.x - 800;
+        backButton.getPosButton().y = cam.position.y + 100;
         if(moveWalls.size!=0){
             cam.position.y = quokka.getPosition().y;
         }
@@ -256,7 +260,6 @@ public class PlayState extends State implements InputProcessor{
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        System.out.println(DEPTHSCALER * quokka.getPosition().y + 1);
         if(moveWalls.size!=0){
             sb.setColor(DEPTHSCALER * (quokka.getPosition().y - 650) + 1, DEPTHSCALER * (quokka.getPosition().y - 650) + 1, DEPTHSCALER * (quokka.getPosition().y - 650) + 1, 1f);
         }
@@ -292,6 +295,7 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
         }
         sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
+        sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
         sb.end();
         if(clickPos2.y!=-100) {
             shapeRenderer.setColor(Color.BROWN);
@@ -339,10 +343,12 @@ public class PlayState extends State implements InputProcessor{
         for(Hawk hawk : hawks){
             hawk.dispose();
         }
+        backButton.dispose();
         shapeRenderer.dispose();
     }
 
     public void levelInit(int level){
+        backButton = new Button(new Texture("level4Button.png"), -100, -100, 0);
         switch(level){
             case 1:
                 levelBackground = new Texture("level1Background.png");
@@ -565,6 +571,9 @@ public class PlayState extends State implements InputProcessor{
                 quokka.getVelocity().scl(1 / currentDT);
             }
             clickPosTemp.set(0, -100, 0);
+        }
+        if(backButton.getButtonBounds().contains(screenX, screenY)){
+            gsm.set(new MenuState(gsm, level));
         }
         return false;
     }
