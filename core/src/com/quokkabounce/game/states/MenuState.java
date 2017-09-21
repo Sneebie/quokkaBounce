@@ -1,6 +1,7 @@
 package com.quokkabounce.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -13,7 +14,7 @@ import com.quokkabounce.game.sprites.Button;
  * Created by Eric on 8/28/2017.
  */
 
-public class MenuState extends State{
+public class MenuState extends State implements InputProcessor{
     private Texture levelSelectBackground;
     private Array<Button> buttons;
     private static final double VIEWPORT_SCALER = 1.6;
@@ -21,6 +22,7 @@ public class MenuState extends State{
 
     public MenuState(GameStateManager gsm, int level) {
         super(gsm, level);
+        Gdx.input.setInputProcessor(this);
         if(level > permaLevel){
             permaLevel = level;
         }
@@ -57,22 +59,8 @@ public class MenuState extends State{
         levelSelectBackground = new Texture("levelSelectBackground.png");
     }
 
-    public void handleInput() {
-        if(Gdx.input.justTouched()){
-            Vector3 touchInput = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            touchInput.set(cam.unproject(touchInput));
-            for(Button button : buttons){
-                if(button.getButtonBounds().contains(touchInput.x, touchInput.y)){
-                    gsm.set(new PlayState(gsm, button.getLevel()));
-                    break;
-                }
-            }
-        }
-    }
-
     @Override
     public void update(float dt) {
-        handleInput();
     }
 
     @Override
@@ -94,4 +82,51 @@ public class MenuState extends State{
         }
     }
 
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Vector3 touchInput = new Vector3(screenX, screenY, 0);
+        touchInput.set(cam.unproject(touchInput));
+        for(Button menuButton : buttons){
+            if(menuButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
+                gsm.set(new PlayState(gsm, menuButton.getLevel()));
+                break;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
+    }
 }

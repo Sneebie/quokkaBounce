@@ -538,6 +538,9 @@ public class PlayState extends State implements InputProcessor{
         clickPos2.set(screenX, -100, 0);
         clickPos.set(screenX, screenY, 0);
         clickPos.set(cam.unproject(clickPos));
+        if(backButton.getButtonBounds().contains(screenX, screenY)){
+            gsm.set(new MenuState(gsm, level));
+        }
         return false;
     }
 
@@ -573,9 +576,6 @@ public class PlayState extends State implements InputProcessor{
                 quokka.getVelocity().scl(1 / currentDT);
             }
             clickPosTemp.set(0, -100, 0);
-        }
-        if(backButton.getButtonBounds().contains(screenX, screenY)){
-            gsm.set(new MenuState(gsm, level));
         }
         return false;
     }
