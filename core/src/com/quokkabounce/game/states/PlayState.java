@@ -349,6 +349,8 @@ public class PlayState extends State implements InputProcessor{
 
     public void levelInit(int level){
         backButton = new Button(new Texture("level4Button.png"), -100, -100, 0);
+        walls.add(new Wall(-1000, -220));
+        walls.add(new Wall(-1000, 375));
         switch(level){
             case 1:
                 levelBackground = new Texture("level1Background.png");
