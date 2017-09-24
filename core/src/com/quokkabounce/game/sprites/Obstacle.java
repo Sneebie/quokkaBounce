@@ -36,4 +36,8 @@ public class Obstacle {
     public void dispose() {
         obstacleTexture.dispose();
     }
+
+    public Rectangle getObstacleBounds() {
+        return obstacleBounds;
+    }
 }

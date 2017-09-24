@@ -42,7 +42,7 @@ public class PlayState extends State implements InputProcessor{
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, justHitTemp;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, justHitTemp, outZone;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -51,6 +51,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Obstacle> gravitySwitches;
     private Array<Obstacle> switches;
     private Array<Obstacle> planets;
+    private Array<Obstacle> nullZones;
     private Array<MoveWall> moveWalls;
     private BooleanArray collectedQuokkas;
 
@@ -65,6 +66,7 @@ public class PlayState extends State implements InputProcessor{
         gravitySwitches = new Array<Obstacle>();
         switches = new Array<Obstacle>();
         planets = new Array<Obstacle>();
+        nullZones = new Array<Obstacle>();
         moveWalls = new Array<MoveWall>();
         levelInit(level);
         shouldFall = false;
@@ -101,16 +103,25 @@ public class PlayState extends State implements InputProcessor{
         }
         justHitTemp = false;
         if(lineCheck) {
+            outZone = false;
             if(!justHit) {
                 if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
                     if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
-                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                        justHitTemp = true;
+                        outZone = true;
+                        for(Obstacle nullZone : nullZones){
+                            if(nullZone.getObstacleBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
+                                outZone = false;
+                            }
+                        }
                     }
                 } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
                     if (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
-                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                        justHitTemp = true;
+                        outZone = true;
+                        for(Obstacle nullZone : nullZones){
+                            if(nullZone.getObstacleBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
+                                outZone = false;
+                            }
+                        }
                     }
                 }
             }
@@ -126,6 +137,10 @@ public class PlayState extends State implements InputProcessor{
                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
                     }
                 }
+            }
+            if(outZone){
+                quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                justHitTemp = true;
             }
         }
         justHit = justHitTemp;
@@ -267,29 +282,16 @@ public class PlayState extends State implements InputProcessor{
         sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
         sb.draw(levelBackground, levelBackgroundPos3.x, levelBackgroundPos3.y);
         sb.draw(levelBackground, levelBackgroundPos4.x, levelBackgroundPos4.y);
-        sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
         for(BonusQuokka bonusQuokka : bonusQuokkas){
             if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
                 sb.draw(bonusQuokka.getTexture(), bonusQuokka.getPosQuokka().x, bonusQuokka.getPosQuokka().y);
             }
         }
-        for(EvilCloud cloud: clouds) {
-            sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
-        }
         for(Obstacle gravitySwitch: gravitySwitches){
             sb.draw(gravitySwitch.getTexture(), gravitySwitch.getPosObstacle().x, gravitySwitch.getPosObstacle().y);
         }
-        for(Obstacle planet : planets){
-            sb.draw(planet.getTexture(), planet.getPosObstacle().x, planet.getPosObstacle().y);
-        }
         for(Obstacle wallSwitch: switches){
             sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
-        }
-        for(Wall wall : walls){
-            sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
-        }
-        for(MoveWall moveWall : moveWalls){
-            sb.draw(moveWall.getTexture(), moveWall.getPosWall().x, moveWall.getPosWall().y);
         }
         for (Hawk hawk : hawks){
             sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
@@ -311,6 +313,24 @@ public class PlayState extends State implements InputProcessor{
             shapeRenderer.line(clickPos, clickPosTemp);
             shapeRenderer.end();
         }
+        sb.begin();
+        for(Obstacle nullZone : nullZones){
+            sb.draw(nullZone.getTexture(), nullZone.getPosObstacle().x, nullZone.getPosObstacle().y);
+        }
+        sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
+        for(Wall wall : walls){
+            sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
+        }
+        for(MoveWall moveWall : moveWalls){
+            sb.draw(moveWall.getTexture(), moveWall.getPosWall().x, moveWall.getPosWall().y);
+        }
+        for(EvilCloud cloud: clouds) {
+            sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
+        }
+        for(Obstacle planet : planets){
+            sb.draw(planet.getTexture(), planet.getPosObstacle().x, planet.getPosObstacle().y);
+        }
+        sb.end();
         sb.setColor(1f, 1f, 1f, 1f);
     }
 
@@ -334,6 +354,9 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle planet : planets){
             planet.dispose();
         }
+        for(Obstacle nullZone : nullZones){
+            nullZone.dispose();
+        }
         for(Obstacle wallSwitch: switches){
             wallSwitch.dispose();
         }
@@ -352,11 +375,16 @@ public class PlayState extends State implements InputProcessor{
         walls.add(new Wall(-1000, -220));
         walls.add(new Wall(-1000, 375));
         switch(level){
-            case 1:
+            /*case 1:
                 levelBackground = new Texture("level1Background.png");
                 switches.add(new Obstacle(200, 100, "wallSwitch.png"));
                 walls.add(new Wall(400, -220, switches, -200));
                 walls.add(new Wall(400, 375));
+                happyCloud = new HappyCloud(10000,200);
+                break;*/
+            case 1:
+                levelBackground = new Texture("level1Background.png");
+                nullZones.add(new Obstacle(300,0, "spaceBackground.png"));
                 happyCloud = new HappyCloud(10000,200);
                 break;
             case 2:
