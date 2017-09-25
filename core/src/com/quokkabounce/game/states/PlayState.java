@@ -138,6 +138,40 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
             }
+            if(planets.size > 0){
+                if (((quokka.getQuokkaBounds2().x > clickPos.x) && (quokka.getQuokkaBounds2().x < clickPos2.x)) || ((quokka.getQuokkaBounds2().x < clickPos.x) && (quokka.getQuokkaBounds2().x > clickPos2.x))) {
+                    if (quokka.getQuokkaBounds2().contains(quokka.getQuokkaBounds2().x, lineY(quokka.getQuokkaBounds2().x))) {
+                        outZone = true;
+                        for(Obstacle nullZone : nullZones){
+                            if(nullZone.getObstacleBounds().contains(quokka.getQuokkaBounds2().x, lineY(quokka.getQuokkaBounds2().x))){
+                                outZone = false;
+                            }
+                        }
+                    }
+                } else if ((((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+                    if (quokka.getQuokkaBounds2().contains(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth(), lineY(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()))) {
+                        outZone = true;
+                        for(Obstacle nullZone : nullZones){
+                            if(nullZone.getObstacleBounds().contains(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth(), lineY(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()))){
+                                outZone = false;
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                if (((quokka.getQuokkaBounds2().x > clickPos.x) && (quokka.getQuokkaBounds2().x < clickPos2.x)) || ((quokka.getQuokkaBounds2().x < clickPos.x) && (quokka.getQuokkaBounds2().x > clickPos2.x))) {
+                    while (quokka.getQuokkaBounds2().contains(quokka.getQuokkaBounds2().x, lineY(quokka.getQuokkaBounds2().x))) {
+                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    }
+                } else if ((((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+                    while (quokka.getQuokkaBounds2().contains(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth(), lineY(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()))) {
+                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    }
+                }
+            }
             if(outZone){
                 quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                 justHitTemp = true;
@@ -158,6 +192,23 @@ public class PlayState extends State implements InputProcessor{
         }
         if(shouldFall) {
             quokka.update(dt);
+        }
+        if (planets.size > 0) {
+            if(quokka.getPosition().y < 0) {
+                quokka.getQuokkaBounds2().set(quokka.getQuokkaBounds().getX(), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER + quokka.getQuokkaBounds().getY()), quokka.getQuokkaBounds().getWidth(), quokka.getQuokkaBounds().getHeight());
+                if(quokka.getQuokkaBounds2().getY() < 0){
+                    quokka.getPosition().set(quokka.getQuokkaBounds2().getX(), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER + quokka.getQuokkaBounds().getY()), 0);
+                }
+            }
+            else if(quokka.getPosition().y  + quokka.getTexture().getHeight() >= QuokkaBounce.HEIGHT*VIEWPORT_SCALER) {
+                quokka.getQuokkaBounds2().set(quokka.getQuokkaBounds().getX(), Math.round(quokka.getQuokkaBounds().getY() - QuokkaBounce.HEIGHT*VIEWPORT_SCALER ), quokka.getQuokkaBounds().getWidth(), quokka.getQuokkaBounds().getHeight());
+                if(quokka.getQuokkaBounds2().y  + quokka.getTexture().getHeight() >= QuokkaBounce.HEIGHT*VIEWPORT_SCALER) {
+                    quokka.getPosition().set(quokka.getQuokkaBounds2().getX(), Math.round(QuokkaBounce.HEIGHT*VIEWPORT_SCALER + quokka.getQuokkaBounds2().getY()), 0);
+                }
+            }
+            else{
+                quokka.getQuokkaBounds2().set(quokka.getQuokkaBounds());
+            }
         }
         for (EvilCloud cloud : clouds){
             if(cloud.collides(quokka.getQuokkaBounds())){
@@ -245,12 +296,15 @@ public class PlayState extends State implements InputProcessor{
             }
             quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
         }
-        quokka.getGravity().set(quokka.getGravity().x / PLANETSCALER, quokka.getGravity().y / PLANETSCALER, 0);
-        if(quokka.getGravity().x == 0 && quokka.getGravity().y == 0){
+        if(planets.size == 0){
             quokka.getGravity().set(0, -13, 0);
         }
-        if(quokka.getPosition().y<=0){
-            if(moveWalls.size==0){
+        else{
+            quokka.getGravity().set(quokka.getGravity().x / PLANETSCALER, quokka.getGravity().y / PLANETSCALER, 0);
+            System.out.println(quokka.getGravity());
+        }
+        if(quokka.getPosition().y <= 0){
+            if(moveWalls.size==0 && planets.size == 0){
                 gsm.set(new PlayState(gsm, level));
             }
         }
@@ -258,7 +312,6 @@ public class PlayState extends State implements InputProcessor{
             gsm.set(new MenuState(gsm, level + 1));
         }
         cam.update();
-
     }
 
     private float lineY(float x){
@@ -318,6 +371,9 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(nullZone.getTexture(), nullZone.getPosObstacle().x, nullZone.getPosObstacle().y);
         }
         sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
+        if(planets.size > 0){
+            sb.draw(quokka.getTexture(), quokka.getQuokkaBounds2().x, quokka.getQuokkaBounds2().y);
+        }
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
         }

@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Quokka {
     private Vector3 position, velocity, gravity;
     private Texture quokka;
-    private Rectangle quokkaBounds;
+    private Rectangle quokkaBounds, quokkaBounds2;
 
     public Vector3 getGravity() {
         return gravity;
@@ -23,6 +23,7 @@ public class Quokka {
         velocity = new Vector3(0,0,0);
         quokka = new Texture("quokka.png");
         quokkaBounds = new Rectangle(x, y, quokka.getWidth(), quokka.getHeight());
+        quokkaBounds2 = new Rectangle(x, y, quokka.getWidth(), quokka.getHeight());
     }
 
     public void update(float dt){
@@ -45,6 +46,10 @@ public class Quokka {
 
     public Rectangle getQuokkaBounds(){
         return quokkaBounds;
+    }
+
+    public Rectangle getQuokkaBounds2() {
+        return quokkaBounds2;
     }
 
     public void dispose(){
