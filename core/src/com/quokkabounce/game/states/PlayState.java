@@ -38,7 +38,7 @@ public class PlayState extends State implements InputProcessor{
     private Button backButton;
     private Texture levelBackground;
     private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, circleCenter;
-    private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance;
+    private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT;
@@ -89,6 +89,7 @@ public class PlayState extends State implements InputProcessor{
         levelBackgroundPos4 = new Vector2((cam.position.x - cam.viewportWidth) + levelBackground.getWidth(), -1 * levelBackground.getHeight());
         intersectionPoint = new Vector2();
         circleCenter = new Vector2();
+        gradientVector = new Vector3();
         clickPos = new Vector3(0,0,0);
         clickPos2 = new Vector3(0,-100,0);
         clickPosTemp = new Vector3(0,-100,0);
@@ -234,8 +235,19 @@ public class PlayState extends State implements InputProcessor{
                 double C = Math.pow(circleCenter.y, 2) - Math.pow(planet.getTexture().getWidth() / 2, 0) + Math.pow(circleCenter.x, 2) - 2 * yIntercept * circleCenter.y + Math.pow(yIntercept, 2);
                 double intersectionX = (-1 * B + Math.sqrt(Math.pow(B, 2) - 4 * A * C)) / (2 * A);
                 double intersectionY = lineSlope * intersectionX + yIntercept;
-                // figure out whether to use + or - quadratic formula
                 intersectionPoint.set((float) intersectionX, (float) intersectionY);
+                if(!quokka.getQuokkaBounds().contains(intersectionPoint)){
+                    intersectionX = (-1 * B - Math.sqrt(Math.pow(B, 2) - 4 * A * C)) / (2 * A);
+                    intersectionY = lineSlope * intersectionX + yIntercept;
+                    intersectionPoint.set((float) intersectionX, (float) intersectionY);
+                }
+                velocityTemp.set(quokka.getVelocity());
+                gradientVector.set(2 * (intersectionPoint.x - circleCenter.x), 2 * (intersectionPoint.y - circleCenter.y), 0);
+                velocityTemp2.set(velocityTemp.sub((gradientVector).scl(2*(velocityTemp.dot(gradientVector)))));
+                if(moveWalls.size!=0){
+                    velocityTemp2.set(Math.round(velocityTemp2.x * OCEANSLOW), Math.round(velocityTemp2.y * OCEANSLOW), 0);
+                }
+                quokka.getVelocity().set(velocityTemp2);
             }
             planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2- planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
             double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
@@ -559,7 +571,7 @@ public class PlayState extends State implements InputProcessor{
         velocityTemp.set(velocity);
         normal.set(point1.y-point2.y,point2.x-point1.x,0);
         normal.nor();
-        velocityTemp2 = velocityTemp.sub((normal).scl(2*(velocityTemp.dot(normal))));
+        velocityTemp2.set(velocityTemp.sub((normal).scl(2*(velocityTemp.dot(normal)))));
         if(moveWalls.size!=0){
             velocityTemp2.set(Math.round(velocityTemp2.x * OCEANSLOW), Math.round(velocityTemp2.y * OCEANSLOW), 0);
         }
