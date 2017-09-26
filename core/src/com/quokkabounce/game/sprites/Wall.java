@@ -17,16 +17,16 @@ public class Wall{
     private float wallMove;
     private boolean hasSwitch;
 
-    public Wall(float x, float y){
-        setTexture();
+    public Wall(float x, float y, String textureString){
+        setTexture(textureString);
 
         posWall = new Vector2(x, y);
         hasSwitch = false;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
     }
 
-    public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove){
-        setTexture();
+    public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove, String textureString){
+        setTexture(textureString);
 
         posWall = new Vector2(x, y);
         hasSwitch = true;
@@ -71,8 +71,8 @@ public class Wall{
         wallTexture.dispose();
     }
 
-    public void setTexture() {
-        wallTexture = new Texture("wall.png");
+    public void setTexture(String textureString) {
+        wallTexture = new Texture(textureString);
     }
 
     public Rectangle getWallBounds() {
