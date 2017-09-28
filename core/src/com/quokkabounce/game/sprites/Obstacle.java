@@ -1,6 +1,7 @@
 package com.quokkabounce.game.sprites;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Ellipse;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -12,6 +13,7 @@ public class Obstacle {
     private Texture obstacleTexture;
     private Vector2 posObstacle;
     private Rectangle obstacleBounds;
+    private Ellipse obstacleEllipse;
 
     public Obstacle(float x, float y, String textureString){
         obstacleTexture = new Texture(textureString);
@@ -19,6 +21,9 @@ public class Obstacle {
         posObstacle = new Vector2(x, y);
 
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
+        if(textureString.equals("greenPlanet.png")){
+            obstacleEllipse = new Ellipse(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
+        }
     }
 
     public Vector2 getPosObstacle() {
@@ -39,5 +44,9 @@ public class Obstacle {
 
     public Rectangle getObstacleBounds() {
         return obstacleBounds;
+    }
+
+    public Ellipse getObstacleEllipse() {
+        return obstacleEllipse;
     }
 }
