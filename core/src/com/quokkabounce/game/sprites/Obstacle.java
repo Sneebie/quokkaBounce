@@ -13,7 +13,6 @@ public class Obstacle {
     private Texture obstacleTexture;
     private Vector2 posObstacle;
     private Rectangle obstacleBounds;
-    private Ellipse obstacleEllipse;
 
     public Obstacle(float x, float y, String textureString){
         obstacleTexture = new Texture(textureString);
@@ -21,9 +20,6 @@ public class Obstacle {
         posObstacle = new Vector2(x, y);
 
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
-        if(textureString.equals("greenPlanet.png")){
-            obstacleEllipse = new Ellipse(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
-        }
     }
 
     public Vector2 getPosObstacle() {
@@ -46,7 +42,14 @@ public class Obstacle {
         return obstacleBounds;
     }
 
-    public Ellipse getObstacleEllipse() {
-        return obstacleEllipse;
+    public boolean contains(float x, float y){
+        if(this.getPosObstacle().x < x && this.getPosObstacle().x + this.getObstacleBounds().getWidth() > x){
+            x -= this.getPosObstacle().x + this.getObstacleBounds().getWidth() / 2;
+            y -= this.getPosObstacle().y + this.getObstacleBounds().getHeight() / 2;
+            if(- 1 * Math.sqrt(Math.pow(this.getObstacleBounds().getWidth(), 2) * (1 - Math.pow(x, 2) / Math.pow(this.getObstacleBounds().getHeight(), 2))) < y && y < Math.sqrt(Math.pow(this.getObstacleBounds().getWidth(), 2) * (1 - Math.pow(x, 2) / Math.pow(this.getObstacleBounds().getHeight(),2)))){
+                return true;
+            }
+        }
+        return false;
     }
 }

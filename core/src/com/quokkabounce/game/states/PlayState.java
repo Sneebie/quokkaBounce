@@ -38,7 +38,7 @@ public class PlayState extends State implements InputProcessor{
     private Button backButton;
     private Texture levelBackground;
     private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, circleCenter;
-    private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector;
+    private Vector3 clickPos, clickPos2, clickPosTemp2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT;
@@ -93,6 +93,7 @@ public class PlayState extends State implements InputProcessor{
         gradientVector = new Vector3();
         clickPos = new Vector3(0,0,0);
         clickPos2 = new Vector3(0,-100,0);
+        clickPosTemp2 = new Vector3(0,0,0);
         clickPosTemp = new Vector3(0,-100,0);
         velocityTemp = new Vector3(0,0,0);
         velocityTemp2 = new Vector3(0,0,0);
@@ -225,50 +226,50 @@ public class PlayState extends State implements InputProcessor{
         }
         justPlanetTemp = false;
         for(Obstacle planet : planets){
-            if(!justPlanet) {
                 if (planet.collides(quokka.getQuokkaBounds())) {
-                    System.out.println("collides");
-                    if(planet.getObstacleEllipse().contains(quokka.getPosition().x, quokka.getPosition().y)) {
-                        System.out.println("quokkaBotLeft");
+                    String tempString = new String();
+                    if(planet.contains(quokka.getPosition().x, quokka.getPosition().y)) {
+                        tempString = ("quokkaBotLeft");
                         intersectionPoint.set(quokka.getPosition().x, quokka.getPosition().y);
                         justPlanetTemp = true;
                     }
-                    else if(planet.getObstacleEllipse().contains(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y)) {
-                        System.out.println("quokkaBotRight");
+                    else if(planet.contains(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y)) {
+                        tempString = ("quokkaBotRight");
                         intersectionPoint.set(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
                         justPlanetTemp = true;
                     }
-                    else if(planet.getObstacleEllipse().contains(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight())) {
-                        System.out.println("quokkaTopRight");
+                    else if(planet.contains(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight())) {
+                        tempString = ("quokkaTopRight");
                         intersectionPoint.set(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getWidth());
                         justPlanetTemp = true;
                     }
-                    else if(planet.getObstacleEllipse().contains(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight())) {
-                        System.out.println("quokkaTopLeft");
+                    else if(planet.contains(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight())) {
+                        tempString = ("quokkaTopLeft");
                         intersectionPoint.set(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getWidth());
                         justPlanetTemp = true;
                     }
                     else if((quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() == planet.getPosObstacle().x) && ((planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2) > quokka.getPosition().y) && ((planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2) < (quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()))){
-                        System.out.println("left");
+                        tempString = ("left");
                         intersectionPoint.set(planet.getPosObstacle().x, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
                         justPlanetTemp = true;
                     }
                     else if((quokka.getPosition().x == planet.getPosObstacle().x + planet.getObstacleBounds().getWidth()) && ((planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2) > quokka.getPosition().y) && ((planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2) < (quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()))){
-                        System.out.println("right");
-                        intersectionPoint.set(planet.getPosObstacle().x, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
+                        tempString = ("right");
+                        intersectionPoint.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth(), planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
                         justPlanetTemp = true;
                     }
                     else if((quokka.getPosition().y == planet.getPosObstacle().y + planet.getObstacleBounds().getHeight()) && ((planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2) > quokka.getPosition().x) && ((planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2) < (quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()))){
-                        System.out.println("top");
-                        intersectionPoint.set(planet.getPosObstacle().x, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
+                        tempString = ("top");
+                        intersectionPoint.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight());
                         justPlanetTemp = true;
                     }
                     else if((quokka.getPosition().y + quokka.getTexture().getHeight() == planet.getPosObstacle().y) && ((planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2) > quokka.getPosition().x) && ((planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2) < (quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()))){
-                        System.out.println("bot");
-                        intersectionPoint.set(planet.getPosObstacle().x, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
+                        tempString = ("bot");
+                        intersectionPoint.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y);
                         justPlanetTemp = true;
                     }
-                    if(justPlanetTemp) {
+                    if(!justPlanet) {
+                        System.out.println(tempString);
                         velocityTemp.set(quokka.getVelocity());
                         gradientVector.set(2 * (intersectionPoint.x - circleCenter.x), 2 * (intersectionPoint.y - circleCenter.y), 0);
                         gradientVector.nor();
@@ -276,7 +277,6 @@ public class PlayState extends State implements InputProcessor{
                         quokka.setVelocity(velocityTemp2);
                     }
                 }
-            }
             planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
             double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
             if (planetMagnitude != 0) {
@@ -367,8 +367,8 @@ public class PlayState extends State implements InputProcessor{
             shapeRenderer.setProjectionMatrix(cam.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.line(clickPos, clickPos2);
-            shapeRenderer.ellipse(planets.get(0).getObstacleEllipse().x, planets.get(0).getObstacleEllipse().y, planets.get(0).getObstacleEllipse().width, planets.get(0).getObstacleEllipse().height);
             shapeRenderer.rect(planets.get(0).getObstacleBounds().x, planets.get(0).getObstacleBounds().y, planets.get(0).getObstacleBounds().width, planets.get(0).getObstacleBounds().height);
+            shapeRenderer.ellipse(planets.get(0).getObstacleBounds().x, planets.get(0).getObstacleBounds().y, planets.get(0).getObstacleBounds().width, planets.get(0).getObstacleBounds().height);
             shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y, quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
             shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y, quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
             shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight(), quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
@@ -379,8 +379,8 @@ public class PlayState extends State implements InputProcessor{
             shapeRenderer.setColor(Color.YELLOW);
             shapeRenderer.setProjectionMatrix(cam.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.ellipse(planets.get(0).getObstacleEllipse().x, planets.get(0).getObstacleEllipse().y, planets.get(0).getObstacleEllipse().width, planets.get(0).getObstacleEllipse().height);
             shapeRenderer.rect(planets.get(0).getObstacleBounds().x, planets.get(0).getObstacleBounds().y, planets.get(0).getObstacleBounds().width, planets.get(0).getObstacleBounds().height);
+            shapeRenderer.ellipse(planets.get(0).getObstacleBounds().x, planets.get(0).getObstacleBounds().y, planets.get(0).getObstacleBounds().width, planets.get(0).getObstacleBounds().height);
             shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y, quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
             shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y, quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
             shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight(), quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
