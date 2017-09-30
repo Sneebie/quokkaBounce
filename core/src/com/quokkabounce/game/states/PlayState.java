@@ -256,7 +256,7 @@ public class PlayState extends State implements InputProcessor{
                     intersectionPointTemp.set(0, 0);
                 }
                 intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
-                if(Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.y - circleCenter.y, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.y - circleCenter.y, 2))) {
+                if(Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
                     intersectionPoint.set(intersectionPointTemp);
                 }
 
@@ -271,7 +271,7 @@ public class PlayState extends State implements InputProcessor{
                     intersectionPointTemp.set(0, 0);
                 }
                 intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y);
-                if(Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.y - circleCenter.y, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.y - circleCenter.y, 2))) {
+                if(Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
                     intersectionPoint.set(intersectionPointTemp);
                 }
 
@@ -286,10 +286,10 @@ public class PlayState extends State implements InputProcessor{
                     intersectionPointTemp.set(0, 0);
                 }
                 intersectionPointTemp.add(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
-                if(Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.y - circleCenter.y, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.y - circleCenter.y, 2))) {
+                if(Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
                     intersectionPoint.set(intersectionPointTemp);
                 }
-                if(Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.y - circleCenter.y, 2)) < planet.getObstacleBounds().getWidth() / 2){
+                if(Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2)) < planet.getObstacleBounds().getWidth() / 2){
                     justPlanetTemp = true;
                 }
                 if(!justPlanet) {

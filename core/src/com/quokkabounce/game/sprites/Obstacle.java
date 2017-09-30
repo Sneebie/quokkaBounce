@@ -41,15 +41,5 @@ public class Obstacle {
     public Rectangle getObstacleBounds() {
         return obstacleBounds;
     }
-
-    public boolean contains(float x, float y){
-        if(this.getPosObstacle().x < x && this.getPosObstacle().x + this.getObstacleBounds().getWidth() > x){
-            x -= this.getPosObstacle().x + this.getObstacleBounds().getWidth() / 2;
-            y -= this.getPosObstacle().y + this.getObstacleBounds().getHeight() / 2;
-            if(- 1 * Math.sqrt(Math.pow(this.getObstacleBounds().getWidth(), 2) * (1 - Math.pow(x, 2) / Math.pow(this.getObstacleBounds().getHeight(), 2))) < y && y < Math.sqrt(Math.pow(this.getObstacleBounds().getWidth(), 2) * (1 - Math.pow(x, 2) / Math.pow(this.getObstacleBounds().getHeight(),2)))){
-                return true;
-            }
-        }
-        return false;
-    }
+    
 }
