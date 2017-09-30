@@ -33,6 +33,7 @@ public class PlayState extends State implements InputProcessor{
     private static final double OCEANSLOW = 0.98;
     private static final float GRAVPOW = 2f;
     private static final float VIEWPORT_SCALER = 1.6f;
+    private static final int SHRINKRATE = 3;
 
     private Quokka quokka;
     private Button backButton;
@@ -48,7 +49,6 @@ public class PlayState extends State implements InputProcessor{
     private Array<Hawk> hawks;
     private Array<Wall> walls;
     private Array<BonusQuokka> bonusQuokkas;
-    private Array<Obstacle> gravitySwitches;
     private Array<Obstacle> switches;
     private Array<Obstacle> planets;
     private Array<Obstacle> nullZones;
@@ -63,7 +63,6 @@ public class PlayState extends State implements InputProcessor{
         hawks = new Array<Hawk>();
         bonusQuokkas = new Array<BonusQuokka>();
         collectedQuokkas = new BooleanArray();
-        gravitySwitches = new Array<Obstacle>();
         switches = new Array<Obstacle>();
         planets = new Array<Obstacle>();
         nullZones = new Array<Obstacle>();
@@ -331,12 +330,28 @@ public class PlayState extends State implements InputProcessor{
                 }
             }
         }
-        for(Obstacle gravitySwitch : gravitySwitches){
-            if(gravitySwitch.collides(quokka.getQuokkaBounds())){
-                quokka.setGravity(quokka.getGravity().x, -1 * quokka.getGravity().y, 0);
+        quokka.getGravity().set(0,0,0);
+        if(nullZones.size > 0 && lineCheck){
+            if(Math.abs(clickPos2.x - clickPos.x) < SHRINKRATE){
+                clickPos2.set(-100, -100, 0);
+                clickPos.set(-100, -100, 0);
+            }
+            else {
+                double linAng = Math.atan((clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x));
+                System.out.println(linAng);
+                if (clickPos2.x > clickPos.x) {
+                    clickPos2.x -= SHRINKRATE * Math.cos(linAng);
+                    clickPos2.y -= SHRINKRATE * Math.sin(linAng);
+                    clickPos.x += SHRINKRATE * Math.cos(linAng);
+                    clickPos.y += SHRINKRATE * Math.sin(linAng);
+                } else {
+                    clickPos2.x += SHRINKRATE * Math.cos(linAng);
+                    clickPos2.y += SHRINKRATE * Math.sin(linAng);
+                    clickPos.x -= SHRINKRATE * Math.cos(linAng);
+                    clickPos.y -= SHRINKRATE * Math.sin(linAng);
+                }
             }
         }
-        quokka.getGravity().set(0,0,0);
         if(quokka.getPosition().y<=0){
             if(moveWalls.size==0){
                 gsm.set(new PlayState(gsm, level));
@@ -375,9 +390,6 @@ public class PlayState extends State implements InputProcessor{
                 sb.draw(bonusQuokka.getTexture(), bonusQuokka.getPosQuokka().x, bonusQuokka.getPosQuokka().y);
             }
         }
-        for(Obstacle gravitySwitch: gravitySwitches){
-            sb.draw(gravitySwitch.getTexture(), gravitySwitch.getPosObstacle().x, gravitySwitch.getPosObstacle().y);
-        }
         for(Obstacle wallSwitch: switches){
             sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
         }
@@ -392,24 +404,12 @@ public class PlayState extends State implements InputProcessor{
             shapeRenderer.setProjectionMatrix(cam.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.line(clickPos, clickPos2);
-            shapeRenderer.rect(planets.get(0).getObstacleBounds().x, planets.get(0).getObstacleBounds().y, planets.get(0).getObstacleBounds().width, planets.get(0).getObstacleBounds().height);
-            shapeRenderer.ellipse(planets.get(0).getObstacleBounds().x, planets.get(0).getObstacleBounds().y, planets.get(0).getObstacleBounds().width, planets.get(0).getObstacleBounds().height);
-            shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y, quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
-            shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y, quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
-            shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight(), quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
-            shapeRenderer.line(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y, quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
             shapeRenderer.end();
         }
         else if (clickPosTemp.y!=-100){
             shapeRenderer.setColor(Color.YELLOW);
             shapeRenderer.setProjectionMatrix(cam.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.rect(planets.get(0).getObstacleBounds().x, planets.get(0).getObstacleBounds().y, planets.get(0).getObstacleBounds().width, planets.get(0).getObstacleBounds().height);
-            shapeRenderer.ellipse(planets.get(0).getObstacleBounds().x, planets.get(0).getObstacleBounds().y, planets.get(0).getObstacleBounds().width, planets.get(0).getObstacleBounds().height);
-            shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y, quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
-            shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y, quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
-            shapeRenderer.line(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight(), quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
-            shapeRenderer.line(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y, quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
             shapeRenderer.line(clickPos, clickPosTemp);
             shapeRenderer.end();
         }
@@ -447,9 +447,6 @@ public class PlayState extends State implements InputProcessor{
         }
         for(BonusQuokka bonusQuokka : bonusQuokkas){
             bonusQuokka.dispose();
-        }
-        for(Obstacle gravitySwitch : gravitySwitches){
-            gravitySwitch.dispose();
         }
         for(Obstacle planet : planets){
             planet.dispose();

@@ -41,5 +41,5 @@ public class Obstacle {
     public Rectangle getObstacleBounds() {
         return obstacleBounds;
     }
-    
+
 }
