@@ -226,6 +226,7 @@ public class PlayState extends State implements InputProcessor{
         }
         justPlanetTemp = false;
         for(Obstacle planet : planets){
+            circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
                 if (planet.collides(quokka.getQuokkaBounds())) {
                     String tempString = new String();
                     if(planet.contains(quokka.getPosition().x, quokka.getPosition().y)) {
