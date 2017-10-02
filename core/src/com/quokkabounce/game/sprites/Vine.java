@@ -12,9 +12,10 @@ public class Vine  {
     private Texture vineTexture;
     private Vector2 posVine;
     private Rectangle vineBounds;
-    private int layer;
+    private int layer, quokkaX;
 
-    public Vine(float x, float y, int layer){
+    public Vine(float x, float y, int layer, int quokkaX){
+        this.quokkaX = quokkaX;
         this.layer = layer;
         vineTexture = new Texture("evilCloud.png");
 
@@ -45,5 +46,9 @@ public class Vine  {
 
     public int getLayer() {
         return layer;
+    }
+
+    public int getQuokkaX() {
+        return quokkaX;
     }
 }

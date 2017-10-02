@@ -120,11 +120,7 @@ public class PlayState extends State implements InputProcessor{
     public void update(float dt) {
         if(!paused) {
             if (layerVines.size > 0) {
-                levelBackground.dispose();
                 levelBackground = (layerTextures.get(layer));
-                for (Vine vine : vines) {
-                    vine.dispose();
-                }
                 vines.clear();
                 vines.addAll(layerVines.get(layer));
             }
@@ -352,6 +348,13 @@ public class PlayState extends State implements InputProcessor{
             for (Vine vine : vines) {
                 if (vine.collides(quokka.getQuokkaBounds())) {
                     layer = vine.getLayer();
+                    quokka.getPosition().set(vine.getQuokkaX(), 650, 0);
+                    quokka.getVelocity().set(0, 0, 0);
+                    lineDraw = false;
+                    shouldFall = false;
+                    lineCheck = true;
+                    clickPos.set(-100, -100, 0);
+                    clickPos2.set(-100, -100, 0);
                 }
             }
             quokka.getGravity().set(0, 0, 0);
@@ -495,8 +498,13 @@ public class PlayState extends State implements InputProcessor{
         for(Hawk hawk : hawks){
             hawk.dispose();
         }
-        for(Vine vine : vines){
-            vine.dispose();
+        for(Array<Vine> vineArray : layerVines){
+            for(Vine vine: vineArray){
+                vine.dispose();
+            }
+        }
+        for(Texture layerTexture : layerTextures){
+            layerTexture.dispose();
         }
         backButton.dispose();
         pauseButton.dispose();
@@ -613,11 +621,10 @@ public class PlayState extends State implements InputProcessor{
                 layerTextures.add(new Texture("level1Background.png"));
                 layerTextures.add(new Texture("level2Background.png"));
                 layerTextures.add(new Texture("level3Background.png"));
-                vines.add(new Vine(600, 500, 1));
+                vines.add(new Vine(600, 500, 1, 50));
                 layerVines.add(new Array<Vine>(vines));
                 vines.clear();
-                vines.add(new Vine(800, 400, 0));
-                vines.add(new Vine (900, 600, 0));
+                vines.add(new Vine (900, 600, 0, 50));
                 layerVines.add(new Array<Vine>(vines));
                 happyCloud = new HappyCloud(1300, 6);
                 break;
