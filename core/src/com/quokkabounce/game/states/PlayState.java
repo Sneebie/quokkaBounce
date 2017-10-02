@@ -127,13 +127,15 @@ public class PlayState extends State implements InputProcessor{
             currentDT = dt;
             updateBackground();
             cam.position.x = quokka.getPosition().x + 80;
-            backButton.getPosButton().x = cam.position.x - 800;
-            pauseButton.getPosButton().x = cam.position.x - 800;
-            backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
-            pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             if (moveWalls.size != 0) {
                 cam.position.y = quokka.getPosition().y;
             }
+            backButton.getPosButton().x = cam.position.x - 800;
+            pauseButton.getPosButton().x = cam.position.x - 800;
+            backButton.getPosButton().y = cam.position.y + 100;
+            pauseButton.getPosButton().y = cam.position.y - 200;
+            backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
+            pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             justHitTemp = false;
             if (lineCheck) {
                 outZone = false;
