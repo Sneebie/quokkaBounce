@@ -45,7 +45,7 @@ public class PlayState extends State implements InputProcessor{
     private HappyCloud happyCloud;
     private float currentDT;
     private int layer, finalLayer;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -80,6 +80,7 @@ public class PlayState extends State implements InputProcessor{
         levelInit(level);
         shouldFall = false;
         lineDraw = false;
+        vineDraw = true;
         lineCheck = false;
         touchingWall = false;
         justHit = false;
@@ -352,6 +353,7 @@ public class PlayState extends State implements InputProcessor{
                     layer = vine.getLayer();
                     quokka.getPosition().set(vine.getQuokkaX(), 650, 0);
                     quokka.getVelocity().set(0, 0, 0);
+                    vineDraw = false;
                     lineDraw = false;
                     shouldFall = false;
                     lineCheck = true;
@@ -431,19 +433,20 @@ public class PlayState extends State implements InputProcessor{
         sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
         sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
         sb.end();
-        if(clickPos2.y!=-100) {
-            shapeRenderer.setColor(Color.BROWN);
-            shapeRenderer.setProjectionMatrix(cam.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.line(clickPos, clickPos2);
-            shapeRenderer.end();
-        }
-        else if (clickPosTemp.y!=-100){
-            shapeRenderer.setColor(Color.YELLOW);
-            shapeRenderer.setProjectionMatrix(cam.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.line(clickPos, clickPosTemp);
-            shapeRenderer.end();
+        if(vineDraw) {
+            if (clickPos2.y != -100) {
+                shapeRenderer.setColor(Color.BROWN);
+                shapeRenderer.setProjectionMatrix(cam.combined);
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                shapeRenderer.line(clickPos, clickPos2);
+                shapeRenderer.end();
+            } else if (clickPosTemp.y != -100) {
+                shapeRenderer.setColor(Color.YELLOW);
+                shapeRenderer.setProjectionMatrix(cam.combined);
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                shapeRenderer.line(clickPos, clickPosTemp);
+                shapeRenderer.end();
+            }
         }
         sb.begin();
         for(Obstacle nullZone : nullZones){
@@ -728,6 +731,7 @@ public class PlayState extends State implements InputProcessor{
             justPaused = true;
         }
         else{
+            vineDraw = true;
             lineDraw = true;
             shouldFall = true;
             lineCheck = false;
@@ -743,6 +747,7 @@ public class PlayState extends State implements InputProcessor{
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if(!paused && !justPaused) {
             if (lineDraw) {
+                vineDraw = true;
                 lineCheck = true;
                 clickPos2.set(screenX, screenY, 0);
                 clickPos2.set(cam.unproject(clickPos2));
