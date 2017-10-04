@@ -34,4 +34,10 @@ public class QuokkaBounce extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 	}
+
+	@Override
+	public void pause() {
+		super.pause();
+		gsm.peek().pause();
+	}
 }

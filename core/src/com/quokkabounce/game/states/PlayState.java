@@ -118,6 +118,11 @@ public class PlayState extends State implements InputProcessor{
     }
 
     @Override
+    public void pause(){
+        paused = true;
+    }
+
+    @Override
     public void update(float dt) {
         if(!paused) {
             if (layerVines.size > 0) {

@@ -64,6 +64,11 @@ public class MenuState extends State implements InputProcessor{
     }
 
     @Override
+    public void pause() {
+
+    }
+
+    @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
