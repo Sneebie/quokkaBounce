@@ -35,17 +35,18 @@ public class PlayState extends State implements InputProcessor{
     private static final float GRAVPOW = 2f;
     private static final float VIEWPORT_SCALER = 1.6f;
     private static final int SHRINKRATE = 3;
+    private static final int TOWERFALL = 100;
 
     private Quokka quokka;
     private Button backButton, pauseButton;
     private Texture levelBackground;
     private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj;
-    private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput;
+    private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT;
     private int layer, finalLayer;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -54,6 +55,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Obstacle> switches;
     private Array<Obstacle> planets;
     private Array<Obstacle> nullZones;
+    private Array<Obstacle> arrows;
     private Array<Array<Vine>> layerVines;
     private Array<Vine> vines;
     private Array<Texture> layerTextures;
@@ -71,6 +73,7 @@ public class PlayState extends State implements InputProcessor{
         switches = new Array<Obstacle>();
         planets = new Array<Obstacle>();
         nullZones = new Array<Obstacle>();
+        arrows = new Array<Obstacle>();
         moveWalls = new Array<MoveWall>();
         vines = new Array<Vine>();
         layerTextures = new Array<Texture>();
@@ -87,6 +90,7 @@ public class PlayState extends State implements InputProcessor{
         justPlanet = false;
         paused = false;
         justPaused = false;
+        vineCheck = true;
         Gdx.input.setInputProcessor(this);
         quokka = new Quokka(50,650);
         if(planets.size == 0) {
@@ -115,6 +119,7 @@ public class PlayState extends State implements InputProcessor{
         velocityTemp2 = new Vector3(0,0,0);
         normal = new Vector3(0,0,0);
         planetDistance = new Vector3(0,0,0);
+        towerVel = new Vector3(0, TOWERFALL, 0);
     }
 
     @Override
@@ -132,7 +137,16 @@ public class PlayState extends State implements InputProcessor{
             }
             currentDT = dt;
             updateBackground();
-            cam.position.x = quokka.getPosition().x + 80;
+            if(arrows.size > 0){
+                towerVel.scl(dt);
+                for(EvilCloud cloud: clouds){
+                    cloud.getPosCloud().y -= towerVel.y;
+                }
+                towerVel.scl(1/dt);
+            }
+            else {
+                cam.position.x = quokka.getPosition().x + 80;
+            }
             if (moveWalls.size != 0) {
                 cam.position.y = quokka.getPosition().y;
             }
@@ -353,17 +367,20 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
             }
-            for (Vine vine : vines) {
-                if (vine.collides(quokka.getQuokkaBounds())) {
-                    layer = vine.getLayer();
-                    quokka.getPosition().set(vine.getQuokkaX(), 650, 0);
-                    quokka.getVelocity().set(0, 0, 0);
-                    vineDraw = false;
-                    lineDraw = false;
-                    shouldFall = false;
-                    lineCheck = true;
-                    clickPos.set(-100, -100, 0);
-                    clickPos2.set(-100, -100, 0);
+            if(vineCheck) {
+                for (Vine vine : vines) {
+                    if (vine.collides(quokka.getQuokkaBounds())) {
+                        vineDraw = false;
+                        lineDraw = false;
+                        shouldFall = false;
+                        lineCheck = true;
+                        vineCheck = false;
+                        clickPos.set(-100, -100, 0);
+                        clickPos2.set(-100, -100, 0);
+                        quokka.getPosition().set(vine.getQuokkaX(), 650, 0);
+                        quokka.getVelocity().set(0, 0, 0);
+                        layer = vine.getLayer();
+                    }
                 }
             }
             quokka.getGravity().set(0, 0, 0);
@@ -516,6 +533,9 @@ public class PlayState extends State implements InputProcessor{
         for(Texture layerTexture : layerTextures){
             layerTexture.dispose();
         }
+        for(Obstacle arrow: arrows){
+            arrow.dispose();
+        }
         backButton.dispose();
         pauseButton.dispose();
         shapeRenderer.dispose();
@@ -651,6 +671,12 @@ public class PlayState extends State implements InputProcessor{
                 walls.add(new Wall(1700, -380, "wall.png"));
                 bonusQuokkas.add(new BonusQuokka(1900, 300));
                 break;
+            case 10:
+                levelBackground = new Texture("level3Background.png");
+                arrows.add(new Obstacle(1900, 100, "wall.png"));
+                clouds.add(new EvilCloud(50, 1000));
+                happyCloud = new HappyCloud(50, 2000);
+                break;
 
         }
         collectedQuokkas.setSize(bonusQuokkas.size);
@@ -737,6 +763,7 @@ public class PlayState extends State implements InputProcessor{
         }
         else{
             vineDraw = true;
+            vineCheck = true;
             lineDraw = true;
             shouldFall = true;
             lineCheck = false;
