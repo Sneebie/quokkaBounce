@@ -92,7 +92,12 @@ public class PlayState extends State implements InputProcessor{
         justPaused = false;
         vineCheck = true;
         Gdx.input.setInputProcessor(this);
-        quokka = new Quokka(50,650);
+        if(arrows.size < 1) {
+            quokka = new Quokka(50, 650);
+        }
+        else{
+            quokka = new Quokka(600, 650);
+        }
         if(planets.size == 0) {
             cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         }
@@ -137,11 +142,10 @@ public class PlayState extends State implements InputProcessor{
             }
             currentDT = dt;
             updateBackground();
-            if(arrows.size > 0){
+            if(arrows.size > 0 && shouldFall){
                 towerVel.scl(dt);
-                for(EvilCloud cloud: clouds){
-                    cloud.getPosCloud().y -= towerVel.y;
-                }
+                cam.position.y += towerVel.y;
+                quokka.getPosition().y += towerVel.y;
                 towerVel.scl(1/dt);
             }
             else {
@@ -403,7 +407,7 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
             }
-            if (quokka.getPosition().y <= 0) {
+            if (quokka.getPosition().y <= cam.position.y - cam.viewportHeight / 2) {
                 if (moveWalls.size == 0) {
                     gsm.set(new PlayState(gsm, level));
                 }
@@ -701,7 +705,7 @@ public class PlayState extends State implements InputProcessor{
                 levelBackgroundPos3.sub(levelBackground.getWidth()*2, 0);
             }
         }
-        if(moveWalls.size!=0){
+        if(moveWalls.size!=0 || arrows.size != 0){
             if(cam.position.y - (cam.viewportHeight / 2) > levelBackgroundPos1.y + levelBackground.getHeight()) {
                 levelBackgroundPos1.add(0, levelBackground.getHeight() * 2);
                 levelBackgroundPos2.add(0, levelBackground.getHeight() * 2);
