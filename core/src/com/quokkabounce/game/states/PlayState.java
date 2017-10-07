@@ -80,6 +80,12 @@ public class PlayState extends State implements InputProcessor{
         layerVines = new Array<Array<Vine>>();
         layer = 0;
         finalLayer = 0;
+        if(planets.size == 0) {
+            cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
+        }
+        else{
+            cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
+        }
         levelInit(level);
         shouldFall = false;
         lineDraw = false;
@@ -97,12 +103,6 @@ public class PlayState extends State implements InputProcessor{
         }
         else{
             quokka = new Quokka(600, 650);
-        }
-        if(planets.size == 0) {
-            cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
-        }
-        else{
-            cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         }
         shapeRenderer = new ShapeRenderer();
         levelBackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, 0);
@@ -682,6 +682,13 @@ public class PlayState extends State implements InputProcessor{
                 happyCloud = new HappyCloud(50, 2000);
                 break;
 
+        }
+        if(arrows.size > 0){
+            for(int i = -220; i < happyCloud.getPosCloud().y; i+=595){
+                walls.add(new Wall(-30, i, "wall.png"));
+                System.out.println(walls.get(0).getWallBounds().getWidth());
+                walls.add(new Wall(cam.viewportWidth - 10, i, "wall.png"));
+            }
         }
         collectedQuokkas.setSize(bonusQuokkas.size);
     }
