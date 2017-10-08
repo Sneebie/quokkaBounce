@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BooleanArray;
 import com.quokkabounce.game.QuokkaBounce;
+import com.quokkabounce.game.sprites.Arrow;
 import com.quokkabounce.game.sprites.BonusQuokka;
 import com.quokkabounce.game.sprites.Button;
 import com.quokkabounce.game.sprites.EvilCloud;
@@ -55,7 +56,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Obstacle> switches;
     private Array<Obstacle> planets;
     private Array<Obstacle> nullZones;
-    private Array<Obstacle> arrows;
+    private Array<Arrow> arrows;
     private Array<Array<Vine>> layerVines;
     private Array<Vine> vines;
     private Array<Texture> layerTextures;
@@ -73,7 +74,7 @@ public class PlayState extends State implements InputProcessor{
         switches = new Array<Obstacle>();
         planets = new Array<Obstacle>();
         nullZones = new Array<Obstacle>();
-        arrows = new Array<Obstacle>();
+        arrows = new Array<Arrow>();
         moveWalls = new Array<MoveWall>();
         vines = new Array<Vine>();
         layerTextures = new Array<Texture>();
@@ -211,6 +212,21 @@ public class PlayState extends State implements InputProcessor{
                     hawk.move(true, dt, quokka.getPosition());
                 } else {
                     hawk.move(false, dt, quokka.getPosition());
+                }
+            }
+            for(Arrow arrow: arrows){
+                if(arrow.getPosArrow().x + arrow.getArrowBounds().getWidth() < cam.position.x - cam.viewportWidth / 2 || arrow.getPosArrow().x > cam.position.x + cam.viewportWidth / 2 || arrow.getPosArrow().y > cam.position.y + cam.viewportHeight / 2 || arrow.getPosArrow().y + arrow.getArrowBounds().getHeight() < cam.position.y - cam.viewportHeight / 2){
+                    arrow.setPosArrow(arrow.getIntialPos());
+                    arrow.setShouldShoot(false);
+                }
+                if(arrow.collides(quokka.getQuokkaBounds())){
+                    gsm.set(new PlayState(gsm, level));
+                    break;
+                }
+                if (Math.sqrt(Math.pow(arrow.getArrowBounds().x + arrow.getArrowBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(arrow.getArrowBounds().y + arrow.getArrowBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT) {
+                    arrow.move(true, dt, quokka.getPosition());
+                } else {
+                    arrow.move(false, dt, quokka.getPosition());
                 }
             }
             for (Wall wall : walls) {
@@ -453,6 +469,9 @@ public class PlayState extends State implements InputProcessor{
         for (Hawk hawk : hawks){
             sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
         }
+        for(Arrow arrow : arrows){
+            sb.draw(arrow.getTexture(), arrow.getPosArrow().x, arrow.getPosArrow().y);
+        }
         if(layer == finalLayer) {
             sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
         }
@@ -537,7 +556,7 @@ public class PlayState extends State implements InputProcessor{
         for(Texture layerTexture : layerTextures){
             layerTexture.dispose();
         }
-        for(Obstacle arrow: arrows){
+        for(Arrow arrow: arrows){
             arrow.dispose();
         }
         backButton.dispose();
@@ -677,7 +696,7 @@ public class PlayState extends State implements InputProcessor{
                 break;
             case 10:
                 levelBackground = new Texture("level3Background.png");
-                arrows.add(new Obstacle(1900, 100, "wall.png"));
+                arrows.add(new Arrow(50, 1100));
                 clouds.add(new EvilCloud(50, 1000));
                 happyCloud = new HappyCloud(50, 2000);
                 break;
@@ -686,7 +705,6 @@ public class PlayState extends State implements InputProcessor{
         if(arrows.size > 0){
             for(int i = -220; i < happyCloud.getPosCloud().y; i+=595){
                 walls.add(new Wall(-30, i, "wall.png"));
-                System.out.println(walls.get(0).getWallBounds().getWidth());
                 walls.add(new Wall(cam.viewportWidth - 10, i, "wall.png"));
             }
         }
