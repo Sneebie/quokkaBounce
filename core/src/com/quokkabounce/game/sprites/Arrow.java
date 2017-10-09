@@ -18,7 +18,7 @@ public class Arrow {
 
     private Rectangle arrowBounds;
     private Texture arrowTexture;
-    private Vector2 posArrow, intialPos, velArrow;
+    private Vector2 posArrow, initialPos, velArrow;
 
     public Arrow(float x, float y) {
         loopTime = 0;
@@ -26,7 +26,7 @@ public class Arrow {
         arrowTexture = new Texture("wallSwitch.png");
         alreadySpotted = false;
         posArrow = new Vector2(x, y);
-        intialPos = new Vector2(x, y);
+        initialPos = new Vector2(x, y);
         velArrow = new Vector2();
         arrowBounds = new Rectangle(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
     }
@@ -43,8 +43,8 @@ public class Arrow {
         return arrowTexture;
     }
 
-    public Vector2 getIntialPos() {
-        return intialPos;
+    public Vector2 getInitialPos() {
+        return initialPos;
     }
 
     public void setShouldShoot(boolean shouldShoot) {
@@ -52,7 +52,11 @@ public class Arrow {
     }
 
     public void setPosArrow(Vector2 posArrow) {
-        this.posArrow = posArrow;
+        this.posArrow.set(posArrow);
+    }
+
+    public void setAlreadySpotted(boolean alreadySpotted) {
+        this.alreadySpotted = alreadySpotted;
     }
 
     public boolean collides(Rectangle player) {
@@ -81,6 +85,7 @@ public class Arrow {
                 loopTime++;
             }
         }
+        arrowBounds.set(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
     }
 
 }
