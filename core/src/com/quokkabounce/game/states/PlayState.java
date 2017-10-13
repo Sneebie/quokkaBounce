@@ -215,11 +215,6 @@ public class PlayState extends State implements InputProcessor{
                 }
             }
             for(Arrow arrow: arrows){
-                if(arrow.getPosArrow().x + arrow.getArrowBounds().getWidth() < cam.position.x - cam.viewportWidth / 2 || arrow.getPosArrow().x > cam.position.x + cam.viewportWidth / 2 || arrow.getPosArrow().y > cam.position.y + cam.viewportHeight / 2 || arrow.getPosArrow().y + arrow.getArrowBounds().getHeight() < cam.position.y - cam.viewportHeight / 2){
-                    arrow.setPosArrow(arrow.getInitialPos());
-                    arrow.setAlreadySpotted(false);
-                    arrow.setShouldShoot(false);
-                }
                 if(arrow.collides(quokka.getQuokkaBounds())){
                     gsm.set(new PlayState(gsm, level));
                     break;
@@ -697,7 +692,7 @@ public class PlayState extends State implements InputProcessor{
                 break;
             case 10:
                 levelBackground = new Texture("level3Background.png");
-                arrows.add(new Arrow(1100, 1100));
+                arrows.add(new Arrow(100, 1100, true));
                 clouds.add(new EvilCloud(50, 1000));
                 happyCloud = new HappyCloud(50, 2000);
                 break;
