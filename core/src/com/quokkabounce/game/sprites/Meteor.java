@@ -74,9 +74,7 @@ public class Meteor {
     }
 
     public void move(float dt){
-        if (posMeteor.y > 0) {
-            velMeteor.add(gravity);
-        }
+        velMeteor.add(gravity);
         velMeteor.scl(dt);
         posMeteor.add(velMeteor.x, velMeteor.y);
         velMeteor.scl(1/dt);

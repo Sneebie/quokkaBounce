@@ -21,6 +21,7 @@ import com.quokkabounce.game.sprites.Meteor;
 import com.quokkabounce.game.sprites.MoveWall;
 import com.quokkabounce.game.sprites.Obstacle;
 import com.quokkabounce.game.sprites.Quokka;
+import com.quokkabounce.game.sprites.TallDino;
 import com.quokkabounce.game.sprites.Vine;
 import com.quokkabounce.game.sprites.Wall;
 
@@ -63,6 +64,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Texture> layerTextures;
     private Array<MoveWall> moveWalls;
     private Array<Meteor> meteors;
+    private Array<TallDino> tallDinos;
     private BooleanArray collectedQuokkas;
 
     public PlayState(GameStateManager gsm, int level) {
@@ -80,6 +82,7 @@ public class PlayState extends State implements InputProcessor{
         moveWalls = new Array<MoveWall>();
         vines = new Array<Vine>();
         meteors = new Array<Meteor>();
+        tallDinos = new Array<TallDino>();
         layerTextures = new Array<Texture>();
         layerVines = new Array<Array<Vine>>();
         layer = 0;
@@ -216,6 +219,13 @@ public class PlayState extends State implements InputProcessor{
                 } else {
                     hawk.move(false, dt, quokka.getPosition());
                 }
+            }
+            for(TallDino tallDino : tallDinos) {
+                if (tallDino.collides(quokka.getQuokkaBounds())) {
+                    gsm.set(new PlayState(gsm, level));
+                    break;
+                }
+                tallDino.move(dt);
             }
             for(Arrow arrow: arrows){
                 if(arrow.collides(quokka.getQuokkaBounds())){
@@ -532,6 +542,9 @@ public class PlayState extends State implements InputProcessor{
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
         }
+        for(TallDino tallDino : tallDinos){
+            sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
+        }
         for(MoveWall moveWall : moveWalls){
             sb.draw(moveWall.getTexture(), moveWall.getPosWall().x, moveWall.getPosWall().y);
         }
@@ -560,6 +573,9 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Wall wall : walls){
             wall.dispose();
+        }
+        for(TallDino tallDino: tallDinos){
+            tallDino.dispose();
         }
         for(BonusQuokka bonusQuokka : bonusQuokkas){
             bonusQuokka.dispose();
@@ -613,7 +629,7 @@ public class PlayState extends State implements InputProcessor{
                 break;*/
             case 1:
                 levelBackground = new Texture("level1Background.png");
-                meteors.add(new Meteor(900, 600, 0, 0));
+                tallDinos.add(new TallDino(400, -100, 800, 200));
                 happyCloud = new HappyCloud(10000,200);
                 break;
             case 2:
