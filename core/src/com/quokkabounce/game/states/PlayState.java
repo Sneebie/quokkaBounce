@@ -285,26 +285,6 @@ public class PlayState extends State implements InputProcessor{
                 }
             }
             justPlanetTemp = false;
-            for(Meteor meteor: meteors){
-                if (((meteor.getPosMeteor().x > clickPos.x) && (meteor.getPosMeteor().x < clickPos2.x)) || ((meteor.getPosMeteor().x < clickPos.x) && (meteor.getPosMeteor().x > clickPos2.x))) {
-                    if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x, lineY(meteor.getPosMeteor().x))) {
-                        meteors.removeValue(meteor, true);
-                        meteor.dispose();
-                    }
-                } else if ((((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos2.x)) || (((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos2.x))) {
-                    if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x + meteor.getTexture().getWidth(), lineY(meteor.getPosMeteor().x + meteor.getTexture().getWidth()))) {
-                        meteors.removeValue(meteor, true);
-                        meteor.dispose();
-                    }
-                }
-                if (meteor.collides(quokka.getQuokkaBounds())) {
-                    if(meteors.contains(meteor, true)) {
-                        gsm.set(new PlayState(gsm, level));
-                        break;
-                    }
-                }
-                meteor.move(dt);
-            }
             for (Obstacle planet : planets) {
                 if (planet.collides(quokka.getQuokkaBounds())) {
                     circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
@@ -391,6 +371,35 @@ public class PlayState extends State implements InputProcessor{
             }
             if (shouldFall) {
                 quokka.update(dt);
+            }
+            for(Meteor meteor: meteors){
+                if(meteor.getPosMeteor().x < (cam.position.x * VIEWPORT_SCALER)) {
+                    meteor.setStartFall(true);
+                }
+                if(meteor.isStartFall()){
+                    meteor.move(dt);
+                    if (((meteor.getPosMeteor().x > clickPos.x) && (meteor.getPosMeteor().x < clickPos2.x)) || ((meteor.getPosMeteor().x < clickPos.x) && (meteor.getPosMeteor().x > clickPos2.x))) {
+                        if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x, lineY(meteor.getPosMeteor().x))) {
+                            meteors.removeValue(meteor, true);
+                            meteor.dispose();
+                        }
+                    } else if ((((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos2.x)) || (((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos2.x))) {
+                        if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x + meteor.getTexture().getWidth(), lineY(meteor.getPosMeteor().x + meteor.getTexture().getWidth()))) {
+                            meteors.removeValue(meteor, true);
+                            meteor.dispose();
+                        }
+                    }
+                    if (meteor.collides(quokka.getQuokkaBounds())) {
+                        if (meteors.contains(meteor, true)) {
+                            gsm.set(new PlayState(gsm, level));
+                            break;
+                        }
+                    }
+                    if((meteor.getPosMeteor().y + meteor.getTexture().getHeight()) < 0){
+                        meteor.setPosMeteor(meteor.getOriginalPos());
+                        meteor.setVelMeteor(meteor.getOriginalVel());
+                    }
+                }
             }
             for (EvilCloud cloud : clouds) {
                 if (cloud.collides(quokka.getQuokkaBounds())) {
@@ -604,7 +613,7 @@ public class PlayState extends State implements InputProcessor{
                 break;*/
             case 1:
                 levelBackground = new Texture("level1Background.png");
-                meteors.add(new Meteor(200, 600, 0, 0));
+                meteors.add(new Meteor(900, 600, 0, 0));
                 happyCloud = new HappyCloud(10000,200);
                 break;
             case 2:

@@ -16,12 +16,15 @@ public class Meteor {
 
     private Rectangle meteorBounds;
     private Texture meteorTexture;
-    private Vector2 posMeteor, velMeteor, gravity;
+    private Vector2 posMeteor, velMeteor, originalPos, originalVel, gravity;
+    private boolean startFall;
 
     public Meteor(float x, float y, float firstVelX, float firstVelY){
         gravity = new Vector2(0, -13);
         posMeteor = new Vector2(x, y);
+        originalPos = new Vector2(x, y);
         velMeteor = new Vector2(firstVelX, firstVelY);
+        originalVel = new Vector2(firstVelX, firstVelY);
         meteorTexture = new Texture("wallSwitch.png");
         meteorBounds = new Rectangle(posMeteor.x, posMeteor.y, meteorTexture.getWidth(), meteorTexture.getHeight());
     }
@@ -38,6 +41,30 @@ public class Meteor {
         return meteorTexture;
     }
 
+    public Vector2 getOriginalPos() {
+        return originalPos;
+    }
+
+    public void setPosMeteor(Vector2 posMeteor) {
+        this.posMeteor = posMeteor;
+    }
+
+    public void setVelMeteor(Vector2 velMeteor) {
+        this.velMeteor = velMeteor;
+    }
+
+    public Vector2 getOriginalVel() {
+        return originalVel;
+    }
+
+    public boolean isStartFall() {
+        return startFall;
+    }
+
+    public void setStartFall(boolean startFall) {
+        this.startFall = startFall;
+    }
+
     public boolean collides(Rectangle player) {
         return player.overlaps(meteorBounds);
     }
@@ -49,9 +76,6 @@ public class Meteor {
     public void move(float dt){
         if (posMeteor.y > 0) {
             velMeteor.add(gravity);
-        }
-        else{
-
         }
         velMeteor.scl(dt);
         posMeteor.add(velMeteor.x, velMeteor.y);
