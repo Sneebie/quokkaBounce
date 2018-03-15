@@ -17,6 +17,7 @@ import com.quokkabounce.game.sprites.Button;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Hawk;
+import com.quokkabounce.game.sprites.Meteor;
 import com.quokkabounce.game.sprites.MoveWall;
 import com.quokkabounce.game.sprites.Obstacle;
 import com.quokkabounce.game.sprites.Quokka;
@@ -61,6 +62,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Vine> vines;
     private Array<Texture> layerTextures;
     private Array<MoveWall> moveWalls;
+    private Array<Meteor> meteors;
     private BooleanArray collectedQuokkas;
 
     public PlayState(GameStateManager gsm, int level) {
@@ -77,6 +79,7 @@ public class PlayState extends State implements InputProcessor{
         arrows = new Array<Arrow>();
         moveWalls = new Array<MoveWall>();
         vines = new Array<Vine>();
+        meteors = new Array<Meteor>();
         layerTextures = new Array<Texture>();
         layerVines = new Array<Array<Vine>>();
         layer = 0;
@@ -282,6 +285,26 @@ public class PlayState extends State implements InputProcessor{
                 }
             }
             justPlanetTemp = false;
+            for(Meteor meteor: meteors){
+                if (((meteor.getPosMeteor().x > clickPos.x) && (meteor.getPosMeteor().x < clickPos2.x)) || ((meteor.getPosMeteor().x < clickPos.x) && (meteor.getPosMeteor().x > clickPos2.x))) {
+                    if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x, lineY(meteor.getPosMeteor().x))) {
+                        meteors.removeValue(meteor, true);
+                        meteor.dispose();
+                    }
+                } else if ((((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos2.x)) || (((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos2.x))) {
+                    if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x + meteor.getTexture().getWidth(), lineY(meteor.getPosMeteor().x + meteor.getTexture().getWidth()))) {
+                        meteors.removeValue(meteor, true);
+                        meteor.dispose();
+                    }
+                }
+                if (meteor.collides(quokka.getQuokkaBounds())) {
+                    if(meteors.contains(meteor, true)) {
+                        gsm.set(new PlayState(gsm, level));
+                        break;
+                    }
+                }
+                meteor.move(dt);
+            }
             for (Obstacle planet : planets) {
                 if (planet.collides(quokka.getQuokkaBounds())) {
                     circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
@@ -465,6 +488,9 @@ public class PlayState extends State implements InputProcessor{
         for (Hawk hawk : hawks){
             sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
         }
+        for(Meteor meteor: meteors){
+            sb.draw(meteor.getTexture(), meteor.getPosMeteor().x, meteor.getPosMeteor().y);
+        }
         for(Arrow arrow : arrows){
             sb.draw(arrow.getTexture(), arrow.getPosArrow().x, arrow.getPosArrow().y);
         }
@@ -544,6 +570,9 @@ public class PlayState extends State implements InputProcessor{
         for(Hawk hawk : hawks){
             hawk.dispose();
         }
+        for(Meteor meteor: meteors){
+            meteor.dispose();
+        }
         for(Array<Vine> vineArray : layerVines){
             for(Vine vine: vineArray){
                 vine.dispose();
@@ -575,7 +604,7 @@ public class PlayState extends State implements InputProcessor{
                 break;*/
             case 1:
                 levelBackground = new Texture("level1Background.png");
-                nullZones.add(new Obstacle(300,0, "spaceBackground.png"));
+                meteors.add(new Meteor(200, 600, 0, 0));
                 happyCloud = new HappyCloud(10000,200);
                 break;
             case 2:
