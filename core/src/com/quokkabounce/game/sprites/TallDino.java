@@ -18,6 +18,7 @@ public class TallDino{
     public TallDino(float x, float y, float endX, float speed){
         setTexture("wall.png");
         endPos = endX;
+        startPos = x;
         dir = 1;
         posTallDino = new Vector2(x, y);
         velTallDino = new Vector2(speed, 0);
