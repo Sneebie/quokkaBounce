@@ -376,7 +376,7 @@ public class PlayState extends State implements InputProcessor{
             }
             justPlanet = justPlanetTemp;
             quokka.getGravity().set(quokka.getGravity().x / PLANETSCALER, quokka.getGravity().y / PLANETSCALER, 0);
-            if (quokka.getGravity().x == 0 && quokka.getGravity().y == 0) {
+            if (planets.size == 0) {
                 quokka.getGravity().set(0, -13, 0);
             }
             if (shouldFall) {
@@ -863,29 +863,58 @@ public class PlayState extends State implements InputProcessor{
                 clickPos2.set(screenX, screenY, 0);
                 clickPos2.set(cam.unproject(clickPos2));
                 if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
-                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
-                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    if(quokka.getVelocity().y <= 0 ) {
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                            clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                        }
+                        quokka.getVelocity().scl(currentDT);
+                        quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
+                            clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                        }
                     }
-                    quokka.getVelocity().scl(currentDT);
-                    quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
-                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    else{
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                            clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                        }
+                        quokka.getVelocity().scl(currentDT);
+                        quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
+                            clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                        }
                     }
                     quokka.getVelocity().scl(1 / currentDT);
                 } else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
-                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
-                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    if(quokka.getVelocity().y <= 0 ) {
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                            clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                        }
+                        quokka.getVelocity().scl(currentDT);
+                        quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
+                            clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                        }
+                        quokka.getVelocity().scl(1 / currentDT);
                     }
-                    quokka.getVelocity().scl(currentDT);
-                    quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
-                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    else{
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                            clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                        }
+                        quokka.getVelocity().scl(currentDT);
+                        quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
+                            clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                        }
+                        quokka.getVelocity().scl(1 / currentDT);
                     }
-                    quokka.getVelocity().scl(1 / currentDT);
                 }
                 clickPosTemp.set(0, -100, 0);
             }
