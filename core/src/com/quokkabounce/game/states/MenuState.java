@@ -2,9 +2,9 @@ package com.quokkabounce.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.quokkabounce.game.QuokkaBounce;
@@ -18,12 +18,16 @@ public class MenuState extends State implements InputProcessor{
     private Texture levelSelectBackground;
     private Array<Button> buttons;
     private static final double VIEWPORT_SCALER = 1.6;
-    private static int permaLevel;
+    private int permaLevel;
 
     public MenuState(GameStateManager gsm, int level) {
         super(gsm, level);
         Gdx.input.setInputProcessor(this);
+        Preferences prefs = Gdx.app.getPreferences("saveData");
+        permaLevel = prefs.getInteger("level", 1);
         if(level > permaLevel){
+            prefs.putInteger("level", level);
+            prefs.flush();
             permaLevel = level;
         }
         buttons = new Array<Button>();

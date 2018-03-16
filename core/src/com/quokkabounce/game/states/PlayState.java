@@ -468,6 +468,7 @@ public class PlayState extends State implements InputProcessor{
             }
             if (layer == finalLayer) {
                 if (happyCloud.collides(quokka.getQuokkaBounds())) {
+                    System.out.println(level);
                     gsm.set(new MenuState(gsm, level + 1));
                 }
             }
@@ -630,7 +631,7 @@ public class PlayState extends State implements InputProcessor{
             case 1:
                 levelBackground = new Texture("level1Background.png");
                 tallDinos.add(new TallDino(400, -100, 800, 200));
-                happyCloud = new HappyCloud(10000,200);
+                happyCloud = new HappyCloud(1000,200);
                 break;
             case 2:
                 levelBackground = new Texture("level2Background.png");
