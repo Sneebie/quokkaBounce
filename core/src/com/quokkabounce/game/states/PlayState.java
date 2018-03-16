@@ -203,6 +203,40 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                 }
+                if(planets.size > 0){
+                    if (((quokka.getQuokkaBounds2().x > clickPos.x) && (quokka.getQuokkaBounds2().x < clickPos2.x)) || ((quokka.getQuokkaBounds2().x < clickPos.x) && (quokka.getQuokkaBounds2().x > clickPos2.x))) {
+                        if (quokka.getQuokkaBounds2().contains(quokka.getQuokkaBounds2().x, lineY(quokka.getQuokkaBounds2().x))) {
+                            outZone = true;
+                            for(Obstacle nullZone : nullZones){
+                                if(nullZone.getObstacleBounds().contains(quokka.getQuokkaBounds2().x, lineY(quokka.getQuokkaBounds2().x))){
+                                    outZone = false;
+                                }
+                            }
+                        }
+                    } else if ((((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+                        if (quokka.getQuokkaBounds2().contains(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth(), lineY(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()))) {
+                            outZone = true;
+                            for(Obstacle nullZone : nullZones){
+                                if(nullZone.getObstacleBounds().contains(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth(), lineY(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()))){
+                                    outZone = false;
+                                }
+                            }
+                        }
+                    }
+                }
+                else{
+                    if (((quokka.getQuokkaBounds2().x > clickPos.x) && (quokka.getQuokkaBounds2().x < clickPos2.x)) || ((quokka.getQuokkaBounds2().x < clickPos.x) && (quokka.getQuokkaBounds2().x > clickPos2.x))) {
+                        while (quokka.getQuokkaBounds2().contains(quokka.getQuokkaBounds2().x, lineY(quokka.getQuokkaBounds2().x))) {
+                            clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                        }
+                    } else if ((((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+                        while (quokka.getQuokkaBounds2().contains(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth(), lineY(quokka.getQuokkaBounds2().x + quokka.getTexture().getWidth()))) {
+                            clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                        }
+                    }
+                }
                 if (outZone) {
                     quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                     justHitTemp = true;
@@ -539,6 +573,9 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(nullZone.getTexture(), nullZone.getPosObstacle().x, nullZone.getPosObstacle().y);
         }
         sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
+        if(planets.size > 0){
+            sb.draw(quokka.getTexture(), quokka.getQuokkaBounds2().x, quokka.getQuokkaBounds2().y);
+        }
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
         }
