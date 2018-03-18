@@ -25,6 +25,24 @@ public class Wall{
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
     }
 
+    public Wall(float x, float y){
+        setTexture("wall.png");
+
+        posWall = new Vector2(x, y);
+        hasSwitch = false;
+        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+    }
+
+    public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove){
+        setTexture("wall.png");
+
+        posWall = new Vector2(x, y);
+        hasSwitch = true;
+        this.wallMove = wallMove;
+        this.wallSwitches = wallSwitches;
+        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+    }
+
     public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove, String textureString){
         setTexture(textureString);
 

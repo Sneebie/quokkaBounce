@@ -18,13 +18,14 @@ public class MenuState extends State implements InputProcessor{
     private Texture levelSelectBackground;
     private Array<Button> buttons;
     private static final double VIEWPORT_SCALER = 1.6;
-    private int permaLevel;
+    private int permaLevel, currentWorld;
 
-    public MenuState(GameStateManager gsm, int level) {
-        super(gsm, level);
+    public MenuState(GameStateManager gsm, int world, int level) {
+        super(gsm, world, level);
         Gdx.input.setInputProcessor(this);
         Preferences prefs = Gdx.app.getPreferences("saveData");
         permaLevel = prefs.getInteger("level", 1);
+        currentWorld = world;
         if(level > permaLevel){
             prefs.putInteger("level", level);
             prefs.flush();
@@ -112,7 +113,7 @@ public class MenuState extends State implements InputProcessor{
         touchInput.set(cam.unproject(touchInput));
         for(Button menuButton : buttons){
             if(menuButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
-                gsm.set(new PlayState(gsm, menuButton.getLevel()));
+                gsm.set(new PlayState(gsm, currentWorld, menuButton.getLevel()));
                 break;
             }
         }

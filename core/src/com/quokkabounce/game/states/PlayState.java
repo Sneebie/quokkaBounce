@@ -67,8 +67,8 @@ public class PlayState extends State implements InputProcessor{
     private Array<TallDino> tallDinos;
     private BooleanArray collectedQuokkas;
 
-    public PlayState(GameStateManager gsm, int level) {
-        super(gsm, level);
+    public PlayState(GameStateManager gsm, int world, int level) {
+        super(gsm, world, level);
         levelBackground = new Texture("level2Background.png");
         clouds = new Array<EvilCloud>();
         walls = new Array<Wall>();
@@ -93,7 +93,7 @@ public class PlayState extends State implements InputProcessor{
         else{
             cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         }
-        levelInit(level);
+        levelInit(world, level);
         shouldFall = false;
         lineDraw = false;
         vineDraw = true;
@@ -211,7 +211,7 @@ public class PlayState extends State implements InputProcessor{
             justHit = justHitTemp;
             for (Hawk hawk : hawks) {
                 if (hawk.collides(quokka.getQuokkaBounds())) {
-                    gsm.set(new PlayState(gsm, level));
+                    gsm.set(new PlayState(gsm, world, level));
                     break;
                 }
                 if (Math.sqrt(Math.pow(hawk.getHawkBounds().x + hawk.getHawkBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(hawk.getHawkBounds().y + hawk.getHawkBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT) {
@@ -222,14 +222,14 @@ public class PlayState extends State implements InputProcessor{
             }
             for(TallDino tallDino : tallDinos) {
                 if (tallDino.collides(quokka.getQuokkaBounds())) {
-                    gsm.set(new PlayState(gsm, level));
+                    gsm.set(new PlayState(gsm, world, level));
                     break;
                 }
                 tallDino.move(dt);
             }
             for(Arrow arrow: arrows){
                 if(arrow.collides(quokka.getQuokkaBounds())){
-                    gsm.set(new PlayState(gsm, level));
+                    gsm.set(new PlayState(gsm, world, level));
                     break;
                 }
                 if (Math.sqrt(Math.pow(arrow.getArrowBounds().x + arrow.getArrowBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(arrow.getArrowBounds().y + arrow.getArrowBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT) {
@@ -401,7 +401,7 @@ public class PlayState extends State implements InputProcessor{
                     }
                     if (meteor.collides(quokka.getQuokkaBounds())) {
                         if (meteors.contains(meteor, true)) {
-                            gsm.set(new PlayState(gsm, level));
+                            gsm.set(new PlayState(gsm, world, level));
                             break;
                         }
                     }
@@ -413,7 +413,7 @@ public class PlayState extends State implements InputProcessor{
             }
             for (EvilCloud cloud : clouds) {
                 if (cloud.collides(quokka.getQuokkaBounds())) {
-                    gsm.set(new PlayState(gsm, level));
+                    gsm.set(new PlayState(gsm, world, level));
                     break;
                 }
             }
@@ -463,13 +463,13 @@ public class PlayState extends State implements InputProcessor{
             }
             if (quokka.getPosition().y <= cam.position.y - cam.viewportHeight / 2) {
                 if (moveWalls.size == 0) {
-                    gsm.set(new PlayState(gsm, level));
+                    gsm.set(new PlayState(gsm, world, level));
                 }
             }
             if (layer == finalLayer) {
                 if (happyCloud.collides(quokka.getQuokkaBounds())) {
                     System.out.println(level);
-                    gsm.set(new MenuState(gsm, level + 1));
+                    gsm.set(new MenuState(gsm, world, level + 1));
                 }
             }
             cam.update();
@@ -615,143 +615,154 @@ public class PlayState extends State implements InputProcessor{
         shapeRenderer.dispose();
     }
 
-    public void levelInit(int level){
+    public void levelInit(int world, int level){
         backButton = new Button(new Texture("level4Button.png"), 0, 500, 0);
         pauseButton = new Button(new Texture("level4Button.png"), 0, 300, 0);
         walls.add(new Wall(-1000, -220, "wall.png"));
         walls.add(new Wall(-1000, 375, "wall.png"));
-        switch(level){
-            /*case 1:
-                levelBackground = new Texture("level1Background.png");
-                switches.add(new Obstacle(200, 100, "wallSwitch.png"));
-                walls.add(new Wall(400, -220, switches, -200));
-                walls.add(new Wall(400, 375));
-                happyCloud = new HappyCloud(10000,200);
-                break;*/
+        switch(world){
             case 1:
-                levelBackground = new Texture("level1Background.png");
-                tallDinos.add(new TallDino(400, -100, 800, 200));
-                happyCloud = new HappyCloud(1000,200);
+                switch(level){
+                    case 1:
+                        levelBackground = new Texture("level1Background.png");
+                        switches.add(new Obstacle(200, 100, "wallSwitch.png"));
+                        walls.add(new Wall(400, -220, switches, -200));
+                        walls.add(new Wall(400, 375));
+                        happyCloud = new HappyCloud(10000,200);
+                        break;
+                    case 2:
+                        levelBackground = new Texture("level2Background.png");
+                        walls.add(new Wall(500,-180, "wall.png"));
+                        walls.add(new Wall(1400,400, "wall.png"));
+                        happyCloud = new HappyCloud(2060, 200);
+                        bonusQuokkas.add(new BonusQuokka(20,200));
+                        break;
+                    case 3:
+                        levelBackground = new Texture("level3Background.png");
+                        walls.add(new Wall(350, -80, "wall.png"));
+                        walls.add(new Wall(850, -230, "wall.png"));
+                        clouds.add(new EvilCloud(1200, 460));
+                        bonusQuokkas.add(new BonusQuokka(1200, 10));
+                        happyCloud = new HappyCloud(500, 50);
+                        break;
+                    case 4:
+                        levelBackground = new Texture("level1Background.png");
+                        walls.add(new Wall(300,500, "wall.png"));
+                        walls.add(new Wall(300, -380, "wall.png"));
+                        walls.add(new Wall (600, -380, "wall.png"));
+                        bonusQuokkas.add(new BonusQuokka(600, 400));
+                        clouds.add(new EvilCloud(800, 500));
+                        walls.add(new Wall(1300, 600, "wall.png"));
+                        clouds.add(new EvilCloud(1300, 50));
+                        happyCloud = new HappyCloud(1600, 300);
+                        break;
+                    case 5:
+                        levelBackground = new Texture("level2Background.png");
+                        hawks.add(new Hawk(400,150));
+                        happyCloud = new HappyCloud(850, 300);
+                        break;
+                    case 6:
+                        levelBackground = new Texture("level3Background.png");
+                        clouds.add(new EvilCloud(200, 50));
+                        walls.add(new Wall (750, 300));
+                        walls.add(new Wall(1150, -130));
+                        happyCloud = new HappyCloud(1400, 200);
+                        break;
+                    case 7:
+                        levelBackground = new Texture("level1Background.png");
+                        clouds.add(new EvilCloud(250, 200));
+                        bonusQuokkas.add(new BonusQuokka(650, 0));
+                        walls.add(new Wall(900, -180));
+                        clouds.add(new EvilCloud(1050, 300));
+                        walls.add(new Wall(1500, 400));
+                        happyCloud = new HappyCloud(1700, 500);
+                        break;
+                    case 8:
+                        levelBackground = new Texture("level2Background.png");
+                        for(int i = 0; i < 10; i++){
+                            walls.add(new Wall(400 + 123 * i, -280));
+                            walls.add(new Wall(400 + 123 * i, 500));
+                        }
+                        happyCloud = new HappyCloud(1400, 5);
+                        break;
+                    case 9:
+                        levelBackground = new Texture("level1Background.png");
+                        walls.add(new Wall(300,600, "wall.png"));
+                        walls.add(new Wall(300, -280, "wall.png"));
+                        walls.add(new Wall(700, 700, "wall.png"));
+                        walls.add(new Wall(700, -180, "wall.png"));
+                        walls.add(new Wall(1100, 500, "wall.png"));
+                        walls.add(new Wall(1100, -380, "wall.png"));
+                        happyCloud = new HappyCloud(1300, 5);
+                        walls.add(new Wall(1700, 500, "wall.png"));
+                        walls.add(new Wall(1700, -380, "wall.png"));
+                        bonusQuokkas.add(new BonusQuokka(1900, 300));
+                        break;
+                    case 10:
+                        levelBackground = new Texture("level3Background.png");
+                        arrows.add(new Arrow(100, 1100, true));
+                        clouds.add(new EvilCloud(50, 1000));
+                        happyCloud = new HappyCloud(50, 2000);
+                        break;
+                }
                 break;
             case 2:
-                levelBackground = new Texture("level2Background.png");
-                walls.add(new Wall(500,-180, "wall.png"));
-                walls.add(new Wall(1400,400, "wall.png"));
-                happyCloud = new HappyCloud(2060, 200);
-                bonusQuokkas.add(new BonusQuokka(20,200));
+                switch(level) {
+                    case 1:
+                        levelBackground = new Texture("level1Background.png");
+                        tallDinos.add(new TallDino(400, -100, 800, 200));
+                        happyCloud = new HappyCloud(1000,200);
+                        break;
+                    case 5:
+                        levelBackground = new Texture("spaceBackground.png");
+                        planets.add(new Obstacle(300, 200, "greenPlanet.png"));
+                        planets.add(new Obstacle(900, 400, "greenPlanet.png"));
+                        happyCloud = new HappyCloud(1500, 300);
+                        planets.add(new Obstacle(1700, 400, "greenPlanet.png"));
+                        break;
+                    case 7:
+                        levelBackground = new Texture("oceanBackground.png");
+                        moveWalls.add(new MoveWall(10000,10000,0,0,0));
+                        happyCloud = new HappyCloud(10000, 10000);
+                        break;
+                    case 8:
+                        layerTextures.add(new Texture("level1Background.png"));
+                        layerTextures.add(new Texture("level2Background.png"));
+                        layerTextures.add(new Texture("level3Background.png"));
+                        vines.add(new Vine(600, 500, 1, 50));
+                        layerVines.add(new Array<Vine>(vines));
+                        vines.clear();
+                        vines.add(new Vine (900, 600, 0, 50));
+                        layerVines.add(new Array<Vine>(vines));
+                        happyCloud = new HappyCloud(1300, 6);
+                        break;
+                }
                 break;
             case 3:
-                levelBackground = new Texture("level3Background.png");
-                walls.add(new Wall(350, -80, "wall.png"));
-                walls.add(new Wall(850, -230, "wall.png"));
-                clouds.add(new EvilCloud(1200, 460));
-                bonusQuokkas.add(new BonusQuokka(1200, 10));
-                happyCloud = new HappyCloud(500, 50);
-                break;
-            case 4:
-                levelBackground = new Texture("level1Background.png");
-                walls.add(new Wall(300,500, "wall.png"));
-                walls.add(new Wall(300, -380, "wall.png"));
-                walls.add(new Wall (600, -380, "wall.png"));
-                bonusQuokkas.add(new BonusQuokka(600, 400));
-                clouds.add(new EvilCloud(800, 500));
-                walls.add(new Wall(1300, 600, "wall.png"));
-                clouds.add(new EvilCloud(1300, 50));
-                happyCloud = new HappyCloud(1600, 300);
-                break;
-            case 5:
-                levelBackground = new Texture("spaceBackground.png");
-                planets.add(new Obstacle(300, 200, "greenPlanet.png"));
-                planets.add(new Obstacle(900, 400, "greenPlanet.png"));
-                happyCloud = new HappyCloud(1500, 300);
-                planets.add(new Obstacle(1900, 400, "greenPlanet.png"));
-                break;
-            /*case 3:
-                levelBackground = new Texture("level3Background.png");
-                clouds.add(new EvilCloud(200, 300));
-                walls.add(new Wall(900, 450));
-                clouds.add(new EvilCloud(1500, 150));
-                happyCloud = new HappyCloud(1710,400);
-                break;
-            case 4:
-                levelBackground = new Texture("level1Background.png");
-                walls.add(new Wall(300, -80));
-                clouds.add(new EvilCloud(450, 350));
-                clouds.add(new EvilCloud(1200, 350));
-                happyCloud = new HappyCloud(1650, 150);
-                break;
-            case 5:
-                levelBackground = new Texture("level2Background.png");
-                hawks.add(new Hawk(400,150));
-                happyCloud = new HappyCloud(850, 300);
-                break;
-            case 6:
-                levelBackground = new Texture("level3Background.png");
-                clouds.add(new EvilCloud(200, 50));
-                walls.add(new Wall (750, 300));
-                walls.add(new Wall(1150, -130));
-                happyCloud = new HappyCloud(1400, 200);
-                break;
-            case 7:
-                levelBackground = new Texture("level1Background.png");
-                clouds.add(new EvilCloud(250, 200));
-                bonusQuokkas.add(new BonusQuokka(650, 0));
-                walls.add(new Wall(900, -180));
-                clouds.add(new EvilCloud(1050, 300));
-                walls.add(new Wall(1500, 400));
-                happyCloud = new HappyCloud(1700, 500);
-                break;
-            case 8:
-                levelBackground = new Texture("level2Background.png");
-                for(int i = 0; i < 10; i++){
-                    walls.add(new Wall(400 + 123 * i, -280));
-                    walls.add(new Wall(400 + 123 * i, 500));
+                switch(level){
+                    case 3:
+                        levelBackground = new Texture("level3Background.png");
+                        clouds.add(new EvilCloud(200, 300));
+                        walls.add(new Wall(900, 450));
+                        clouds.add(new EvilCloud(1500, 150));
+                        happyCloud = new HappyCloud(1710,400);
+                        break;
+                    case 4:
+                        levelBackground = new Texture("level1Background.png");
+                        walls.add(new Wall(300, -80));
+                        clouds.add(new EvilCloud(450, 350));
+                        clouds.add(new EvilCloud(1200, 350));
+                        happyCloud = new HappyCloud(1650, 150);
+                        break;
+                    case 6:
+                        levelBackground = new Texture("level3Background.png");
+                        walls.add(new Wall(350, 300, "wall.png"));
+                        bonusQuokkas.add(new BonusQuokka(500, 400));
+                        walls.add(new Wall(750,300, "wall.png"));
+                        happyCloud = new HappyCloud(1250, 200);
+                        break;
                 }
-                happyCloud = new HappyCloud(1400, 5);
-                break;*/
-            case 6:
-                levelBackground = new Texture("level3Background.png");
-                walls.add(new Wall(350, 300, "wall.png"));
-                bonusQuokkas.add(new BonusQuokka(500, 400));
-                walls.add(new Wall(750,300, "wall.png"));
-                happyCloud = new HappyCloud(1250, 200);
                 break;
-            case 7:
-                levelBackground = new Texture("oceanBackground.png");
-                moveWalls.add(new MoveWall(10000,10000,0,0,0));
-                happyCloud = new HappyCloud(10000, 10000);
-                break;
-            case 8:
-                layerTextures.add(new Texture("level1Background.png"));
-                layerTextures.add(new Texture("level2Background.png"));
-                layerTextures.add(new Texture("level3Background.png"));
-                vines.add(new Vine(600, 500, 1, 50));
-                layerVines.add(new Array<Vine>(vines));
-                vines.clear();
-                vines.add(new Vine (900, 600, 0, 50));
-                layerVines.add(new Array<Vine>(vines));
-                happyCloud = new HappyCloud(1300, 6);
-                break;
-            case 9:
-                levelBackground = new Texture("level1Background.png");
-                walls.add(new Wall(300,600, "wall.png"));
-                walls.add(new Wall(300, -280, "wall.png"));
-                walls.add(new Wall(700, 700, "wall.png"));
-                walls.add(new Wall(700, -180, "wall.png"));
-                walls.add(new Wall(1100, 500, "wall.png"));
-                walls.add(new Wall(1100, -380, "wall.png"));
-                happyCloud = new HappyCloud(1300, 5);
-                walls.add(new Wall(1700, 500, "wall.png"));
-                walls.add(new Wall(1700, -380, "wall.png"));
-                bonusQuokkas.add(new BonusQuokka(1900, 300));
-                break;
-            case 10:
-                levelBackground = new Texture("level3Background.png");
-                arrows.add(new Arrow(100, 1100, true));
-                clouds.add(new EvilCloud(50, 1000));
-                happyCloud = new HappyCloud(50, 2000);
-                break;
-
         }
         if(arrows.size > 0){
             for(int i = -220; i < happyCloud.getPosCloud().y; i+=595){
@@ -835,7 +846,7 @@ public class PlayState extends State implements InputProcessor{
         cam.unproject(touchInput);
         justPaused = false;
         if(backButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
-            gsm.set(new MenuState(gsm, level));
+            gsm.set(new MenuState(gsm, world, level));
         }
         else if(pauseButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
             paused = !paused;
