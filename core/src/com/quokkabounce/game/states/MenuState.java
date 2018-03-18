@@ -17,6 +17,7 @@ import com.quokkabounce.game.sprites.Button;
 public class MenuState extends State implements InputProcessor{
     private Texture levelSelectBackground;
     private Array<Button> buttons;
+    private Button backButton;
     private static final double VIEWPORT_SCALER = 1.6;
     private int permaLevel, currentWorld;
 
@@ -24,13 +25,14 @@ public class MenuState extends State implements InputProcessor{
         super(gsm, world, level);
         Gdx.input.setInputProcessor(this);
         Preferences prefs = Gdx.app.getPreferences("saveData");
-        permaLevel = prefs.getInteger("level", 1);
+        permaLevel = prefs.getInteger("level" + world, 1);
         currentWorld = world;
         if(level > permaLevel){
-            prefs.putInteger("level", level);
+            prefs.putInteger("level" + world, level);
             prefs.flush();
             permaLevel = level;
         }
+        backButton = new Button(new Texture("level4Button.png"), -175, 500, 0);
         buttons = new Array<Button>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         buttons.add(new Button(new Texture("level1Button.png"), 0, 100, 1));
@@ -78,6 +80,7 @@ public class MenuState extends State implements InputProcessor{
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(levelSelectBackground, cam.position.x - cam.viewportWidth / 2, 0, cam.viewportWidth, cam.viewportHeight);
+        sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
         for (Button button : buttons){
             sb.draw(button.getTexture(), button.getPosButton().x, button.getPosButton().y);
         }
@@ -90,6 +93,7 @@ public class MenuState extends State implements InputProcessor{
         for(Button button : buttons) {
             button.dispose();
         }
+        backButton.dispose();
     }
 
     @Override
@@ -111,6 +115,9 @@ public class MenuState extends State implements InputProcessor{
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector3 touchInput = new Vector3(screenX, screenY, 0);
         touchInput.set(cam.unproject(touchInput));
+        if(backButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
+            gsm.set(new WorldState(gsm, world, level));
+        }
         for(Button menuButton : buttons){
             if(menuButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
                 gsm.set(new PlayState(gsm, currentWorld, menuButton.getLevel()));
