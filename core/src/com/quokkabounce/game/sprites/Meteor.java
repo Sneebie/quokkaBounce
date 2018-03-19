@@ -16,7 +16,7 @@ public class Meteor {
 
     private Rectangle meteorBounds;
     private Texture meteorTexture;
-    private Vector2 posMeteor, velMeteor, originalPos, originalVel, gravity;
+    private Vector2 posMeteor, velMeteor, originalPos, originalVel, gravity, previousPos;
     private boolean startFall;
 
     public Meteor(float x, float y, float firstVelX, float firstVelY){
@@ -25,6 +25,7 @@ public class Meteor {
         originalPos = new Vector2(x, y);
         velMeteor = new Vector2(firstVelX, firstVelY);
         originalVel = new Vector2(firstVelX, firstVelY);
+        previousPos = new Vector2();
         meteorTexture = new Texture("wallSwitch.png");
         meteorBounds = new Rectangle(posMeteor.x, posMeteor.y, meteorTexture.getWidth(), meteorTexture.getHeight());
     }
@@ -74,6 +75,7 @@ public class Meteor {
     }
 
     public void move(float dt){
+        previousPos.set(posMeteor);
         velMeteor.add(gravity);
         velMeteor.scl(dt);
         posMeteor.add(velMeteor.x, velMeteor.y);

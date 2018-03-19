@@ -18,7 +18,7 @@ public class Arrow {
 
     private Rectangle arrowBounds;
     private Texture arrowTexture;
-    private Vector2 posArrow, initialPos, velArrow;
+    private Vector2 posArrow, initialPos, velArrow, previousPos;
 
     public Arrow(float x, float y, boolean horizontal) {
         loopTime = 0;
@@ -29,6 +29,7 @@ public class Arrow {
         posArrow = new Vector2(x, y);
         initialPos = new Vector2(x, y);
         velArrow = new Vector2();
+        previousPos = new Vector2();
         if(horizontal){
             velArrow.set(HORIZONTALSPEED, 0);
         }
@@ -72,6 +73,7 @@ public class Arrow {
     }
 
     public void move(boolean spotsQuokka, float dt, Vector3 posQuokka) {
+        previousPos.set(posArrow);
         if(spotsQuokka){
             shouldShoot = true;
         }
@@ -110,5 +112,4 @@ public class Arrow {
         }
         arrowBounds.set(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
     }
-
 }

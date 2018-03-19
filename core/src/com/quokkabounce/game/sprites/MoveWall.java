@@ -10,14 +10,14 @@ import com.badlogic.gdx.math.Vector2;
 
 public class MoveWall {
     private Texture wallTexture;
-    private Vector2 posWall;
+    private Vector2 posWall, previousPos;
     private Rectangle wallBounds;
     private Vector2 velocity;
     private int direction, distance;
 
     public MoveWall(float x, float y, float speed, float distance, int direction){
         setTexture();
-        switch(direction){
+        switch(direction) {
             case 0:
                 velocity = new Vector2(speed, 0);
                 break;
@@ -31,8 +31,8 @@ public class MoveWall {
                 velocity = new Vector2(0, speed);
                 break;
         }
-
         posWall = new Vector2(x, y);
+        previousPos = new Vector2();
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
     }
 
@@ -65,6 +65,7 @@ public class MoveWall {
     }
     
     public void update(float dt){
+        previousPos.set(posWall);
         if(posWall.x >= distance || posWall.x <= -1 *distance){
             velocity.set(-1 * velocity.x, 0);
         }

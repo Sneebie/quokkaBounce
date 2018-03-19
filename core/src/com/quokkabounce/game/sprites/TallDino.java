@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class TallDino{
     private Texture tallDinoTexture;
-    private Vector2 posTallDino, velTallDino;
+    private Vector2 posTallDino, velTallDino, previousPos;
     private Rectangle tallDinoBounds;
     private float endPos, startPos;
     private int dir;
@@ -22,6 +22,7 @@ public class TallDino{
         dir = 1;
         posTallDino = new Vector2(x, y);
         velTallDino = new Vector2(speed, 0);
+        previousPos = new Vector2();
         tallDinoBounds = new Rectangle(posTallDino.x, posTallDino.y, tallDinoTexture.getWidth(), tallDinoTexture.getHeight());
     }
 
@@ -46,6 +47,7 @@ public class TallDino{
     }
 
     public void move(float dt){
+        previousPos.set(posTallDino);
         velTallDino.scl(dt);
         if(getPosTallDino().x < startPos){
             dir = 1;
