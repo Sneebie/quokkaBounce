@@ -834,7 +834,7 @@ public class PlayState extends State implements InputProcessor{
             float currentPot = 13 * quokka.getPosition().y;
             velocityTemp2.set(velocityTemp2.x /velocityTemp2.len(), velocityTemp2.y/velocityTemp2.len(), 0);
             velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
-            System.out.println((2*(iniPot - currentPot)));
+            System.out.println((float) Math.sqrt(2*(iniPot - currentPot)));
         }
         return velocityTemp2;
     }
