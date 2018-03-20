@@ -37,6 +37,7 @@ public class QuokkaBounce extends ApplicationAdapter {
 			gsm.update(TIMEDELTA);
 			accumulator -= TIMEDELTA;
 		}
+		gsm.interpolate(accumulator / TIMEDELTA);
 		gsm.render(batch);
 	}
 	

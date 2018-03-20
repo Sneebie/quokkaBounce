@@ -18,7 +18,7 @@ public class Arrow {
 
     private Rectangle arrowBounds;
     private Texture arrowTexture;
-    private Vector2 posArrow, initialPos, velArrow, previousPos;
+    private Vector2 posArrow, drawPosArrow, initialPos, velArrow, previousPos;
 
     public Arrow(float x, float y, boolean horizontal) {
         loopTime = 0;
@@ -27,9 +27,10 @@ public class Arrow {
         alreadySpotted = false;
         this.horizontal = horizontal;
         posArrow = new Vector2(x, y);
+        drawPosArrow = new Vector2(x, y);
         initialPos = new Vector2(x, y);
         velArrow = new Vector2();
-        previousPos = new Vector2();
+        previousPos = new Vector2(x, y);
         if(horizontal){
             velArrow.set(HORIZONTALSPEED, 0);
         }
@@ -44,6 +45,10 @@ public class Arrow {
         return posArrow;
     }
 
+    public Vector2 getPreviousPos() {
+        return previousPos;
+    }
+
     public Texture getTexture() {
         return arrowTexture;
     }
@@ -56,8 +61,12 @@ public class Arrow {
         this.shouldShoot = shouldShoot;
     }
 
-    public void setPosArrow(Vector2 posArrow) {
-        this.posArrow.set(posArrow);
+    public void setDrawPosArrow(Vector2 posArrow) {
+        this.drawPosArrow.set(posArrow);
+    }
+
+    public Vector2 getDrawPosArrow() {
+        return drawPosArrow;
     }
 
     public void setAlreadySpotted(boolean alreadySpotted) {

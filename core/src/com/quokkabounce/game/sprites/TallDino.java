@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class TallDino{
     private Texture tallDinoTexture;
-    private Vector2 posTallDino, velTallDino, previousPos;
+    private Vector2 posTallDino, drawPosTallDino, velTallDino, previousPos;
     private Rectangle tallDinoBounds;
     private float endPos, startPos;
     private int dir;
@@ -21,13 +21,26 @@ public class TallDino{
         startPos = x;
         dir = 1;
         posTallDino = new Vector2(x, y);
+        drawPosTallDino = new Vector2(x, y);
         velTallDino = new Vector2(speed, 0);
-        previousPos = new Vector2();
+        previousPos = new Vector2(x, y);
         tallDinoBounds = new Rectangle(posTallDino.x, posTallDino.y, tallDinoTexture.getWidth(), tallDinoTexture.getHeight());
     }
 
     public Vector2 getPosTallDino() {
         return posTallDino;
+    }
+
+    public Vector2 getPreviousPos() {
+        return previousPos;
+    }
+
+    public void setDrawPosTallDino(Vector2 posTallDino) {
+        this.drawPosTallDino = posTallDino;
+    }
+
+    public Vector2 getDrawPosTallDino() {
+        return drawPosTallDino;
     }
 
     public Texture getTexture() {

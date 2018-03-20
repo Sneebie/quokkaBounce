@@ -16,16 +16,17 @@ public class Meteor {
 
     private Rectangle meteorBounds;
     private Texture meteorTexture;
-    private Vector2 posMeteor, velMeteor, originalPos, originalVel, gravity, previousPos;
+    private Vector2 posMeteor, drawPosMeteor, velMeteor, originalPos, originalVel, gravity, previousPos;
     private boolean startFall;
 
     public Meteor(float x, float y, float firstVelX, float firstVelY){
         gravity = new Vector2(0, -13);
         posMeteor = new Vector2(x, y);
         originalPos = new Vector2(x, y);
+        drawPosMeteor = new Vector2(x, y);
         velMeteor = new Vector2(firstVelX, firstVelY);
         originalVel = new Vector2(firstVelX, firstVelY);
-        previousPos = new Vector2();
+        previousPos = new Vector2(x, y);
         meteorTexture = new Texture("wallSwitch.png");
         meteorBounds = new Rectangle(posMeteor.x, posMeteor.y, meteorTexture.getWidth(), meteorTexture.getHeight());
     }
@@ -52,6 +53,18 @@ public class Meteor {
 
     public void setVelMeteor(Vector2 velMeteor) {
         this.velMeteor = velMeteor;
+    }
+
+    public Vector2 getPreviousPos() {
+        return previousPos;
+    }
+
+    public Vector2 getDrawPosMeteor() {
+        return drawPosMeteor;
+    }
+
+    public void setDrawPosMeteor(Vector2 drawPosMeteor) {
+        this.drawPosMeteor = drawPosMeteor;
     }
 
     public Vector2 getOriginalVel() {

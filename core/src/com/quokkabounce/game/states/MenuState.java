@@ -76,6 +76,11 @@ public class MenuState extends State implements InputProcessor{
     }
 
     @Override
+    public void interpolate(double alpha) {
+
+    }
+
+    @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();

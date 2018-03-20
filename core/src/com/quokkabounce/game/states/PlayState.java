@@ -43,7 +43,7 @@ public class PlayState extends State implements InputProcessor{
     private Quokka quokka;
     private Button backButton, pauseButton;
     private Texture levelBackground;
-    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, tempPos;
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
@@ -122,6 +122,7 @@ public class PlayState extends State implements InputProcessor{
         quokkaSide = new Vector2();
         adjustedCenter = new Vector2();
         planetProj = new Vector2();
+        tempPos = new Vector2();
         gradientVector = new Vector3();
         touchInput = new Vector3();
         clickPos = new Vector3(0,0,0);
@@ -156,10 +157,10 @@ public class PlayState extends State implements InputProcessor{
                 towerVel.scl(1/dt);
             }
             else {
-                cam.position.x = quokka.getPosition().x + 80;
+                cam.position.x = quokka.getDrawPosition().x + 80;
             }
             if (moveWalls.size != 0) {
-                cam.position.y = quokka.getPosition().y;
+                cam.position.y = quokka.getDrawPosition().y;
             }
             backButton.getPosButton().x = cam.position.x - 800;
             pauseButton.getPosButton().x = cam.position.x - 800;
@@ -475,6 +476,42 @@ public class PlayState extends State implements InputProcessor{
         }
     }
 
+    @Override
+    public void interpolate(double alpha) {
+        for(Arrow arrow : arrows){
+            Vector2 currentPosition = arrow.getPosArrow();
+            Vector2 pastPosition = arrow.getPreviousPos();
+            tempPos.set((float)(currentPosition.x * alpha + pastPosition.x * (1 - alpha)),((float)(currentPosition.y * alpha + pastPosition.y * (1-alpha))));
+            arrow.setDrawPosArrow(tempPos);
+        }
+        for(Hawk hawk : hawks){
+            Vector2 currentPosition = hawk.getPosHawk();
+            Vector2 pastPosition = hawk.getPreviousPos();
+            tempPos.set((float)(currentPosition.x * alpha + pastPosition.x * (1 - alpha)),((float)(currentPosition.y * alpha + pastPosition.y * (1-alpha))));
+            hawk.setDrawPosHawk(tempPos);
+        }
+        for(Meteor meteor : meteors){
+            Vector2 currentPosition = meteor.getPosMeteor();
+            Vector2 pastPosition = meteor.getPreviousPos();
+            tempPos.set((float)(currentPosition.x * alpha + pastPosition.x * (1 - alpha)),((float)(currentPosition.y * alpha + pastPosition.y * (1-alpha))));
+            meteor.setDrawPosMeteor(tempPos);
+        }
+        for(MoveWall moveWall : moveWalls){
+            Vector2 currentPosition = moveWall.getPosWall();
+            Vector2 pastPosition = moveWall.getPreviousPos();
+            moveWall.setDrawPosWall((float)(currentPosition.x * alpha + pastPosition.x * (1 - alpha)),((float)(currentPosition.y * alpha + pastPosition.y * (1-alpha))));
+        }
+        for(TallDino tallDino : tallDinos){
+            Vector2 currentPosition = tallDino.getPosTallDino();
+            Vector2 pastPosition = tallDino.getPreviousPos();
+            tempPos.set((float)(currentPosition.x * alpha + pastPosition.x * (1 - alpha)),((float)(currentPosition.y * alpha + pastPosition.y * (1-alpha))));
+            tallDino.setDrawPosTallDino(tempPos);
+        }
+        Vector3 currentPosition = quokka.getPosition();
+        Vector3 pastPosition = quokka.getPreviousPos();
+        quokka.setDrawPosition((float)(currentPosition.x * alpha + pastPosition.x * (1 - alpha)),((float)(currentPosition.y * alpha + pastPosition.y * (1-alpha))), 0);
+    }
+
     private float lineY(float x){
         if(clickPos2.x > clickPos.x) {
             final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
@@ -505,13 +542,13 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
         }
         for (Hawk hawk : hawks){
-            sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
+            sb.draw(hawk.getTexture(), hawk.getDrawPosHawk().x, hawk.getDrawPosHawk().y);
         }
         for(Meteor meteor: meteors){
-            sb.draw(meteor.getTexture(), meteor.getPosMeteor().x, meteor.getPosMeteor().y);
+            sb.draw(meteor.getTexture(), meteor.getDrawPosMeteor().x, meteor.getDrawPosMeteor().y);
         }
         for(Arrow arrow : arrows){
-            sb.draw(arrow.getTexture(), arrow.getPosArrow().x, arrow.getPosArrow().y);
+            sb.draw(arrow.getTexture(), arrow.getDrawPosArrow().x, arrow.getDrawPosArrow().y);
         }
         if(layer == finalLayer) {
             sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
@@ -538,15 +575,15 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle nullZone : nullZones){
             sb.draw(nullZone.getTexture(), nullZone.getPosObstacle().x, nullZone.getPosObstacle().y);
         }
-        sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
+        sb.draw(quokka.getTexture(), quokka.getDrawPosition().x, quokka.getDrawPosition().y);
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
         }
         for(TallDino tallDino : tallDinos){
-            sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
+            sb.draw(tallDino.getTexture(), tallDino.getDrawPosTallDino().x, tallDino.getDrawPosTallDino().y);
         }
         for(MoveWall moveWall : moveWalls){
-            sb.draw(moveWall.getTexture(), moveWall.getPosWall().x, moveWall.getPosWall().y);
+            sb.draw(moveWall.getTexture(), moveWall.getDrawPosWall().x, moveWall.getDrawPosWall().y);
         }
         for(EvilCloud cloud: clouds) {
             sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
