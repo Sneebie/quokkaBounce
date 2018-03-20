@@ -211,6 +211,7 @@ public class PlayState extends State implements InputProcessor{
                 }
                 if (outZone) {
                     quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    System.out.println(dt);
                     justHitTemp = true;
                 }
             }
@@ -834,6 +835,7 @@ public class PlayState extends State implements InputProcessor{
             float currentPot = 13 * quokka.getPosition().y;
             velocityTemp2.set(velocityTemp2.x /velocityTemp2.len(), velocityTemp2.y/velocityTemp2.len(), 0);
             velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
+            velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
             System.out.println((float) Math.sqrt(2*(iniPot - currentPot)));
         }
         return velocityTemp2;
