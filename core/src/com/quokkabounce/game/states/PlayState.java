@@ -47,7 +47,7 @@ public class PlayState extends State implements InputProcessor{
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
-    private float currentDT;
+    private float currentDT, iniPot;
     private int layer, finalLayer;
     private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck;
 
@@ -110,6 +110,12 @@ public class PlayState extends State implements InputProcessor{
         }
         else{
             quokka = new Quokka(600, 650);
+        }
+        if(planets.size>0){
+            //do the physics for space
+        }
+        else{
+            iniPot = 13 * quokka.getPosition().y;
         }
         shapeRenderer = new ShapeRenderer();
         levelBackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, 0);
@@ -820,6 +826,14 @@ public class PlayState extends State implements InputProcessor{
         velocityTemp2.set(velocityTemp.sub((normal).scl(2*(velocityTemp.dot(normal)))));
         if(moveWalls.size!=0){
             velocityTemp2.set(Math.round(velocityTemp2.x * OCEANSLOW), Math.round(velocityTemp2.y * OCEANSLOW), 0);
+        }
+        if(planets.size > 0){
+
+        }
+        else{
+            float currentPot = 13 * quokka.getPosition().y;
+            velocityTemp2.setLength((float) Math.sqrt(2*(iniPot - currentPot)));
+            System.out.println(velocityTemp2);
         }
         return velocityTemp2;
     }
