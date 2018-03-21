@@ -307,6 +307,7 @@ public class PlayState extends State implements InputProcessor{
                 }
             }
             justPlanetTemp = false;
+            quokka.getGravity().set(0, 0, 0);
             for (Obstacle planet : planets) {
                 if (planet.collides(quokka.getQuokkaBounds())) {
                     circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
@@ -382,7 +383,7 @@ public class PlayState extends State implements InputProcessor{
                 planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
                 double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
                 if (planetMagnitude != 0) {
-                    planetDistance.scl(Math.round(GOODGRAV / Math.pow(planetMagnitude, GRAVPOW)));
+                    planetDistance.scl((float)(GOODGRAV / Math.pow(planetMagnitude, GRAVPOW)));
                 }
                 quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
             }
@@ -453,7 +454,6 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
             }
-            quokka.getGravity().set(0, 0, 0);
             if (nullZones.size > 0 && lineCheck) {
                 if (Math.abs(clickPos2.x - clickPos.x) < SHRINKRATE) {
                     clickPos2.set(-100, -100, 0);
@@ -831,7 +831,7 @@ public class PlayState extends State implements InputProcessor{
         normal.nor();
         velocityTemp2.set(velocityTemp.sub((normal).scl(2*(velocityTemp.dot(normal)))));
         if(moveWalls.size!=0){
-            velocityTemp2.set(Math.round(velocityTemp2.x * OCEANSLOW), Math.round(velocityTemp2.y * OCEANSLOW), 0);
+            velocityTemp2.set((float)(velocityTemp2.x * OCEANSLOW), (float)(velocityTemp2.y * OCEANSLOW), 0);
         }
         float currentPot = 0f;
         velocityTemp2.set(velocityTemp2.x /velocityTemp2.len(), velocityTemp2.y/velocityTemp2.len(), 0);
@@ -846,8 +846,6 @@ public class PlayState extends State implements InputProcessor{
         else{
             currentPot = 13 * quokka.getPosition().y;
         }
-        System.out.println("iniPot" + iniPot);
-        System.out.println("currentPot" + currentPot);
         velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
         velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
         return velocityTemp2;
