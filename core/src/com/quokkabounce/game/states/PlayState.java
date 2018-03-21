@@ -43,7 +43,7 @@ public class PlayState extends State implements InputProcessor{
     private Quokka quokka;
     private Button backButton, pauseButton;
     private Texture levelBackground;
-    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, planetIniPot, planetCurrentPot, planetDistance2;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj;
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
@@ -122,9 +122,6 @@ public class PlayState extends State implements InputProcessor{
         quokkaSide = new Vector2();
         adjustedCenter = new Vector2();
         planetProj = new Vector2();
-        planetDistance2 = new Vector2();
-        planetIniPot = new Vector2(0,0);
-        planetCurrentPot = new Vector2(0, 0);
         gradientVector = new Vector3();
         touchInput = new Vector3();
         clickPos = new Vector3(0,0,0);
@@ -138,10 +135,11 @@ public class PlayState extends State implements InputProcessor{
         iniPot = 0f;
         if(planets.size>0){
             for(Obstacle planet : planets){
-                planetDistance2.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2);
-                planetIniPot.add(planetDistance2.scl((float)Math.pow(1 / (planet.getObstacleBounds().getWidth()/2),2)));
+                planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
+                double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                iniPot+=(1 / planetMagnitude);
             }
-            planetIniPot.scl(GOODGRAV * PLANETSCALER);
+            iniPot*=(GOODGRAV * PLANETSCALER);
         }
         else{
             iniPot = 13 * quokka.getPosition().y;
@@ -734,9 +732,9 @@ public class PlayState extends State implements InputProcessor{
                         planets.add(new Obstacle(1700, 400, "greenPlanet.png"));
                         break;
                     case 3:
-                        levelBackground = new Texture("oceanBackground.png");
-                        moveWalls.add(new MoveWall(10000,10000,0,0,0));
-                        happyCloud = new HappyCloud(10000, 10000);
+                        levelBackground = new Texture("spaceBackground.png");
+                        planets.add(new Obstacle(300, 200, "greenPlanet.png"));
+                        happyCloud = new HappyCloud(1500, 300);
                         break;
                     case 4:
                         layerTextures.add(new Texture("level1Background.png"));
@@ -838,20 +836,20 @@ public class PlayState extends State implements InputProcessor{
         float currentPot = 0f;
         velocityTemp2.set(velocityTemp2.x /velocityTemp2.len(), velocityTemp2.y/velocityTemp2.len(), 0);
         if(planets.size > 0){
-            planetCurrentPot.set(0,0);
             for(Obstacle planet : planets){
-                planetDistance2.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2);
-                planetCurrentPot.add(planetDistance2.scl((float)Math.pow(1 / (planet.getObstacleBounds().getWidth()/2),2)));
+                planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
+                double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                currentPot+=(1/planetMagnitude);
             }
-            planetCurrentPot.scl(GOODGRAV * PLANETSCALER);
-            velocityTemp2.set((float)Math.sqrt(Math.abs(2*(planetIniPot.x - planetCurrentPot.x))) * velocityTemp2.x, (float)Math.sqrt(Math.abs(2*(planetIniPot.y - planetCurrentPot.y))) * velocityTemp2.y, 0);
-            System.out.println(velocityTemp2);
+            currentPot*=(GOODGRAV * PLANETSCALER);
         }
         else{
             currentPot = 13 * quokka.getPosition().y;
-            velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
-            velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
         }
+        System.out.println("iniPot" + iniPot);
+        System.out.println("currentPot" + currentPot);
+        velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
+        velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
         return velocityTemp2;
     }
 
