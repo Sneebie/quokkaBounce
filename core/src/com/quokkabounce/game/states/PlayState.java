@@ -372,10 +372,12 @@ public class PlayState extends State implements InputProcessor{
                     }
                     if (!justPlanet) {
                         if (justPlanetTemp) {
+                            //coachLandmark
                             velocityTemp.set(quokka.getVelocity());
                             gradientVector.set(2 * (intersectionPoint.x - circleCenter.x), 2 * (intersectionPoint.y - circleCenter.y), 0);
                             gradientVector.nor();
                             velocityTemp2.set(velocityTemp.sub((gradientVector).scl(2 * (velocityTemp.dot(gradientVector)))));
+                            planetFixer();
                             quokka.setVelocity(velocityTemp2);
                         }
                     }
@@ -486,7 +488,20 @@ public class PlayState extends State implements InputProcessor{
             cam.update();
         }
     }
-
+    private void planetFixer(){
+        float currentPot = 0f;
+        velocityTemp2.set(velocityTemp2.x /velocityTemp2.len(), velocityTemp2.y/velocityTemp2.len(), 0);
+        for(int i =0; i<planets.size;i++){
+            Obstacle planet = planets.get(i);
+            planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
+            double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+            currentPot+=(1/planetMagnitude);
+        }
+        currentPot*=(GOODGRAV * PLANETSCALER);
+        //coachLandmark
+        velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
+        velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
+    }
     private float lineY(float x){
         if(clickPos2.x > clickPos.x) {
             final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
@@ -846,8 +861,11 @@ public class PlayState extends State implements InputProcessor{
         else{
             currentPot = 13 * quokka.getPosition().y;
         }
+        //coachLandmark
         velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
         velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
+        System.out.println("iniPot" + iniPot);
+        System.out.println("currentPot"+currentPot);
         return velocityTemp2;
     }
 
