@@ -43,13 +43,13 @@ public class PlayState extends State implements InputProcessor{
     private Quokka quokka;
     private Button backButton, pauseButton;
     private Texture levelBackground;
-    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet;
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT, iniPot;
     private int layer, finalLayer;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -103,6 +103,7 @@ public class PlayState extends State implements InputProcessor{
         justPlanet = false;
         paused = false;
         justPaused = false;
+        hasCollided = false;
         vineCheck = true;
         Gdx.input.setInputProcessor(this);
         if(arrows.size < 1) {
@@ -124,8 +125,13 @@ public class PlayState extends State implements InputProcessor{
         planetProj = new Vector2();
         gradientVector = new Vector3();
         touchInput = new Vector3();
+        xdiff = new Vector2();
+        ydiff = new Vector2();
+        tempDet = new Vector2();
         clickPos = new Vector3(0,0,0);
+        clickPos2d = new Vector2(0,0);
         clickPos2 = new Vector3(0,-100,0);
+        clickPos2d2 = new Vector2(0,-100);
         clickPosTemp = new Vector3(0,-100,0);
         velocityTemp = new Vector3(0,0,0);
         velocityTemp2 = new Vector3(0,0,0);
@@ -217,7 +223,36 @@ public class PlayState extends State implements InputProcessor{
                 }
                 if (outZone) {
                     quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    hasCollided = true;
                     justHitTemp = true;
+                }
+                else if(!hasCollided){
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                    if(doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2)){
+                        System.out.println("bl");
+                        hasCollided = true;
+                        quokka.setPosition(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2));
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    }
+                    else if(doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2)){
+                        System.out.println("br");
+                        hasCollided = true;
+                        quokka.setPosition(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2));
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    }
+                    else if(doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2)){
+                        System.out.println("ul");
+                        hasCollided = true;
+                        quokka.setPosition(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2));
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    }
+                    else if(doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)){
+                        System.out.println("ur");
+                        hasCollided = true;
+                        quokka.setPosition(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2));
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    }
                 }
             }
             justHit = justHitTemp;
@@ -512,6 +547,67 @@ public class PlayState extends State implements InputProcessor{
             return (slope * (x - clickPos2.x) + clickPos2.y);
         }
     }
+    private boolean onSegment(Vector2 p, Vector2 q, Vector2 r)
+    {
+        if (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y)) {
+            return true;
+        }
+        return false;
+    }
+    private int orientation(Vector2 p, Vector2 q, Vector2 r)
+    {
+        float val = (q.y - p.y) * (r.x - q.x) -(q.x - p.x) * (r.y - q.y);
+
+        if (val == 0){
+            return 0;  // colinear
+        }
+
+        return (val > 0)? 1: 2; // clock or counterclock wise
+    }
+    private boolean doIntersect(Vector2 p1, Vector2 q1, Vector2 p2, Vector2 q2)
+    {
+        // Find the four orientations needed for general and
+        // special cases
+        int o1 = orientation(p1, q1, p2);
+        int o2 = orientation(p1, q1, q2);
+        int o3 = orientation(p2, q2, p1);
+        int o4 = orientation(p2, q2, q1);
+
+        // General case
+        if (o1 != o2 && o3 != o4)
+            return true;
+
+        // Special Cases
+        // p1, q1 and p2 are colinear and p2 lies on segment p1q1
+        if (o1 == 0 && onSegment(p1, p2, q1)) return true;
+
+        // p1, q1 and q2 are colinear and q2 lies on segment p1q1
+        if (o2 == 0 && onSegment(p1, q2, q1)) return true;
+
+        // p2, q2 and p1 are colinear and p1 lies on segment p2q2
+        if (o3 == 0 && onSegment(p2, p1, q2)) return true;
+
+        // p2, q2 and q1 are colinear and q1 lies on segment p2q2
+        if (o4 == 0 && onSegment(p2, q1, q2)) return true;
+
+        return false; // Doesn't fall in any of the above cases
+    }
+
+    private Vector2 intersectionPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2){
+        xdiff.set(a1.x - a2.x, b1.x - b2.x);
+        ydiff.set(a1.y - a2.y, b1.y - b2.y);
+        float div = det(xdiff, ydiff);
+        tempDet.set(det(a1,a2), det(b1,b2));
+        float x = det(tempDet, xdiff) / div;
+        float y = det(tempDet, ydiff) / div;
+        tempDet.set(x,y);
+        return tempDet;
+    }
+
+    private float det(Vector2 a1, Vector2 a2){
+        return a1.x * a2.y - a1.y * a2.x;
+    }
+
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
@@ -736,8 +832,7 @@ public class PlayState extends State implements InputProcessor{
                 switch(level) {
                     case 1:
                         levelBackground = new Texture("level1Background.png");
-                        tallDinos.add(new TallDino(400, -100, 800, 200));
-                        happyCloud = new HappyCloud(1000,200);
+                        happyCloud = new HappyCloud(10000,200);
                         break;
                     case 2:
                         levelBackground = new Texture("spaceBackground.png");
@@ -864,8 +959,6 @@ public class PlayState extends State implements InputProcessor{
         //coachLandmark
         velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
         velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
-        System.out.println("iniPot" + iniPot);
-        System.out.println("currentPot"+currentPot);
         return velocityTemp2;
     }
 
@@ -901,6 +994,7 @@ public class PlayState extends State implements InputProcessor{
             vineCheck = true;
             lineDraw = true;
             shouldFall = true;
+            hasCollided = false;
             lineCheck = false;
             paused = false;
             clickPos2.set(screenX, -100, 0);
