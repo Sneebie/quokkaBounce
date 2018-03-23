@@ -44,12 +44,12 @@ public class PlayState extends State implements InputProcessor{
     private Button backButton, pauseButton;
     private Texture levelBackground;
     private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet;
-    private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel, perpTemp, perp0;
+    private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT, iniPot;
     private int layer, finalLayer;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, outZonePerp;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -102,11 +102,11 @@ public class PlayState extends State implements InputProcessor{
         justHit = false;
         justPlanet = false;
         paused = false;
+        smallBounce = false;
         justPaused = false;
         hasCollided = false;
         smallMove = false;
         vineCheck = true;
-        outZonePerp = false;
         Gdx.input.setInputProcessor(this);
         if(arrows.size < 1) {
             quokka = new Quokka(50, 650);
@@ -130,8 +130,6 @@ public class PlayState extends State implements InputProcessor{
         xdiff = new Vector2();
         ydiff = new Vector2();
         tempDet = new Vector2();
-        perp0 = new Vector3(0,0,0);
-        perpTemp = new Vector3(0,0,0);
         clickPos = new Vector3(0,0,0);
         clickPos2d = new Vector2(0,0);
         clickPos2 = new Vector3(0,-100,0);
@@ -164,6 +162,7 @@ public class PlayState extends State implements InputProcessor{
     @Override
     public void update(float dt) {
         if(!paused) {
+            smallBounce = false;
             if (layerVines.size > 0) {
                 levelBackground = (layerTextures.get(layer));
                 vines.clear();
@@ -192,7 +191,6 @@ public class PlayState extends State implements InputProcessor{
             justHitTemp = false;
             if (lineCheck) {
                 outZone = false;
-                outZonePerp = false;
                 if (!justHit) {
                     if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
                         if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
@@ -222,16 +220,6 @@ public class PlayState extends State implements InputProcessor{
                                 if (nullZone.getObstacleBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
                                     outZone = false;
                                     smallMove = false;
-                                }
-                            }
-                        }
-                    }
-                    if(!outZone) {
-                        if (quokka.getQuokkaBounds().contains(clickPos.x, clickPos.y) || quokka.getQuokkaBounds().contains(clickPos2.x, clickPos2.y)) {
-                            outZonePerp = true;
-                            for (Obstacle nullZone : nullZones) {
-                                if (nullZone.getObstacleBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
-                                    outZonePerp = false;
                                 }
                             }
                         }
@@ -273,12 +261,19 @@ public class PlayState extends State implements InputProcessor{
                                 clickPos2d2.set(clickPos2.x, clickPos2.y);
                             }
                         }
+                        else{
+                            if (shouldFall) {
+                                quokka.update(dt);
+                                smallBounce = true;
+                            }
+                            while(((clickPos.y > quokka.getPosition().y) && (clickPos2.y > quokka.getPosition().y) && (clickPos.y < (quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()) && (clickPos2.y < (quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()))))) {
+                                clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
+                        }
                     }
-                }
-                else if (outZonePerp) {
-                    quokka.setVelocity(resultVector(quokka.getVelocity(), perp0, perpLine(clickPos, clickPos2)));
-                    hasCollided = true;
-                    justHitTemp = true;
                 }
                 else if(!hasCollided){
                     clickPos2d.set(clickPos.x, clickPos.y);
@@ -479,7 +474,7 @@ public class PlayState extends State implements InputProcessor{
             if (planets.size == 0) {
                 quokka.getGravity().set(0, -13, 0);
             }
-            if (shouldFall) {
+            if (shouldFall && !smallBounce) {
                 quokka.update(dt);
             }
             for(Meteor meteor: meteors){
@@ -597,20 +592,7 @@ public class PlayState extends State implements InputProcessor{
             return (slope * (x - clickPos2.x) + clickPos2.y);
         }
     }
-    private Vector3 perpLine (Vector3 orgLine, Vector3 orgLine2){
-        float slope;
-        if(orgLine2.x > orgLine.x) {
-            slope = (orgLine2.y - orgLine.y) / (orgLine2.x - orgLine.x);
-        }
-        else{
-            slope = (orgLine.y - orgLine2.y) / (orgLine.x - orgLine2.x);
-        }
-        float perpSlope = - 1 / slope;
-        perpTemp.set(1, perpSlope, 0);
-        System.out.println((perpTemp.y - perp0.y)/(perpTemp.x-perp0.x));
-        System.out.println(-1/((clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x)));
-        return perpTemp;
-    }
+
     private boolean onSegment(Vector2 p, Vector2 q, Vector2 r)
     {
         if (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y)) {
