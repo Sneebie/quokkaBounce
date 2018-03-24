@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Wall{
     private Texture wallTexture;
-    private Vector2 posWall;
+    private Vector2 posWall, bl, br, ul, ur;
     private Rectangle wallBounds;
     private Array<Obstacle> wallSwitches;
     private float wallMove;
@@ -23,6 +23,10 @@ public class Wall{
         posWall = new Vector2(x, y);
         hasSwitch = false;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
     }
 
     public Wall(float x, float y){
@@ -31,6 +35,10 @@ public class Wall{
         posWall = new Vector2(x, y);
         hasSwitch = false;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
     }
 
     public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove){
@@ -41,6 +49,10 @@ public class Wall{
         this.wallMove = wallMove;
         this.wallSwitches = wallSwitches;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
     }
 
     public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove, String textureString){
@@ -51,6 +63,10 @@ public class Wall{
         this.wallMove = wallMove;
         this.wallSwitches = wallSwitches;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
     }
 
     public float getWallMove() {
@@ -67,6 +83,26 @@ public class Wall{
 
     public void setPosWall(float x, float y) {
         posWall.set(x, y);
+        bl.set(x,y);
+        br.set(x + getWallBounds().getWidth(), y);
+        ul.set(x, y + getWallBounds().getHeight());
+        ur.set(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
+    }
+
+    public Vector2 getBl() {
+        return bl;
+    }
+
+    public Vector2 getBr() {
+        return br;
+    }
+
+    public Vector2 getUl() {
+        return ul;
+    }
+
+    public Vector2 getUr() {
+        return ur;
     }
 
     public Vector2 getPosWall() {
