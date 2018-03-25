@@ -24,7 +24,6 @@ import com.quokkabounce.game.sprites.Quokka;
 import com.quokkabounce.game.sprites.TallDino;
 import com.quokkabounce.game.sprites.Vine;
 import com.quokkabounce.game.sprites.Wall;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 /**
  * Created by Eric on 8/29/2017.
@@ -44,7 +43,7 @@ public class PlayState extends State implements InputProcessor{
     private Quokka quokka;
     private Button backButton, pauseButton;
     private Texture levelBackground;
-    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet, tempWall;
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
@@ -69,6 +68,7 @@ public class PlayState extends State implements InputProcessor{
     private BooleanArray collectedQuokkas;
     private boolean hitLeft[], hitRight[], hitBottom[], hitTop[];
     private Vector2 hitSide[];
+    private String hitCorner;
 
     public PlayState(GameStateManager gsm, int world, int level) {
         super(gsm, world, level);
@@ -138,6 +138,7 @@ public class PlayState extends State implements InputProcessor{
         xdiff = new Vector2();
         ydiff = new Vector2();
         tempDet = new Vector2();
+        tempWall = new Vector2();
         clickPos = new Vector3(0,0,0);
         clickPos2d = new Vector2(0,0);
         clickPos2 = new Vector3(0,-100,0);
@@ -197,7 +198,7 @@ public class PlayState extends State implements InputProcessor{
             backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
             pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             justHitTemp = false;
-            if (lineCheck) {
+            if (lineCheck && !hitWall) {
                 outZone = false;
                 if (!justHit) {
                     if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
@@ -288,22 +289,26 @@ public class PlayState extends State implements InputProcessor{
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                     if(doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2)){
                         hasCollided = true;
-                        quokka.setPosition(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2));
+                        tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y);
                         quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                     }
                     else if(doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2)){
                         hasCollided = true;
-                        quokka.setPosition(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2));
+                        tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y);
                         quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                     }
                     else if(doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2)){
                         hasCollided = true;
-                        quokka.setPosition(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2));
+                        tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
                         quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                     }
                     else if(doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)){
                         hasCollided = true;
-                        quokka.setPosition(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2));
+                        tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
                         quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                     }
                 }
@@ -413,11 +418,13 @@ public class PlayState extends State implements InputProcessor{
                                         firstSide = false;
                                         if(i==0){
                                             shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr()));
+                                            hitCorner = "topLeft";
                                             hitSide[0] = wall.getBl();
                                             hitSide[1] = wall.getBr();
                                         }
                                         else if(i==1){
                                             shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr()));
+                                            hitCorner = "topRight";
                                             hitSide[0] = wall.getBl();
                                             hitSide[1] = wall.getBr();
                                         }
@@ -426,6 +433,7 @@ public class PlayState extends State implements InputProcessor{
                                         if(i==0){
                                             if(distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr())) < shortestDistance) {
                                                 shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr()));
+                                                hitCorner = "topLeft";
                                                 hitSide[0] = wall.getBl();
                                                 hitSide[1] = wall.getBr();
                                             }
@@ -433,6 +441,7 @@ public class PlayState extends State implements InputProcessor{
                                         else if(i==1){
                                             if(distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr())) < shortestDistance) {
                                                 shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr()));
+                                                hitCorner = "topRight";
                                                 hitSide[0] = wall.getBl();
                                                 hitSide[1] = wall.getBr();
                                             }
@@ -444,11 +453,13 @@ public class PlayState extends State implements InputProcessor{
                                         firstSide = false;
                                         if (i==0){
                                             shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl()));
+                                            hitCorner = "bottomRight";
                                             hitSide[0] = wall.getBl();
                                             hitSide[1] = wall.getUl();
                                         }
                                         else if(i==1){
                                             shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getUl()));
+                                            hitCorner = "topRight";
                                             hitSide[0] = wall.getBl();
                                             hitSide[1] = wall.getUl();
                                         }
@@ -457,6 +468,7 @@ public class PlayState extends State implements InputProcessor{
                                         if (i==0){
                                             if(distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl())) < shortestDistance) {
                                                 shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl()));
+                                                hitCorner = "bottomRight";
                                                 hitSide[0] = wall.getBl();
                                                 hitSide[1] = wall.getUl();
                                             }
@@ -464,6 +476,7 @@ public class PlayState extends State implements InputProcessor{
                                         else if(i==1){
                                             if(distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getUl())) < shortestDistance) {
                                                 shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getUl()));
+                                                hitCorner = "topRight";
                                                 hitSide[0] = wall.getBl();
                                                 hitSide[1] = wall.getUl();
                                             }
@@ -475,11 +488,13 @@ public class PlayState extends State implements InputProcessor{
                                         firstSide = false;
                                         if(i==0) {
                                             shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr()));
+                                            hitCorner = "bottomLeft";
                                             hitSide[0] = wall.getUl();
                                             hitSide[1] = wall.getUr();
                                         }
                                         else if (i==1){
                                             shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getUl(), wall.getUr()));
+                                            hitCorner = "bottomRight";
                                             hitSide[0] = wall.getUl();
                                             hitSide[1] = wall.getUr();
                                         }
@@ -488,6 +503,7 @@ public class PlayState extends State implements InputProcessor{
                                         if(i==0) {
                                             if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr())) < shortestDistance) {
                                                 shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr()));
+                                                hitCorner = "bottomLeft";
                                                 hitSide[0] = wall.getUl();
                                                 hitSide[1] = wall.getUr();
                                             }
@@ -495,6 +511,7 @@ public class PlayState extends State implements InputProcessor{
                                         else if (i==1){
                                             if(distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getUl(), wall.getUr())) < shortestDistance) {
                                                 shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getUl(), wall.getUr()));
+                                                hitCorner = "bottomRight";
                                                 hitSide[0] = wall.getUl();
                                                 hitSide[1] = wall.getUr();
                                             }
@@ -506,11 +523,13 @@ public class PlayState extends State implements InputProcessor{
                                         firstSide = false;
                                         if(i==0) {
                                             shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getBr(), wall.getUr()));
+                                            hitCorner = "bottomLeft";
                                             hitSide[0] = wall.getBr();
                                             hitSide[1] = wall.getUr();
                                         }
                                         else if(i==1){
                                             shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBr(), wall.getUr()));
+                                            hitCorner = "topLeft";
                                             hitSide[0] = wall.getBr();
                                             hitSide[1] = wall.getUr();
                                         }
@@ -519,6 +538,7 @@ public class PlayState extends State implements InputProcessor{
                                         if(i==0) {
                                             if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getBr(), wall.getUr())) < shortestDistance) {
                                                 shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getBr(), wall.getUr()));
+                                                hitCorner = "bottomLeft";
                                                 hitSide[0] = wall.getBr();
                                                 hitSide[1] = wall.getUr();
                                             }
@@ -526,6 +546,7 @@ public class PlayState extends State implements InputProcessor{
                                         else if(i==1){
                                             if(distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBr(), wall.getUr())) < shortestDistance) {
                                                 shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBr(), wall.getUr()));
+                                                hitCorner = "topLeft";
                                                 hitSide[0] = wall.getBr();
                                                 hitSide[1] = wall.getUr();
                                             }
@@ -536,6 +557,22 @@ public class PlayState extends State implements InputProcessor{
                         }
             }// wall loop
             if(walls.size > 0 && hitWall){
+                if(hitCorner.equals("topLeft")){
+                    tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), hitSide[0], hitSide[1]));
+                    quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                }
+                else if(hitCorner.equals("topRight")){
+                    tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), hitSide[0], hitSide[1]));
+                    quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                }
+                else if(hitCorner.equals("bottomRight")){
+                    tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), hitSide[0], hitSide[1]));
+                    quokka.setPosition(quokka.getPosition().x, tempWall.y);
+                }
+                else if(hitCorner.equals("bottomLeft")){
+                    tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), hitSide[0], hitSide[1]));
+                    quokka.setPosition(quokka.getPosition().x, tempWall.y);
+                }
                 quokka.setVelocity(resultVector(quokka.getVelocity(), hitSide[0], hitSide[1]));
             }
             for (MoveWall moveWall : moveWalls) {
@@ -768,10 +805,7 @@ public class PlayState extends State implements InputProcessor{
 
     private boolean onSegment(Vector2 p, Vector2 q, Vector2 r)
     {
-        if (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y)) {
-            return true;
-        }
-        return false;
+        return (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y));
     }
     private int orientation(Vector2 p, Vector2 q, Vector2 r)
     {
@@ -807,9 +841,7 @@ public class PlayState extends State implements InputProcessor{
         if (o3 == 0 && onSegment(p2, p1, q2)) return true;
 
         // p2, q2 and q1 are colinear and q1 lies on segment p2q2
-        if (o4 == 0 && onSegment(p2, q1, q2)) return true;
-
-        return false; // Doesn't fall in any of the above cases
+        return (o4 == 0 && onSegment(p2, q1, q2));
     }
 
     private Vector2 intersectionPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2){
@@ -959,7 +991,7 @@ public class PlayState extends State implements InputProcessor{
         shapeRenderer.dispose();
     }
 
-    public void levelInit(int world, int level){
+    private void levelInit(int world, int level){
         backButton = new Button(new Texture("level4Button.png"), 0, 500, 0);
         pauseButton = new Button(new Texture("level4Button.png"), 0, 300, 0);
         walls.add(new Wall(-1000, -220, "wall.png"));

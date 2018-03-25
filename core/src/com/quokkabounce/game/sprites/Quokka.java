@@ -92,6 +92,9 @@ public class Quokka {
     public void setPosition(Vector2 position) {
         this.position.set(position,0);
     }
+    public void setPosition(float x, float y) {
+        this.position.set(x, y, 0);
+    }
 
     public Texture getTexture() {
         return quokka;
