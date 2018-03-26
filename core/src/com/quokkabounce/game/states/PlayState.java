@@ -183,6 +183,7 @@ public class PlayState extends State implements InputProcessor{
             if(arrows.size > 0 && shouldFall){
                 towerVel.scl(dt);
                 cam.position.y += towerVel.y;
+                iniPot+= 13*towerVel.y;
                 if(lineDraw) {
                     clickPosTemp.set(clickPosTemp.x, clickPosTemp.y + towerVel.y, 0);
                 }
