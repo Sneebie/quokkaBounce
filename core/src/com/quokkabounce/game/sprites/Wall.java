@@ -15,7 +15,7 @@ public class Wall{
     private Rectangle wallBounds;
     private Array<Obstacle> wallSwitches;
     private float wallMove;
-    private boolean hasSwitch;
+    private boolean hasSwitch, moveWall;
 
     public Wall(float x, float y, String textureString){
         setTexture(textureString);
@@ -23,6 +23,7 @@ public class Wall{
         posWall = new Vector2(x, y);
         hasSwitch = false;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        moveWall = false;
         bl = new Vector2(x,y);
         br = new Vector2(x + getWallBounds().getWidth(), y);
         ul = new Vector2(x, y + getWallBounds().getHeight());
@@ -35,6 +36,7 @@ public class Wall{
         posWall = new Vector2(x, y);
         hasSwitch = false;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        moveWall = false;
         bl = new Vector2(x,y);
         br = new Vector2(x + getWallBounds().getWidth(), y);
         ul = new Vector2(x, y + getWallBounds().getHeight());
@@ -49,6 +51,7 @@ public class Wall{
         this.wallMove = wallMove;
         this.wallSwitches = wallSwitches;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        moveWall = false;
         bl = new Vector2(x,y);
         br = new Vector2(x + getWallBounds().getWidth(), y);
         ul = new Vector2(x, y + getWallBounds().getHeight());
@@ -63,6 +66,7 @@ public class Wall{
         this.wallMove = wallMove;
         this.wallSwitches = wallSwitches;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        moveWall = false;
         bl = new Vector2(x,y);
         br = new Vector2(x + getWallBounds().getWidth(), y);
         ul = new Vector2(x, y + getWallBounds().getHeight());
@@ -75,6 +79,14 @@ public class Wall{
 
     public boolean hasSwitch() {
         return hasSwitch;
+    }
+
+    public boolean isMoveWall() {
+        return moveWall;
+    }
+
+    public void setMoveWall(boolean moveWall) {
+        this.moveWall = moveWall;
     }
 
     public void setWallBounds(float x, float y, float width, float height) {

@@ -39,6 +39,7 @@ public class PlayState extends State implements InputProcessor{
     private static final float VIEWPORT_SCALER = 1.6f;
     private static final int SHRINKRATE = 3;
     private static final int TOWERFALL = 100;
+    private static final int WALLSPEED = 3;
 
     private Quokka quokka;
     private Button backButton, pauseButton;
@@ -365,18 +366,23 @@ public class PlayState extends State implements InputProcessor{
             firstSide = true;
             hitWall = false;
             for (Wall wall : walls) {
-                boolean moveWall = false;
                 if (wall.hasSwitch()) {
                     for (Obstacle wallSwitch : wall.getWallSwitches()) {
                         if (wallSwitch.collides(quokka.getQuokkaBounds())) {
+                            for(int i = 0; i < walls.size; i++) {
+                                if(walls.get(i).getWallSwitches()!=null) {
+                                    if (walls.get(i).getWallSwitches().contains(wallSwitch, true)) {
+                                        walls.get(i).setMoveWall(true);
+                                    }
+                                }
+                            }
                             switches.removeIndex(switches.indexOf(wallSwitch, false));
                             wallSwitch.dispose();
-                            moveWall = true;
                         }
                     }
                 }
-                if (moveWall) {
-                    wall.setPosWall(wall.getPosWall().x, wall.getPosWall().y + wall.getWallMove());
+                if(wall.isMoveWall() && (Math.abs(wall.getWallMove() - wall.getPosWall().y) > 0)){
+                    wall.setPosWall(wall.getPosWall().x, wall.getPosWall().y + (wall.getWallMove() - wall.getPosWall().y) / WALLSPEED);
                     wall.setWallBounds(wall.getPosWall().x, wall.getPosWall().y, wall.getTexture().getWidth(), wall.getTexture().getHeight());
                 }
                 hitBottom[0] = false;
@@ -1224,8 +1230,8 @@ public class PlayState extends State implements InputProcessor{
                     case 1:
                         levelBackground = new Texture("level1Background.png");
                         switches.add(new Obstacle(200, 100, "wallSwitch.png"));
-                        walls.add(new Wall(400, -220, switches, -200));
-                        walls.add(new Wall(400, 375));
+                        walls.add(new Wall(400, -220, switches, -320));
+                        walls.add(new Wall(400, 375, switches, 500));
                         happyCloud = new HappyCloud(10000,200);
                         break;
                     case 2:
