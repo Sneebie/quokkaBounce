@@ -22,6 +22,7 @@ public class Wall{
 
         posWall = new Vector2(x, y);
         hasSwitch = false;
+        System.out.println(wallTexture.getWidth());
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
         moveWall = false;
         bl = new Vector2(x,y);

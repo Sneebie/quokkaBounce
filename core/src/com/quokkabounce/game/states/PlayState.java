@@ -117,7 +117,7 @@ public class PlayState extends State implements InputProcessor{
         smallMove = false;
         vineCheck = true;
         Gdx.input.setInputProcessor(this);
-        if(arrows.size < 1) {
+        if(world!= 3) {
             quokka = new Quokka(50, 650);
         }
         else{
@@ -180,22 +180,6 @@ public class PlayState extends State implements InputProcessor{
             }
             currentDT = dt;
             updateBackground();
-            if(arrows.size > 0 && shouldFall){
-                towerVel.scl(dt);
-                cam.position.y += towerVel.y;
-                iniPot+= 13*towerVel.y;
-                if(lineDraw) {
-                    clickPosTemp.set(clickPosTemp.x, clickPosTemp.y + towerVel.y, 0);
-                }
-                quokka.getPosition().y += towerVel.y;
-                towerVel.scl(1/dt);
-            }
-            else {
-                cam.position.x = quokka.getPosition().x + 80;
-                if(lineDraw) {
-                    clickPosTemp.set(clickPosTemp.x + quokka.getBottomLeft2().x - quokka.getBottomLeft().x, clickPosTemp.y, 0);
-                }
-            }
             if (moveWalls.size != 0) {
                 cam.position.y = quokka.getPosition().y;
                 if(lineDraw) {
@@ -913,9 +897,24 @@ public class PlayState extends State implements InputProcessor{
             if (planets.size == 0) {
                 quokka.getGravity().set(0, -13, 0);
             }
+            if(world == 3 && shouldFall){
+                towerVel.scl(dt);
+                cam.position.y += towerVel.y;
+                iniPot+= 13*towerVel.y;
+                if(lineDraw) {
+                    clickPosTemp.set(clickPosTemp.x, clickPosTemp.y + towerVel.y, 0);
+                }
+                towerVel.scl(1/dt);
+            }
+            else {
+                cam.position.x = quokka.getPosition().x + 80;
+                if(lineDraw) {
+                    clickPosTemp.set(clickPosTemp.x + quokka.getBottomLeft2().x - quokka.getBottomLeft().x, clickPosTemp.y, 0);
+                }
+            }
             if (shouldFall && !smallBounce) {
                 quokka.update(dt);
-            }
+            } //gohere
             for(Meteor meteor: meteors){
                 if(meteor.getPosMeteor().x < (cam.position.x * VIEWPORT_SCALER)) {
                     meteor.setStartFall(true);
@@ -1228,12 +1227,17 @@ public class PlayState extends State implements InputProcessor{
         switch(world){
             case 1:
                 switch(level){
-                    case 1:
+                    /*case 1:
                         levelBackground = new Texture("level1Background.png");
                         switches.add(new Obstacle(200, 100, "wallSwitch.png"));
                         walls.add(new Wall(400, -220, switches, -320));
                         walls.add(new Wall(400, 375, switches, 500));
                         happyCloud = new HappyCloud(10000,200);
+                        break;*/
+                    case 1:
+                        levelBackground = new Texture("level1Background.png");
+                        bonusQuokkas.add(new BonusQuokka(200, 400));
+                        happyCloud = new HappyCloud(500, 200);
                         break;
                     case 2:
                         levelBackground = new Texture("level2Background.png");
@@ -1244,13 +1248,26 @@ public class PlayState extends State implements InputProcessor{
                         break;
                     case 3:
                         levelBackground = new Texture("level3Background.png");
+                        clouds.add(new EvilCloud(350, 400));
+                        bonusQuokkas.add(new BonusQuokka(350, 50));
+                        happyCloud = new HappyCloud(750, 200);
+                        break;
+                    case 4:
+                        levelBackground = new Texture("level3Background.png");
                         walls.add(new Wall(350, -80, "wall.png"));
                         walls.add(new Wall(850, -230, "wall.png"));
                         clouds.add(new EvilCloud(1200, 460));
                         bonusQuokkas.add(new BonusQuokka(1200, 10));
                         happyCloud = new HappyCloud(500, 50);
                         break;
-                    case 4:
+                    case 5:
+                        levelBackground = new Texture("level3Background.png");
+                        clouds.add(new EvilCloud(200, 300));
+                        walls.add(new Wall(900, 450));
+                        clouds.add(new EvilCloud(1500, 150));
+                        happyCloud = new HappyCloud(1710,400);
+                        break;
+                    case 6:
                         levelBackground = new Texture("level1Background.png");
                         walls.add(new Wall(300,500, "wall.png"));
                         walls.add(new Wall(300, -380, "wall.png"));
@@ -1261,26 +1278,17 @@ public class PlayState extends State implements InputProcessor{
                         clouds.add(new EvilCloud(1300, 50));
                         happyCloud = new HappyCloud(1600, 300);
                         break;
-                    case 5:
+                    /*case 5:
                         levelBackground = new Texture("level2Background.png");
                         hawks.add(new Hawk(400,150));
                         happyCloud = new HappyCloud(850, 300);
-                        break;
-                    case 6:
+                        break;*/
+                    case 7:
                         levelBackground = new Texture("level3Background.png");
                         clouds.add(new EvilCloud(200, 50));
                         walls.add(new Wall (750, 300));
                         walls.add(new Wall(1150, -130));
                         happyCloud = new HappyCloud(1400, 200);
-                        break;
-                    case 7:
-                        levelBackground = new Texture("level1Background.png");
-                        clouds.add(new EvilCloud(250, 200));
-                        bonusQuokkas.add(new BonusQuokka(650, 0));
-                        walls.add(new Wall(900, -180));
-                        clouds.add(new EvilCloud(1050, 300));
-                        walls.add(new Wall(1500, 400));
-                        happyCloud = new HappyCloud(1700, 500);
                         break;
                     case 8:
                         levelBackground = new Texture("level2Background.png");
@@ -1291,6 +1299,15 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(1400, 5);
                         break;
                     case 9:
+                        levelBackground = new Texture("level1Background.png");
+                        clouds.add(new EvilCloud(250, 200));
+                        bonusQuokkas.add(new BonusQuokka(650, 0));
+                        walls.add(new Wall(900, -180));
+                        clouds.add(new EvilCloud(1050, 300));
+                        walls.add(new Wall(1500, 400));
+                        happyCloud = new HappyCloud(1700, 500);
+                        break;
+                    case 10:
                         levelBackground = new Texture("level1Background.png");
                         walls.add(new Wall(300,600, "wall.png"));
                         walls.add(new Wall(300, -280, "wall.png"));
@@ -1303,18 +1320,19 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(1700, -380, "wall.png"));
                         bonusQuokkas.add(new BonusQuokka(1900, 300));
                         break;
-                    case 10:
+                    /*case 10:
                         levelBackground = new Texture("level3Background.png");
                         arrows.add(new Arrow(100, 1100, true));
                         clouds.add(new EvilCloud(50, 1000));
                         happyCloud = new HappyCloud(50, 2000);
-                        break;
+                        break;*/
                 }
                 break;
             case 2:
                 switch(level) {
                     case 1:
                         levelBackground = new Texture("level1Background.png");
+                        walls.add(new Wall(700, 500, "horizontWall.png"));
                         happyCloud = new HappyCloud(10000,200);
                         break;
                     case 2:
@@ -1344,14 +1362,7 @@ public class PlayState extends State implements InputProcessor{
                 break;
             case 3:
                 switch(level){
-                    case 1:
-                        levelBackground = new Texture("level3Background.png");
-                        clouds.add(new EvilCloud(200, 300));
-                        walls.add(new Wall(900, 450));
-                        clouds.add(new EvilCloud(1500, 150));
-                        happyCloud = new HappyCloud(1710,400);
-                        break;
-                    case 2:
+                    /*case 2:
                         levelBackground = new Texture("level1Background.png");
                         walls.add(new Wall(300, -80));
                         clouds.add(new EvilCloud(450, 350));
@@ -1365,10 +1376,17 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(750,300, "wall.png"));
                         happyCloud = new HappyCloud(1250, 200);
                         break;
+                    */
+                    case 1:
+                        clouds.add(new EvilCloud(300,800));
+                        walls.add(new Wall(700, 1000, "horizontWall.png"));
+                        bonusQuokkas.add(new BonusQuokka(1000, 1300));
+                        happyCloud = new HappyCloud(300, 1400);
+                        break;
                 }
                 break;
         }
-        if(arrows.size > 0){
+        if(world == 3){
             for(int i = -220; i < happyCloud.getPosCloud().y; i+=595){
                 walls.add(new Wall(-30, i, "wall.png"));
                 walls.add(new Wall(cam.viewportWidth - 5, i, "wall.png"));
@@ -1396,7 +1414,7 @@ public class PlayState extends State implements InputProcessor{
                 levelBackgroundPos3.sub(levelBackground.getWidth()*2, 0);
             }
         }
-        if(moveWalls.size!=0 || arrows.size != 0){
+        if(moveWalls.size!=0 || world == 3){
             if(cam.position.y - (cam.viewportHeight / 2) > levelBackgroundPos1.y + levelBackground.getHeight()) {
                 levelBackgroundPos1.add(0, levelBackground.getHeight() * 2);
                 levelBackgroundPos2.add(0, levelBackground.getHeight() * 2);
