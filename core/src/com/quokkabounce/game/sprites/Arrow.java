@@ -34,6 +34,18 @@ public class Arrow {
         }
         arrowBounds = new Rectangle(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
     }
+    public Arrow(float x, float y) {
+        loopTime = 0;
+        t = 0;
+        arrowTexture = new Texture("wallSwitch.png");
+        alreadySpotted = false;
+        horizontal = true;
+        posArrow = new Vector2(x, y);
+        initialPos = new Vector2(x, y);
+        velArrow = new Vector2();
+        velArrow.set(HORIZONTALSPEED, 0);
+        arrowBounds = new Rectangle(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
+    }
 
     public Rectangle getArrowBounds() {
         return arrowBounds;

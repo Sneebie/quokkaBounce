@@ -31,6 +31,7 @@ import com.quokkabounce.game.sprites.Wall;
 
 public class PlayState extends State implements InputProcessor{
     private static final int HAWKSIGHT = 400;
+    private static final int ARROWHEIGHT = 125;
     private static final int GOODGRAV = -150000;
     private static final int PLANETSCALER = 30;
     private static final float DEPTHSCALER = 0.0001f;
@@ -342,7 +343,7 @@ public class PlayState extends State implements InputProcessor{
                     gsm.set(new PlayState(gsm, world, level));
                     break;
                 }
-                if (Math.sqrt(Math.pow(arrow.getArrowBounds().x + arrow.getArrowBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(arrow.getArrowBounds().y + arrow.getArrowBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT) {
+                if ((arrow.getArrowBounds().y + arrow.getArrowBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2) <= ARROWHEIGHT) {
                     arrow.move(true, dt, quokka.getPosition());
                 } else {
                     arrow.move(false, dt, quokka.getPosition());
@@ -1378,10 +1379,17 @@ public class PlayState extends State implements InputProcessor{
                         break;
                     */
                     case 1:
-                        clouds.add(new EvilCloud(300,800));
-                        walls.add(new Wall(700, 1000, "horizontWall.png"));
-                        bonusQuokkas.add(new BonusQuokka(1000, 1300));
-                        happyCloud = new HappyCloud(300, 1400);
+                        clouds.add(new EvilCloud(250,800));
+                        walls.add(new Wall(700, 1250, "horizontWall.png"));
+                        bonusQuokkas.add(new BonusQuokka(1000, 1550));
+                        happyCloud = new HappyCloud(300, 1650);
+                        break;
+                    case 2:
+                        arrows.add(new Arrow(50, 850));
+                        arrows.add(new Arrow(50, 1250));
+                        bonusQuokkas.add(new BonusQuokka(300, 1250));
+                        clouds.add(new EvilCloud(250, 1650));
+                        happyCloud = new HappyCloud(700,1800);
                         break;
                 }
                 break;
