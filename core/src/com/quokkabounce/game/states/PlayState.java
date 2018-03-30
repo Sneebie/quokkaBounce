@@ -939,10 +939,6 @@ public class PlayState extends State implements InputProcessor{
                             break;
                         }
                     }
-                    if((meteor.getPosMeteor().y + meteor.getTexture().getHeight()) < 0){
-                        meteor.setPosMeteor(meteor.getOriginalPos());
-                        meteor.setVelMeteor(meteor.getOriginalVel());
-                    }
                 }
             }
             for (EvilCloud cloud : clouds) {
@@ -1291,13 +1287,29 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(1150, -130));
                         happyCloud = new HappyCloud(1400, 200);
                         break;
-                    case 8:
+                    /*case 8:
                         levelBackground = new Texture("level2Background.png");
                         for(int i = 0; i < 10; i++){
                             walls.add(new Wall(400 + 123 * i, -280));
                             walls.add(new Wall(400 + 123 * i, 500));
                         }
                         happyCloud = new HappyCloud(1400, 5);
+                        break;
+
+                    case 8:
+                        levelBackground = new Texture("level1Background.png");
+                        walls.add(new Wall(300, -80));
+                        clouds.add(new EvilCloud(450, 350));
+                        clouds.add(new EvilCloud(1200, 350));
+                        happyCloud = new HappyCloud(1650, 150);
+                        break;
+                        */
+                    case 8:
+                        levelBackground = new Texture("level3Background.png");
+                        walls.add(new Wall(350, 300, "wall.png"));
+                        bonusQuokkas.add(new BonusQuokka(500, 400));
+                        walls.add(new Wall(750,300, "wall.png"));
+                        happyCloud = new HappyCloud(1250, 200);
                         break;
                     case 9:
                         levelBackground = new Texture("level1Background.png");
@@ -1331,7 +1343,7 @@ public class PlayState extends State implements InputProcessor{
                 break;
             case 2:
                 switch(level) {
-                    case 1:
+                    /*case 1:
                         levelBackground = new Texture("level1Background.png");
                         walls.add(new Wall(700, 500, "horizontWall.png"));
                         happyCloud = new HappyCloud(10000,200);
@@ -1358,26 +1370,36 @@ public class PlayState extends State implements InputProcessor{
                         vines.add(new Vine (900, 600, 0, 50));
                         layerVines.add(new Array<Vine>(vines));
                         happyCloud = new HappyCloud(1300, 6);
+                        break;*/
+                    case 1:
+                        walls.add(new Wall(500, 450));
+                        meteors.add(new Meteor(675, 780, 0, 0));
+                        clouds.add(new EvilCloud(900, 50));
+                        bonusQuokkas.add(new BonusQuokka(1200, 50));
+                        happyCloud = new HappyCloud(1550, 50);
+                        break;
+                    case 2:
+                        walls.add(new Wall(450, 380));
+                        switches.add(new Obstacle(650, 120, "wallSwitch.png"));
+                        walls.add(new Wall(450, -445, switches, -215));
+                        meteors.add(new Meteor(800, 780, 0, 0));
+                        walls.add(new Wall(900, -80));
+                        happyCloud = new HappyCloud(1200, 50);
+                        break;
+                    case 3:
+                        meteors.add(new Meteor(500, 780, 0, 0));
+                        clouds.add(new EvilCloud(675, 300));
+                        bonusQuokkas.add(new BonusQuokka(700, 450));
+                        meteors.add(new Meteor(1000, 780, 0, 0));
+                        clouds.add(new EvilCloud(1200, 600));
+                        clouds.add(new EvilCloud(1200, 50));
+                        meteors.add(new Meteor(1450, 780, 0, 0));
+                        happyCloud = new HappyCloud(1650, 300);
                         break;
                 }
                 break;
             case 3:
                 switch(level){
-                    /*case 2:
-                        levelBackground = new Texture("level1Background.png");
-                        walls.add(new Wall(300, -80));
-                        clouds.add(new EvilCloud(450, 350));
-                        clouds.add(new EvilCloud(1200, 350));
-                        happyCloud = new HappyCloud(1650, 150);
-                        break;
-                    case 3:
-                        levelBackground = new Texture("level3Background.png");
-                        walls.add(new Wall(350, 300, "wall.png"));
-                        bonusQuokkas.add(new BonusQuokka(500, 400));
-                        walls.add(new Wall(750,300, "wall.png"));
-                        happyCloud = new HappyCloud(1250, 200);
-                        break;
-                    */
                     case 1:
                         clouds.add(new EvilCloud(250,800));
                         walls.add(new Wall(700, 1250, "horizontWall.png"));
