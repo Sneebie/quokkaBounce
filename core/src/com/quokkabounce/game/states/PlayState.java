@@ -1391,6 +1391,16 @@ public class PlayState extends State implements InputProcessor{
                         clouds.add(new EvilCloud(250, 1650));
                         happyCloud = new HappyCloud(700,1800);
                         break;
+                    case 3:
+                        walls.add(new Wall(-50, 850, "horizontWall.png"));
+                        arrows.add(new Arrow (cam.viewportWidth - 50, 1250));
+                        arrows.add(new Arrow(50, 1650));
+                        arrows.add(new Arrow(cam.viewportWidth - 50, 2050));
+                        bonusQuokkas.add(new BonusQuokka(200, 1250));
+                        happyCloud = new HappyCloud(50, 2250);
+                        break;
+                    case 4:
+                        break;
                 }
                 break;
         }
