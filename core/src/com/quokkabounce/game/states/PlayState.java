@@ -240,8 +240,8 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                 if (outZone) {
-                    if(!justHit){
-                    quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    if(!justHit) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                 } else {
                     if(!smallMove) {
                         if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
@@ -955,25 +955,6 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
             }
-            if (nullZones.size > 0 && lineCheck) {
-                if (Math.abs(clickPos2.x - clickPos.x) < SHRINKRATE) {
-                    clickPos2.set(-100, -100, 0);
-                    clickPos.set(-100, -100, 0);
-                } else {
-                    double linAng = Math.atan((clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x));
-                    if (clickPos2.x > clickPos.x) {
-                        clickPos2.x -= SHRINKRATE * Math.cos(linAng);
-                        clickPos2.y -= SHRINKRATE * Math.sin(linAng);
-                        clickPos.x += SHRINKRATE * Math.cos(linAng);
-                        clickPos.y += SHRINKRATE * Math.sin(linAng);
-                    } else {
-                        clickPos2.x += SHRINKRATE * Math.cos(linAng);
-                        clickPos2.y += SHRINKRATE * Math.sin(linAng);
-                        clickPos.x -= SHRINKRATE * Math.cos(linAng);
-                        clickPos.y -= SHRINKRATE * Math.sin(linAng);
-                    }
-                }
-            }
             if (quokka.getPosition().y + quokka.getTexture().getHeight() <= cam.position.y - cam.viewportHeight / 2) {
                 if (moveWalls.size == 0) {
                     gsm.set(new PlayState(gsm, world, level));
@@ -1428,6 +1409,15 @@ public class PlayState extends State implements InputProcessor{
                         break;
                     case 4:
                         break;
+                }
+                break;
+            case 4:
+                switch(level){
+                    case 1:
+                        clouds.add(new EvilCloud(450, 500));
+                        clouds.add(new EvilCloud(450, 50));
+                        nullZones.add(new Obstacle(700, 0, "nullZone.png"));
+                        happyCloud = new HappyCloud(1000,50);
                 }
                 break;
         }
