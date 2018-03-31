@@ -51,7 +51,7 @@ public class PlayState extends State implements InputProcessor{
     private HappyCloud happyCloud;
     private float currentDT, iniPot, shortestDistance;
     private int layer, finalLayer;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide, shouldMove;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -116,6 +116,7 @@ public class PlayState extends State implements InputProcessor{
         shouldMove = false;
         justPaused = false;
         hasCollided = false;
+        hasEdgeCollided = false;
         smallMove = false;
         vineCheck = true;
         Gdx.input.setInputProcessor(this);
@@ -191,7 +192,7 @@ public class PlayState extends State implements InputProcessor{
             justHitTemp = false;
             if (lineCheck && !hitWall) {
                 outZone = false;
-                if(!justHit) {
+                if(!justHit && !hasEdgeCollided) {
                     if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
                         if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
                             outZone = true;
@@ -321,8 +322,10 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                 }
+                hasEdgeCollided = false;
                 if (outZone) {
                     quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    System.out.println("boing bong");
                     hasCollided = true;
                     justHitTemp = true;
                 }
@@ -336,11 +339,13 @@ public class PlayState extends State implements InputProcessor{
                                 shouldBounce = false;
                             }
                         }
-                        if(shouldBounce) {
+                        if(shouldBounce && !doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)) {
                             hasCollided = true;
+                            hasEdgeCollided = true;
                             tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2));
                             quokka.setPosition(quokka.getPosition().x, tempWall.y);
                             quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                            System.out.println("boing bong 2");
                         }
                     }
                     else if(doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2)){
@@ -350,11 +355,13 @@ public class PlayState extends State implements InputProcessor{
                                 shouldBounce = false;
                             }
                         }
-                        if(shouldBounce) {
+                        if(shouldBounce && !doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)) {
                             hasCollided = true;
+                            hasEdgeCollided = true;
                             tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2));
                             quokka.setPosition(quokka.getPosition().x, tempWall.y);
                             quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                            System.out.println("boing bong 3");
                         }
                     }
                     else if(doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2)){
@@ -366,9 +373,11 @@ public class PlayState extends State implements InputProcessor{
                         }
                         if(shouldBounce) {
                             hasCollided = true;
+                            hasEdgeCollided = true;
                             tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2));
                             quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
                             quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                            System.out.println("boing bong 4");
                         }
                     }
                     else if(doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)){
@@ -380,9 +389,11 @@ public class PlayState extends State implements InputProcessor{
                         }
                         if(shouldBounce) {
                             hasCollided = true;
+                            hasEdgeCollided = true;
                             tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2));
                             quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
                             quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                            System.out.println("boing bong 5");
                         }
                     }
                 }
@@ -1026,9 +1037,22 @@ public class PlayState extends State implements InputProcessor{
                             clickPos2.set(clickPos2.x, clickPos2.y- 10, 0);
                         }
                     }
-                    while (quokka.getQuokkaBounds().contains(clickPos.x, clickPos.y) && quokka.getQuokkaBounds().contains(clickPos2.x, clickPos2.y)) {
-                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                    while(doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2) && (doIntersect(quokka.getBottomLeft2(), quokka.getBottomRight2(), clickPos2d, clickPos2d2) || doIntersect(quokka.getBottomLeft2(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2) || doIntersect(quokka.getBottomRight2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))){
+                        System.out.println("zoing ZOING");
+                        if(quokka.getVelocity().x < 0) {
+                            clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                            clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                            clickPos2d.set(clickPos.x, clickPos.y);
+                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                        }
+                        else{
+                            clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                            clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                            clickPos2d.set(clickPos.x, clickPos.y);
+                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                        }
                     }
                 }
             }
