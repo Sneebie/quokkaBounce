@@ -188,12 +188,6 @@ public class PlayState extends State implements InputProcessor{
                     clickPosTemp.set(clickPosTemp.x, clickPosTemp.y + quokka.getBottomLeft2().y - quokka.getBottomLeft().y, 0);
                 }
             }
-            backButton.getPosButton().x = cam.position.x - 800;
-            pauseButton.getPosButton().x = cam.position.x - 800;
-            backButton.getPosButton().y = cam.position.y + 100;
-            pauseButton.getPosButton().y = cam.position.y - 200;
-            backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
-            pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             justHitTemp = false;
             if (lineCheck && !hitWall) {
                 outZone = false;
@@ -336,28 +330,60 @@ public class PlayState extends State implements InputProcessor{
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                     if(doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2)){
-                        hasCollided = true;
-                        tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2));
-                        quokka.setPosition(quokka.getPosition().x, tempWall.y);
-                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        boolean shouldBounce = true;
+                        for (Obstacle nullZone : nullZones) {
+                            if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2))) {
+                                shouldBounce = false;
+                            }
+                        }
+                        if(shouldBounce) {
+                            hasCollided = true;
+                            tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2));
+                            quokka.setPosition(quokka.getPosition().x, tempWall.y);
+                            quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        }
                     }
                     else if(doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2)){
-                        hasCollided = true;
-                        tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2));
-                        quokka.setPosition(quokka.getPosition().x, tempWall.y);
-                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        boolean shouldBounce = true;
+                        for (Obstacle nullZone : nullZones) {
+                            if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2))) {
+                                shouldBounce = false;
+                            }
+                        }
+                        if(shouldBounce) {
+                            hasCollided = true;
+                            tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2));
+                            quokka.setPosition(quokka.getPosition().x, tempWall.y);
+                            quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        }
                     }
                     else if(doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2)){
-                        hasCollided = true;
-                        tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2));
-                        quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
-                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        boolean shouldBounce = true;
+                        for (Obstacle nullZone : nullZones) {
+                            if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2))) {
+                                shouldBounce = false;
+                            }
+                        }
+                        if(shouldBounce) {
+                            hasCollided = true;
+                            tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2));
+                            quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                            quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        }
                     }
                     else if(doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)){
-                        hasCollided = true;
-                        tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2));
-                        quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
-                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        boolean shouldBounce = true;
+                        for (Obstacle nullZone : nullZones) {
+                            if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                                shouldBounce = false;
+                            }
+                        }
+                        if(shouldBounce) {
+                            hasCollided = true;
+                            tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2));
+                            quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                            quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                        }
                     }
                 }
                 justHit = justHitTemp;
@@ -977,6 +1003,12 @@ public class PlayState extends State implements InputProcessor{
                     clickPosTemp.set(clickPosTemp.x + quokka.getBottomLeft2().x - quokka.getBottomLeft().x, clickPosTemp.y, 0);
                 }
             }
+            backButton.getPosButton().x = cam.position.x - 800;
+            pauseButton.getPosButton().x = cam.position.x - 800;
+            backButton.getPosButton().y = cam.position.y + 100;
+            pauseButton.getPosButton().y = cam.position.y - 200;
+            backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
+            pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             if (shouldFall && !smallBounce) {
                 quokka.update(dt);
             } //gohere
