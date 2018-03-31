@@ -47,11 +47,19 @@ public class TallDino{
 
     public void move(float dt){
         velTallDino.scl(dt);
-        if(getPosTallDino().x < startPos){
-            dir = 1;
+        if(startPos < endPos) {
+            if (getPosTallDino().x < startPos) {
+                dir = 1;
+            } else if (getPosTallDino().x >= endPos) {
+                dir = -1;
+            }
         }
-        else if(getPosTallDino().x >= endPos){
-            dir = -1;
+        else{
+            if (getPosTallDino().x < endPos) {
+                dir = 1;
+            } else if (getPosTallDino().x >= startPos) {
+                dir = -1;
+            }
         }
         posTallDino.add(velTallDino.x * dir, velTallDino.y * dir);
         velTallDino.scl(1/dt);

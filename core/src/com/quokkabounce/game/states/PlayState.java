@@ -51,7 +51,7 @@ public class PlayState extends State implements InputProcessor{
     private HappyCloud happyCloud;
     private float currentDT, iniPot, shortestDistance;
     private int layer, finalLayer;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide, shouldMove;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -113,6 +113,7 @@ public class PlayState extends State implements InputProcessor{
         justPlanet = false;
         paused = false;
         smallBounce = false;
+        shouldMove = false;
         justPaused = false;
         hasCollided = false;
         smallMove = false;
@@ -320,77 +321,78 @@ public class PlayState extends State implements InputProcessor{
                 }
             }
             justHit = justHitTemp;
-            for (Hawk hawk : hawks) {
-                if (hawk.collides(quokka.getQuokkaBounds())) {
-                    gsm.set(new PlayState(gsm, world, level));
-                    break;
-                }
-                if (Math.sqrt(Math.pow(hawk.getHawkBounds().x + hawk.getHawkBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(hawk.getHawkBounds().y + hawk.getHawkBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT) {
-                    hawk.move(true, dt, quokka.getPosition());
-                } else {
-                    hawk.move(false, dt, quokka.getPosition());
-                }
-            }
-            for(TallDino tallDino : tallDinos) {
-                if (tallDino.collides(quokka.getQuokkaBounds())) {
-                    gsm.set(new PlayState(gsm, world, level));
-                    break;
-                }
-                tallDino.move(dt);
-            }
-            for(Arrow arrow: arrows){
-                if(arrow.collides(quokka.getQuokkaBounds())){
-                    gsm.set(new PlayState(gsm, world, level));
-                    break;
-                }
-                if ((arrow.getArrowBounds().y + arrow.getArrowBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2) <= ARROWHEIGHT) {
-                    arrow.move(true, dt, quokka.getPosition());
-                } else {
-                    arrow.move(false, dt, quokka.getPosition());
-                }
-            }
-            firstSide = true;
-            hitWall = false;
-            for (Wall wall : walls) {
-                if (wall.hasSwitch()) {
-                    for (Obstacle wallSwitch : wall.getWallSwitches()) {
-                        if (wallSwitch.collides(quokka.getQuokkaBounds())) {
-                            for(int i = 0; i < walls.size; i++) {
-                                if(walls.get(i).getWallSwitches()!=null) {
-                                    if (walls.get(i).getWallSwitches().contains(wallSwitch, true)) {
-                                        walls.get(i).setMoveWall(true);
-                                    }
-                                }
-                            }
-                            switches.removeIndex(switches.indexOf(wallSwitch, false));
-                            wallSwitch.dispose();
-                        }
+            if(shouldMove) {
+                for (Hawk hawk : hawks) {
+                    if (hawk.collides(quokka.getQuokkaBounds())) {
+                        gsm.set(new PlayState(gsm, world, level));
+                        break;
+                    }
+                    if (Math.sqrt(Math.pow(hawk.getHawkBounds().x + hawk.getHawkBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(hawk.getHawkBounds().y + hawk.getHawkBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT) {
+                        hawk.move(true, dt, quokka.getPosition());
+                    } else {
+                        hawk.move(false, dt, quokka.getPosition());
                     }
                 }
-                if(wall.isMoveWall() && (Math.abs(wall.getWallMove() - wall.getPosWall().y) > 0)){
-                    wall.setPosWall(wall.getPosWall().x, wall.getPosWall().y + (wall.getWallMove() - wall.getPosWall().y) / WALLSPEED);
-                    wall.setWallBounds(wall.getPosWall().x, wall.getPosWall().y, wall.getTexture().getWidth(), wall.getTexture().getHeight());
+                for (TallDino tallDino : tallDinos) {
+                    if (tallDino.collides(quokka.getQuokkaBounds())) {
+                        gsm.set(new PlayState(gsm, world, level));
+                        break;
+                    }
+                    tallDino.move(dt);
                 }
-                hitBottom[0] = false;
-                hitBottom[1] = false;
-                hitTop[0] = false;
-                hitTop[1] = false;
-                hitLeft[0] = false;
-                hitLeft[1] = false;
-                hitRight[0] = false;
-                hitRight[1] = false;
+                for (Arrow arrow : arrows) {
+                    if (arrow.collides(quokka.getQuokkaBounds())) {
+                        gsm.set(new PlayState(gsm, world, level));
+                        break;
+                    }
+                    if ((arrow.getArrowBounds().y + arrow.getArrowBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2) <= ARROWHEIGHT) {
+                        arrow.move(true, dt, quokka.getPosition());
+                    } else {
+                        arrow.move(false, dt, quokka.getPosition());
+                    }
+                }
+                firstSide = true;
+                hitWall = false;
+                for (Wall wall : walls) {
+                    if (wall.hasSwitch()) {
+                        for (Obstacle wallSwitch : wall.getWallSwitches()) {
+                            if (wallSwitch.collides(quokka.getQuokkaBounds())) {
+                                for (int i = 0; i < walls.size; i++) {
+                                    if (walls.get(i).getWallSwitches() != null) {
+                                        if (walls.get(i).getWallSwitches().contains(wallSwitch, true)) {
+                                            walls.get(i).setMoveWall(true);
+                                        }
+                                    }
+                                }
+                                switches.removeIndex(switches.indexOf(wallSwitch, false));
+                                wallSwitch.dispose();
+                            }
+                        }
+                    }
+                    if (wall.isMoveWall() && (Math.abs(wall.getWallMove() - wall.getPosWall().y) > 0)) {
+                        wall.setPosWall(wall.getPosWall().x, wall.getPosWall().y + (wall.getWallMove() - wall.getPosWall().y) / WALLSPEED);
+                        wall.setWallBounds(wall.getPosWall().x, wall.getPosWall().y, wall.getTexture().getWidth(), wall.getTexture().getHeight());
+                    }
+                    hitBottom[0] = false;
+                    hitBottom[1] = false;
+                    hitTop[0] = false;
+                    hitTop[1] = false;
+                    hitLeft[0] = false;
+                    hitLeft[1] = false;
+                    hitRight[0] = false;
+                    hitRight[1] = false;
                     if (wall.collides(quokka.getQuokkaBounds())) {
-                            Vector3 tempVelocity = new Vector3();
-                            tempVelocity.set(quokka.getVelocity());
-                            tempVelocity.scl(dt);
-                            if (doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr())) {
-                                hitWall = true;
-                                hitBottom[0] = true;
-                            }
-                            if (doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr())) {
-                                hitWall = true;
-                                hitBottom[1] = true;
-                            }
+                        Vector3 tempVelocity = new Vector3();
+                        tempVelocity.set(quokka.getVelocity());
+                        tempVelocity.scl(dt);
+                        if (doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr())) {
+                            hitWall = true;
+                            hitBottom[0] = true;
+                        }
+                        if (doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr())) {
+                            hitWall = true;
+                            hitBottom[1] = true;
+                        }
                         if (doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr())) {
                             hitWall = true;
                             hitTop[0] = true;
@@ -399,7 +401,7 @@ public class PlayState extends State implements InputProcessor{
                             hitWall = true;
                             hitTop[1] = true;
                         }
-                        if(!(hitBottom[0] && hitBottom[1]) && !(hitTop[0] && hitTop[1])) {
+                        if (!(hitBottom[0] && hitBottom[1]) && !(hitTop[0] && hitTop[1])) {
                             if (doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl())) {
                                 hitWall = true;
                                 hitLeft[0] = true;
@@ -417,544 +419,526 @@ public class PlayState extends State implements InputProcessor{
                                 hitRight[1] = true;
                             }
                         }
-                        if((hitLeft[0] && hitLeft[1]) || (hitRight[0] && hitRight[1])){
+                        if ((hitLeft[0] && hitLeft[1]) || (hitRight[0] && hitRight[1])) {
                             hitBottom[0] = false;
                             hitBottom[1] = false;
                             hitTop[0] = false;
                             hitTop[1] = false;
                         }
-                            for(int i =0; i<2; i++){
-                                if(hitBottom[i]){
-                                    if(firstSide){
-                                        firstSide = false;
-                                        if(i==0){
+                        for (int i = 0; i < 2; i++) {
+                            if (hitBottom[i]) {
+                                if (firstSide) {
+                                    firstSide = false;
+                                    if (i == 0) {
+                                        shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr()));
+                                        hitCorner = "topLeft";
+                                        hitSide[0] = wall.getBl();
+                                        hitSide[1] = wall.getBr();
+                                    } else if (i == 1) {
+                                        shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr()));
+                                        hitCorner = "topRight";
+                                        hitSide[0] = wall.getBl();
+                                        hitSide[1] = wall.getBr();
+                                    }
+                                } else {
+                                    if (i == 0) {
+                                        if (distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr())) < shortestDistance) {
                                             shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr()));
                                             hitCorner = "topLeft";
                                             hitSide[0] = wall.getBl();
                                             hitSide[1] = wall.getBr();
                                         }
-                                        else if(i==1){
+                                    } else if (i == 1) {
+                                        if (distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr())) < shortestDistance) {
                                             shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr()));
                                             hitCorner = "topRight";
                                             hitSide[0] = wall.getBl();
                                             hitSide[1] = wall.getBr();
                                         }
                                     }
-                                    else{
-                                        if(i==0){
-                                            if(distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr())) < shortestDistance) {
-                                                shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBl(), wall.getBr()));
-                                                hitCorner = "topLeft";
-                                                hitSide[0] = wall.getBl();
-                                                hitSide[1] = wall.getBr();
-                                            }
-                                        }
-                                        else if(i==1){
-                                            if(distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr())) < shortestDistance) {
-                                                shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getBr()));
-                                                hitCorner = "topRight";
-                                                hitSide[0] = wall.getBl();
-                                                hitSide[1] = wall.getBr();
-                                            }
-                                        }
-                                    }
                                 }
-                                if(hitLeft[i]){
-                                    if(firstSide){
-                                        firstSide = false;
-                                        if (i==0){
+                            }
+                            if (hitLeft[i]) {
+                                if (firstSide) {
+                                    firstSide = false;
+                                    if (i == 0) {
+                                        shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl()));
+                                        hitCorner = "bottomRight";
+                                        hitSide[0] = wall.getBl();
+                                        hitSide[1] = wall.getUl();
+                                    } else if (i == 1) {
+                                        shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getUl()));
+                                        hitCorner = "topRight";
+                                        hitSide[0] = wall.getBl();
+                                        hitSide[1] = wall.getUl();
+                                    }
+                                } else {
+                                    if (i == 0) {
+                                        if (distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl())) < shortestDistance) {
                                             shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl()));
                                             hitCorner = "bottomRight";
                                             hitSide[0] = wall.getBl();
                                             hitSide[1] = wall.getUl();
                                         }
-                                        else if(i==1){
+                                    } else if (i == 1) {
+                                        if (distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getUl())) < shortestDistance) {
                                             shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getUl()));
                                             hitCorner = "topRight";
                                             hitSide[0] = wall.getBl();
                                             hitSide[1] = wall.getUl();
                                         }
                                     }
-                                    else{
-                                        if (i==0){
-                                            if(distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl())) < shortestDistance) {
-                                                shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getBl(), wall.getUl()));
-                                                hitCorner = "bottomRight";
-                                                hitSide[0] = wall.getBl();
-                                                hitSide[1] = wall.getUl();
-                                            }
-                                        }
-                                        else if(i==1){
-                                            if(distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getUl())) < shortestDistance) {
-                                                shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), wall.getBl(), wall.getUl()));
-                                                hitCorner = "topRight";
-                                                hitSide[0] = wall.getBl();
-                                                hitSide[1] = wall.getUl();
-                                            }
-                                        }
-                                    }
                                 }
-                                if(hitTop[i]){
-                                    if(firstSide){
-                                        firstSide = false;
-                                        if(i==0) {
+                            }
+                            if (hitTop[i]) {
+                                if (firstSide) {
+                                    firstSide = false;
+                                    if (i == 0) {
+                                        shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr()));
+                                        hitCorner = "bottomLeft";
+                                        hitSide[0] = wall.getUl();
+                                        hitSide[1] = wall.getUr();
+                                    } else if (i == 1) {
+                                        shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getUl(), wall.getUr()));
+                                        hitCorner = "bottomRight";
+                                        hitSide[0] = wall.getUl();
+                                        hitSide[1] = wall.getUr();
+                                    }
+                                } else {
+                                    if (i == 0) {
+                                        if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr())) < shortestDistance) {
                                             shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr()));
                                             hitCorner = "bottomLeft";
                                             hitSide[0] = wall.getUl();
                                             hitSide[1] = wall.getUr();
                                         }
-                                        else if (i==1){
+                                    } else if (i == 1) {
+                                        if (distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getUl(), wall.getUr())) < shortestDistance) {
                                             shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getUl(), wall.getUr()));
                                             hitCorner = "bottomRight";
                                             hitSide[0] = wall.getUl();
                                             hitSide[1] = wall.getUr();
                                         }
                                     }
-                                    else{
-                                        if(i==0) {
-                                            if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr())) < shortestDistance) {
-                                                shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getUl(), wall.getUr()));
-                                                hitCorner = "bottomLeft";
-                                                hitSide[0] = wall.getUl();
-                                                hitSide[1] = wall.getUr();
-                                            }
-                                        }
-                                        else if (i==1){
-                                            if(distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getUl(), wall.getUr())) < shortestDistance) {
-                                                shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), wall.getUl(), wall.getUr()));
-                                                hitCorner = "bottomRight";
-                                                hitSide[0] = wall.getUl();
-                                                hitSide[1] = wall.getUr();
-                                            }
-                                        }
-                                    }
                                 }
-                                if(hitRight[i]){
-                                    if(firstSide){
-                                        firstSide = false;
-                                        if(i==0) {
+                            }
+                            if (hitRight[i]) {
+                                if (firstSide) {
+                                    firstSide = false;
+                                    if (i == 0) {
+                                        shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getBr(), wall.getUr()));
+                                        hitCorner = "bottomLeft";
+                                        hitSide[0] = wall.getBr();
+                                        hitSide[1] = wall.getUr();
+                                    } else if (i == 1) {
+                                        shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBr(), wall.getUr()));
+                                        hitCorner = "topLeft";
+                                        hitSide[0] = wall.getBr();
+                                        hitSide[1] = wall.getUr();
+                                    }
+                                } else {
+                                    if (i == 0) {
+                                        if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getBr(), wall.getUr())) < shortestDistance) {
                                             shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getBr(), wall.getUr()));
                                             hitCorner = "bottomLeft";
                                             hitSide[0] = wall.getBr();
                                             hitSide[1] = wall.getUr();
                                         }
-                                        else if(i==1){
+                                    } else if (i == 1) {
+                                        if (distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBr(), wall.getUr())) < shortestDistance) {
                                             shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBr(), wall.getUr()));
                                             hitCorner = "topLeft";
                                             hitSide[0] = wall.getBr();
                                             hitSide[1] = wall.getUr();
                                         }
                                     }
-                                    else{
-                                        if(i==0) {
-                                            if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getBr(), wall.getUr())) < shortestDistance) {
-                                                shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), wall.getBr(), wall.getUr()));
-                                                hitCorner = "bottomLeft";
-                                                hitSide[0] = wall.getBr();
-                                                hitSide[1] = wall.getUr();
-                                            }
-                                        }
-                                        else if(i==1){
-                                            if(distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBr(), wall.getUr())) < shortestDistance) {
-                                                shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), wall.getBr(), wall.getUr()));
-                                                hitCorner = "topLeft";
-                                                hitSide[0] = wall.getBr();
-                                                hitSide[1] = wall.getUr();
-                                            }
-                                        }
-                                    }
                                 }
                             }
                         }
-            }// wall loop
-            if(walls.size > 0 && hitWall){
-                if(hitCorner.equals("topLeft")){
-                    tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), hitSide[0], hitSide[1]));
-                    quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                    }
+                }// wall loop
+                if (walls.size > 0 && hitWall) {
+                    if (hitCorner.equals("topLeft")) {
+                        tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), hitSide[0], hitSide[1]));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                    } else if (hitCorner.equals("topRight")) {
+                        tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), hitSide[0], hitSide[1]));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                    } else if (hitCorner.equals("bottomRight")) {
+                        tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), hitSide[0], hitSide[1]));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y);
+                    } else if (hitCorner.equals("bottomLeft")) {
+                        tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), hitSide[0], hitSide[1]));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y);
+                    }
+                    quokka.setVelocity(resultVector(quokka.getVelocity(), hitSide[0], hitSide[1]));
                 }
-                else if(hitCorner.equals("topRight")){
-                    tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), hitSide[0], hitSide[1]));
-                    quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
-                }
-                else if(hitCorner.equals("bottomRight")){
-                    tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), hitSide[0], hitSide[1]));
-                    quokka.setPosition(quokka.getPosition().x, tempWall.y);
-                }
-                else if(hitCorner.equals("bottomLeft")){
-                    tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), hitSide[0], hitSide[1]));
-                    quokka.setPosition(quokka.getPosition().x, tempWall.y);
-                }
-                quokka.setVelocity(resultVector(quokka.getVelocity(), hitSide[0], hitSide[1]));
-            }
-            for (MoveWall moveWall : moveWalls) {
-                if (moveWall.collides(quokka.getQuokkaBounds())) {
-                    if (!touchingWall) {
-                        touchingWall = true;
+                for (MoveWall moveWall : moveWalls) {
+                    if (moveWall.collides(quokka.getQuokkaBounds())) {
+                        if (!touchingWall) {
+                            touchingWall = true;
+                            Vector3 tempVelocity = new Vector3();
+                            tempVelocity.set(quokka.getVelocity());
+                            tempVelocity.scl(dt);
+                            if (quokka.getQuokkaBounds().x + quokka.getTexture().getWidth() - tempVelocity.x < moveWall.getWallBounds().getX()) {
+                                quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0))));
+                            } else if (quokka.getQuokkaBounds().x - tempVelocity.x > moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth()) {
+                                quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0))));
+                            } else if (quokka.getQuokkaBounds().y + quokka.getQuokkaBounds().getHeight() - tempVelocity.y < moveWall.getWallBounds().getY()) {
+                                quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY(), 0))));
+                            } else {
+                                quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0), new Vector3(moveWall.getWallBounds().getX() + moveWall.getWallBounds().getWidth(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0)));
+                            }
+                        }
+                    } else {
+                        touchingWall = false;
+                    }
+                    hitBottom[0] = false;
+                    hitBottom[1] = false;
+                    hitTop[0] = false;
+                    hitTop[1] = false;
+                    hitLeft[0] = false;
+                    hitLeft[1] = false;
+                    hitRight[0] = false;
+                    hitRight[1] = false;
+                    if (moveWall.collides(quokka.getQuokkaBounds())) {
                         Vector3 tempVelocity = new Vector3();
                         tempVelocity.set(quokka.getVelocity());
                         tempVelocity.scl(dt);
-                        if (quokka.getQuokkaBounds().x + quokka.getTexture().getWidth() - tempVelocity.x < moveWall.getWallBounds().getX()) {
-                            quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0))));
-                        } else if (quokka.getQuokkaBounds().x - tempVelocity.x > moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth()) {
-                            quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0))));
-                        } else if (quokka.getQuokkaBounds().y + quokka.getQuokkaBounds().getHeight() - tempVelocity.y < moveWall.getWallBounds().getY()) {
-                            quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY(), 0), new Vector3(new Vector3(moveWall.getWallBounds().getX() + moveWall.getTexture().getWidth(), moveWall.getWallBounds().getY(), 0))));
-                        } else {
-                            quokka.setVelocity(resultVector(quokka.getVelocity(), new Vector3(moveWall.getWallBounds().getX(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0), new Vector3(moveWall.getWallBounds().getX() + moveWall.getWallBounds().getWidth(), moveWall.getWallBounds().getY() + moveWall.getWallBounds().getHeight(), 0)));
-                        }
-                    }
-                } else {
-                    touchingWall = false;
-                }
-                hitBottom[0] = false;
-                hitBottom[1] = false;
-                hitTop[0] = false;
-                hitTop[1] = false;
-                hitLeft[0] = false;
-                hitLeft[1] = false;
-                hitRight[0] = false;
-                hitRight[1] = false;
-                if (moveWall.collides(quokka.getQuokkaBounds())) {
-                    Vector3 tempVelocity = new Vector3();
-                    tempVelocity.set(quokka.getVelocity());
-                    tempVelocity.scl(dt);
-                    if (doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBl(), moveWall.getBr())) {
-                        hitWall = true;
-                        hitBottom[0] = true;
-                    }
-                    if (doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getBr())) {
-                        hitWall = true;
-                        hitBottom[1] = true;
-                    }
-                    if (doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getUl(), moveWall.getUr())) {
-                        hitWall = true;
-                        hitTop[0] = true;
-                    }
-                    if (doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getUl(), moveWall.getUr())) {
-                        hitWall = true;
-                        hitTop[1] = true;
-                    }
-                    if (!(hitBottom[0] && hitBottom[1]) && !(hitTop[0] && hitTop[1])) {
-                        if (doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getBl(), moveWall.getUl())) {
+                        if (doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBl(), moveWall.getBr())) {
                             hitWall = true;
-                            hitLeft[0] = true;
+                            hitBottom[0] = true;
                         }
-                        if (doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getUl())) {
+                        if (doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getBr())) {
                             hitWall = true;
-                            hitLeft[1] = true;
+                            hitBottom[1] = true;
                         }
-                        if (doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getBr(), moveWall.getUr())) {
+                        if (doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getUl(), moveWall.getUr())) {
                             hitWall = true;
-                            hitRight[0] = true;
+                            hitTop[0] = true;
                         }
-                        if (doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBr(), moveWall.getUr())) {
+                        if (doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getUl(), moveWall.getUr())) {
                             hitWall = true;
-                            hitRight[1] = true;
+                            hitTop[1] = true;
                         }
-                    }
-                    if ((hitLeft[0] && hitLeft[1]) || (hitRight[0] && hitRight[1])) {
-                        hitBottom[0] = false;
-                        hitBottom[1] = false;
-                        hitTop[0] = false;
-                        hitTop[1] = false;
-                    }
-                    for (int i = 0; i < 2; i++) {
-                        if (hitBottom[i]) {
-                            if (firstSide) {
-                                firstSide = false;
-                                if (i == 0) {
-                                    shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBl(), moveWall.getBr()));
-                                    hitCorner = "topLeft";
-                                    hitSide[0] = moveWall.getBl();
-                                    hitSide[1] = moveWall.getBr();
-                                } else if (i == 1) {
-                                    shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getBr()));
-                                    hitCorner = "topRight";
-                                    hitSide[0] = moveWall.getBl();
-                                    hitSide[1] = moveWall.getBr();
-                                }
-                            } else {
-                                if (i == 0) {
-                                    if (distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBl(), moveWall.getBr())) < shortestDistance) {
+                        if (!(hitBottom[0] && hitBottom[1]) && !(hitTop[0] && hitTop[1])) {
+                            if (doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getBl(), moveWall.getUl())) {
+                                hitWall = true;
+                                hitLeft[0] = true;
+                            }
+                            if (doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getUl())) {
+                                hitWall = true;
+                                hitLeft[1] = true;
+                            }
+                            if (doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getBr(), moveWall.getUr())) {
+                                hitWall = true;
+                                hitRight[0] = true;
+                            }
+                            if (doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBr(), moveWall.getUr())) {
+                                hitWall = true;
+                                hitRight[1] = true;
+                            }
+                        }
+                        if ((hitLeft[0] && hitLeft[1]) || (hitRight[0] && hitRight[1])) {
+                            hitBottom[0] = false;
+                            hitBottom[1] = false;
+                            hitTop[0] = false;
+                            hitTop[1] = false;
+                        }
+                        for (int i = 0; i < 2; i++) {
+                            if (hitBottom[i]) {
+                                if (firstSide) {
+                                    firstSide = false;
+                                    if (i == 0) {
                                         shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBl(), moveWall.getBr()));
                                         hitCorner = "topLeft";
                                         hitSide[0] = moveWall.getBl();
                                         hitSide[1] = moveWall.getBr();
-                                    }
-                                } else if (i == 1) {
-                                    if (distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getBr())) < shortestDistance) {
+                                    } else if (i == 1) {
                                         shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getBr()));
                                         hitCorner = "topRight";
                                         hitSide[0] = moveWall.getBl();
                                         hitSide[1] = moveWall.getBr();
                                     }
+                                } else {
+                                    if (i == 0) {
+                                        if (distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBl(), moveWall.getBr())) < shortestDistance) {
+                                            shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBl(), moveWall.getBr()));
+                                            hitCorner = "topLeft";
+                                            hitSide[0] = moveWall.getBl();
+                                            hitSide[1] = moveWall.getBr();
+                                        }
+                                    } else if (i == 1) {
+                                        if (distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getBr())) < shortestDistance) {
+                                            shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getBr()));
+                                            hitCorner = "topRight";
+                                            hitSide[0] = moveWall.getBl();
+                                            hitSide[1] = moveWall.getBr();
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        if (hitLeft[i]) {
-                            if (firstSide) {
-                                firstSide = false;
-                                if (i == 0) {
-                                    shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getBl(), moveWall.getUl()));
-                                    hitCorner = "bottomRight";
-                                    hitSide[0] = moveWall.getBl();
-                                    hitSide[1] = moveWall.getUl();
-                                } else if (i == 1) {
-                                    shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getUl()));
-                                    hitCorner = "topRight";
-                                    hitSide[0] = moveWall.getBl();
-                                    hitSide[1] = moveWall.getUl();
-                                }
-                            } else {
-                                if (i == 0) {
-                                    if (distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getBl(), moveWall.getUl())) < shortestDistance) {
+                            if (hitLeft[i]) {
+                                if (firstSide) {
+                                    firstSide = false;
+                                    if (i == 0) {
                                         shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getBl(), moveWall.getUl()));
                                         hitCorner = "bottomRight";
                                         hitSide[0] = moveWall.getBl();
                                         hitSide[1] = moveWall.getUl();
-                                    }
-                                } else if (i == 1) {
-                                    if (distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getUl())) < shortestDistance) {
+                                    } else if (i == 1) {
                                         shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getUl()));
                                         hitCorner = "topRight";
                                         hitSide[0] = moveWall.getBl();
                                         hitSide[1] = moveWall.getUl();
                                     }
+                                } else {
+                                    if (i == 0) {
+                                        if (distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getBl(), moveWall.getUl())) < shortestDistance) {
+                                            shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getBl(), moveWall.getUl()));
+                                            hitCorner = "bottomRight";
+                                            hitSide[0] = moveWall.getBl();
+                                            hitSide[1] = moveWall.getUl();
+                                        }
+                                    } else if (i == 1) {
+                                        if (distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getUl())) < shortestDistance) {
+                                            shortestDistance = (float) distance(quokka.getUpperRight(), intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), moveWall.getBl(), moveWall.getUl()));
+                                            hitCorner = "topRight";
+                                            hitSide[0] = moveWall.getBl();
+                                            hitSide[1] = moveWall.getUl();
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        if (hitTop[i]) {
-                            if (firstSide) {
-                                firstSide = false;
-                                if (i == 0) {
-                                    shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getUl(), moveWall.getUr()));
-                                    hitCorner = "bottomLeft";
-                                    hitSide[0] = moveWall.getUl();
-                                    hitSide[1] = moveWall.getUr();
-                                } else if (i == 1) {
-                                    shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getUl(), moveWall.getUr()));
-                                    hitCorner = "bottomRight";
-                                    hitSide[0] = moveWall.getUl();
-                                    hitSide[1] = moveWall.getUr();
-                                }
-                            } else {
-                                if (i == 0) {
-                                    if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getUl(), moveWall.getUr())) < shortestDistance) {
+                            if (hitTop[i]) {
+                                if (firstSide) {
+                                    firstSide = false;
+                                    if (i == 0) {
                                         shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getUl(), moveWall.getUr()));
                                         hitCorner = "bottomLeft";
                                         hitSide[0] = moveWall.getUl();
                                         hitSide[1] = moveWall.getUr();
-                                    }
-                                } else if (i == 1) {
-                                    if (distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getUl(), moveWall.getUr())) < shortestDistance) {
+                                    } else if (i == 1) {
                                         shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getUl(), moveWall.getUr()));
                                         hitCorner = "bottomRight";
                                         hitSide[0] = moveWall.getUl();
                                         hitSide[1] = moveWall.getUr();
                                     }
+                                } else {
+                                    if (i == 0) {
+                                        if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getUl(), moveWall.getUr())) < shortestDistance) {
+                                            shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getUl(), moveWall.getUr()));
+                                            hitCorner = "bottomLeft";
+                                            hitSide[0] = moveWall.getUl();
+                                            hitSide[1] = moveWall.getUr();
+                                        }
+                                    } else if (i == 1) {
+                                        if (distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getUl(), moveWall.getUr())) < shortestDistance) {
+                                            shortestDistance = (float) distance(quokka.getBottomRight(), intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), moveWall.getUl(), moveWall.getUr()));
+                                            hitCorner = "bottomRight";
+                                            hitSide[0] = moveWall.getUl();
+                                            hitSide[1] = moveWall.getUr();
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        if (hitRight[i]) {
-                            if (firstSide) {
-                                firstSide = false;
-                                if (i == 0) {
-                                    shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getBr(), moveWall.getUr()));
-                                    hitCorner = "bottomLeft";
-                                    hitSide[0] = moveWall.getBr();
-                                    hitSide[1] = moveWall.getUr();
-                                } else if (i == 1) {
-                                    shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBr(), moveWall.getUr()));
-                                    hitCorner = "topLeft";
-                                    hitSide[0] = moveWall.getBr();
-                                    hitSide[1] = moveWall.getUr();
-                                }
-                            } else {
-                                if (i == 0) {
-                                    if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getBr(), moveWall.getUr())) < shortestDistance) {
+                            if (hitRight[i]) {
+                                if (firstSide) {
+                                    firstSide = false;
+                                    if (i == 0) {
                                         shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getBr(), moveWall.getUr()));
                                         hitCorner = "bottomLeft";
                                         hitSide[0] = moveWall.getBr();
                                         hitSide[1] = moveWall.getUr();
-                                    }
-                                } else if (i == 1) {
-                                    if (distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBr(), moveWall.getUr())) < shortestDistance) {
+                                    } else if (i == 1) {
                                         shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBr(), moveWall.getUr()));
                                         hitCorner = "topLeft";
                                         hitSide[0] = moveWall.getBr();
                                         hitSide[1] = moveWall.getUr();
                                     }
+                                } else {
+                                    if (i == 0) {
+                                        if (distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getBr(), moveWall.getUr())) < shortestDistance) {
+                                            shortestDistance = (float) distance(quokka.getBottomLeft(), intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), moveWall.getBr(), moveWall.getUr()));
+                                            hitCorner = "bottomLeft";
+                                            hitSide[0] = moveWall.getBr();
+                                            hitSide[1] = moveWall.getUr();
+                                        }
+                                    } else if (i == 1) {
+                                        if (distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBr(), moveWall.getUr())) < shortestDistance) {
+                                            shortestDistance = (float) distance(quokka.getUpperLeft(), intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), moveWall.getBr(), moveWall.getUr()));
+                                            hitCorner = "topLeft";
+                                            hitSide[0] = moveWall.getBr();
+                                            hitSide[1] = moveWall.getUr();
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            // wall loop
-            if(moveWalls.size > 0 && hitWall){
-                if(hitCorner.equals("topLeft")){
-                    tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), hitSide[0], hitSide[1]));
-                    quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
-                }
-                else if(hitCorner.equals("topRight")){
-                    tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), hitSide[0], hitSide[1]));
-                    quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
-                }
-                else if(hitCorner.equals("bottomRight")){
-                    tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), hitSide[0], hitSide[1]));
-                    quokka.setPosition(quokka.getPosition().x, tempWall.y);
-                }
-                else if(hitCorner.equals("bottomLeft")){
-                    tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), hitSide[0], hitSide[1]));
-                    quokka.setPosition(quokka.getPosition().x, tempWall.y);
-                }
-                quokka.setVelocity(resultVector(quokka.getVelocity(), hitSide[0], hitSide[1]));
-            }
-            justPlanetTemp = false;
-            quokka.getGravity().set(0, 0, 0);
-            for (Obstacle planet : planets) {
-                if (planet.collides(quokka.getQuokkaBounds())) {
-                    circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
-                    adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
-                    quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
-                    planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
-                    if (0 < planetProj.x && planetProj.x < quokka.getQuokkaBounds().getWidth()) {
-                        intersectionPoint.set(planetProj.x, planetProj.y);
-                    } else if (Math.abs(planetProj.x - quokka.getQuokkaBounds().getWidth()) < Math.abs(planetProj.x)) {
-                        intersectionPoint.set(quokka.getQuokkaBounds().getWidth(), 0);
-                    } else {
-                        intersectionPoint.set(0, 0);
+                // wall loop
+                if (moveWalls.size > 0 && hitWall) {
+                    if (hitCorner.equals("topLeft")) {
+                        tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), hitSide[0], hitSide[1]));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                    } else if (hitCorner.equals("topRight")) {
+                        tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), hitSide[0], hitSide[1]));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
+                    } else if (hitCorner.equals("bottomRight")) {
+                        tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), hitSide[0], hitSide[1]));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y);
+                    } else if (hitCorner.equals("bottomLeft")) {
+                        tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), hitSide[0], hitSide[1]));
+                        quokka.setPosition(quokka.getPosition().x, tempWall.y);
                     }
-                    intersectionPoint.add(quokka.getPosition().x, quokka.getPosition().y);
+                    quokka.setVelocity(resultVector(quokka.getVelocity(), hitSide[0], hitSide[1]));
+                }
+                justPlanetTemp = false;
+                quokka.getGravity().set(0, 0, 0);
+                for (Obstacle planet : planets) {
+                    if (planet.collides(quokka.getQuokkaBounds())) {
+                        circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
+                        adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
+                        quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
+                        planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
+                        if (0 < planetProj.x && planetProj.x < quokka.getQuokkaBounds().getWidth()) {
+                            intersectionPoint.set(planetProj.x, planetProj.y);
+                        } else if (Math.abs(planetProj.x - quokka.getQuokkaBounds().getWidth()) < Math.abs(planetProj.x)) {
+                            intersectionPoint.set(quokka.getQuokkaBounds().getWidth(), 0);
+                        } else {
+                            intersectionPoint.set(0, 0);
+                        }
+                        intersectionPoint.add(quokka.getPosition().x, quokka.getPosition().y);
 
-                    adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y - quokka.getQuokkaBounds().getHeight());
-                    quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
-                    planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
-                    if (0 < planetProj.x && planetProj.x < quokka.getQuokkaBounds().getWidth()) {
-                        intersectionPointTemp.set(planetProj.x, planetProj.y);
-                    } else if (Math.abs(planetProj.x - quokka.getQuokkaBounds().getWidth()) < Math.abs(planetProj.x)) {
-                        intersectionPointTemp.set(quokka.getQuokkaBounds().getWidth(), 0);
-                    } else {
-                        intersectionPointTemp.set(0, 0);
-                    }
-                    intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
-                    if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
-                        intersectionPoint.set(intersectionPointTemp);
-                    }
+                        adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y - quokka.getQuokkaBounds().getHeight());
+                        quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
+                        planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
+                        if (0 < planetProj.x && planetProj.x < quokka.getQuokkaBounds().getWidth()) {
+                            intersectionPointTemp.set(planetProj.x, planetProj.y);
+                        } else if (Math.abs(planetProj.x - quokka.getQuokkaBounds().getWidth()) < Math.abs(planetProj.x)) {
+                            intersectionPointTemp.set(quokka.getQuokkaBounds().getWidth(), 0);
+                        } else {
+                            intersectionPointTemp.set(0, 0);
+                        }
+                        intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
+                        if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
+                            intersectionPoint.set(intersectionPointTemp);
+                        }
 
-                    adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
-                    quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
-                    planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
-                    if (0 < planetProj.y && planetProj.y < quokka.getQuokkaBounds().getHeight()) {
-                        intersectionPointTemp.set(planetProj.x, planetProj.y);
-                    } else if (Math.abs(planetProj.y - quokka.getQuokkaBounds().getHeight()) < Math.abs(planetProj.y)) {
-                        intersectionPointTemp.set(0, quokka.getQuokkaBounds().getHeight());
-                    } else {
-                        intersectionPointTemp.set(0, 0);
-                    }
-                    intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y);
-                    if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
-                        intersectionPoint.set(intersectionPointTemp);
-                    }
+                        adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
+                        quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
+                        planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
+                        if (0 < planetProj.y && planetProj.y < quokka.getQuokkaBounds().getHeight()) {
+                            intersectionPointTemp.set(planetProj.x, planetProj.y);
+                        } else if (Math.abs(planetProj.y - quokka.getQuokkaBounds().getHeight()) < Math.abs(planetProj.y)) {
+                            intersectionPointTemp.set(0, quokka.getQuokkaBounds().getHeight());
+                        } else {
+                            intersectionPointTemp.set(0, 0);
+                        }
+                        intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y);
+                        if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
+                            intersectionPoint.set(intersectionPointTemp);
+                        }
 
-                    adjustedCenter.set(circleCenter.x - quokka.getPosition().x - quokka.getQuokkaBounds().getWidth(), circleCenter.y - quokka.getPosition().y);
-                    quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
-                    planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
-                    if (0 < planetProj.y && planetProj.y < quokka.getQuokkaBounds().getHeight()) {
-                        intersectionPointTemp.set(planetProj.x, planetProj.y);
-                    } else if (Math.abs(planetProj.y - quokka.getQuokkaBounds().getHeight()) < Math.abs(planetProj.y)) {
-                        intersectionPointTemp.set(0, quokka.getQuokkaBounds().getHeight());
-                    } else {
-                        intersectionPointTemp.set(0, 0);
+                        adjustedCenter.set(circleCenter.x - quokka.getPosition().x - quokka.getQuokkaBounds().getWidth(), circleCenter.y - quokka.getPosition().y);
+                        quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
+                        planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
+                        if (0 < planetProj.y && planetProj.y < quokka.getQuokkaBounds().getHeight()) {
+                            intersectionPointTemp.set(planetProj.x, planetProj.y);
+                        } else if (Math.abs(planetProj.y - quokka.getQuokkaBounds().getHeight()) < Math.abs(planetProj.y)) {
+                            intersectionPointTemp.set(0, quokka.getQuokkaBounds().getHeight());
+                        } else {
+                            intersectionPointTemp.set(0, 0);
+                        }
+                        intersectionPointTemp.add(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
+                        if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
+                            intersectionPoint.set(intersectionPointTemp);
+                        }
+                        if (Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2)) < planet.getObstacleBounds().getWidth() / 2) {
+                            justPlanetTemp = true;
+                        }
+                        if (!justPlanet) {
+                            if (justPlanetTemp) {
+                                //coachLandmark
+                                velocityTemp.set(quokka.getVelocity());
+                                gradientVector.set(2 * (intersectionPoint.x - circleCenter.x), 2 * (intersectionPoint.y - circleCenter.y), 0);
+                                gradientVector.nor();
+                                velocityTemp2.set(velocityTemp.sub((gradientVector).scl(2 * (velocityTemp.dot(gradientVector)))));
+                                planetFixer();
+                                quokka.setVelocity(velocityTemp2);
+                            }
+                        }
                     }
-                    intersectionPointTemp.add(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
-                    if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
-                        intersectionPoint.set(intersectionPointTemp);
+                    planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
+                    double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                    if (planetMagnitude != 0) {
+                        planetDistance.scl((float) (GOODGRAV / Math.pow(planetMagnitude, GRAVPOW)));
                     }
-                    if (Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2)) < planet.getObstacleBounds().getWidth() / 2) {
-                        justPlanetTemp = true;
+                    quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
+                }
+                justPlanet = justPlanetTemp;
+                quokka.getGravity().set(quokka.getGravity().x / PLANETSCALER, quokka.getGravity().y / PLANETSCALER, 0);
+                if (planets.size == 0) {
+                    quokka.getGravity().set(0, -13, 0);
+                }
+                for (Meteor meteor : meteors) {
+                    if (meteor.getPosMeteor().x < (cam.position.x * VIEWPORT_SCALER)) {
+                        meteor.setStartFall(true);
                     }
-                    if (!justPlanet) {
-                        if (justPlanetTemp) {
-                            //coachLandmark
-                            velocityTemp.set(quokka.getVelocity());
-                            gradientVector.set(2 * (intersectionPoint.x - circleCenter.x), 2 * (intersectionPoint.y - circleCenter.y), 0);
-                            gradientVector.nor();
-                            velocityTemp2.set(velocityTemp.sub((gradientVector).scl(2 * (velocityTemp.dot(gradientVector)))));
-                            planetFixer();
-                            quokka.setVelocity(velocityTemp2);
+                    if (meteor.isStartFall()) {
+                        meteor.move(dt);
+                        if (((meteor.getPosMeteor().x > clickPos.x) && (meteor.getPosMeteor().x < clickPos2.x)) || ((meteor.getPosMeteor().x < clickPos.x) && (meteor.getPosMeteor().x > clickPos2.x))) {
+                            if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x, lineY(meteor.getPosMeteor().x))) {
+                                meteors.removeValue(meteor, true);
+                                meteor.dispose();
+                            }
+                        } else if ((((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos2.x)) || (((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos2.x))) {
+                            if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x + meteor.getTexture().getWidth(), lineY(meteor.getPosMeteor().x + meteor.getTexture().getWidth()))) {
+                                meteors.removeValue(meteor, true);
+                                meteor.dispose();
+                            }
+                        }
+                        if (meteor.collides(quokka.getQuokkaBounds())) {
+                            if (meteors.contains(meteor, true)) {
+                                gsm.set(new PlayState(gsm, world, level));
+                                break;
+                            }
                         }
                     }
                 }
-                planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getWidth() / 2, 0);
-                double planetMagnitude = Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-                if (planetMagnitude != 0) {
-                    planetDistance.scl((float)(GOODGRAV / Math.pow(planetMagnitude, GRAVPOW)));
+                for (EvilCloud cloud : clouds) {
+                    if (cloud.collides(quokka.getQuokkaBounds())) {
+                        gsm.set(new PlayState(gsm, world, level));
+                        break;
+                    }
                 }
-                quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
+                for (BonusQuokka bonusQuokka : bonusQuokkas) {
+                    if (bonusQuokka.collides(quokka.getQuokkaBounds())) {
+                        if (!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
+                            collectedQuokkas.set(bonusQuokkas.indexOf(bonusQuokka, false), true);
+                            bonusQuokka.dispose();
+                        }
+                    }
+                }
             }
-            justPlanet = justPlanetTemp;
-            quokka.getGravity().set(quokka.getGravity().x / PLANETSCALER, quokka.getGravity().y / PLANETSCALER, 0);
-            if (planets.size == 0) {
-                quokka.getGravity().set(0, -13, 0);
-            }
-            if(world == 3 && shouldFall){
+            if (world == 3 && shouldFall) {
                 towerVel.scl(dt);
                 cam.position.y += towerVel.y;
-                iniPot+= 13*towerVel.y;
-                if(lineDraw) {
+                iniPot += 13 * towerVel.y;
+                if (lineDraw) {
                     clickPosTemp.set(clickPosTemp.x, clickPosTemp.y + towerVel.y, 0);
                 }
-                towerVel.scl(1/dt);
-            }
-            else {
+                towerVel.scl(1 / dt);
+            } else {
                 cam.position.x = quokka.getPosition().x + 80;
-                if(lineDraw) {
+                if (lineDraw) {
                     clickPosTemp.set(clickPosTemp.x + quokka.getBottomLeft2().x - quokka.getBottomLeft().x, clickPosTemp.y, 0);
                 }
             }
             if (shouldFall && !smallBounce) {
                 quokka.update(dt);
             } //gohere
-            for(Meteor meteor: meteors){
-                if(meteor.getPosMeteor().x < (cam.position.x * VIEWPORT_SCALER)) {
-                    meteor.setStartFall(true);
-                }
-                if(meteor.isStartFall()){
-                    meteor.move(dt);
-                    if (((meteor.getPosMeteor().x > clickPos.x) && (meteor.getPosMeteor().x < clickPos2.x)) || ((meteor.getPosMeteor().x < clickPos.x) && (meteor.getPosMeteor().x > clickPos2.x))) {
-                        if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x, lineY(meteor.getPosMeteor().x))) {
-                            meteors.removeValue(meteor, true);
-                            meteor.dispose();
-                        }
-                    } else if ((((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos2.x)) || (((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos2.x))) {
-                        if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x + meteor.getTexture().getWidth(), lineY(meteor.getPosMeteor().x + meteor.getTexture().getWidth()))) {
-                            meteors.removeValue(meteor, true);
-                            meteor.dispose();
-                        }
-                    }
-                    if (meteor.collides(quokka.getQuokkaBounds())) {
-                        if (meteors.contains(meteor, true)) {
-                            gsm.set(new PlayState(gsm, world, level));
-                            break;
-                        }
-                    }
-                }
-            }
-            for (EvilCloud cloud : clouds) {
-                if (cloud.collides(quokka.getQuokkaBounds())) {
-                    gsm.set(new PlayState(gsm, world, level));
-                    break;
-                }
-            }
-            for (BonusQuokka bonusQuokka : bonusQuokkas) {
-                if (bonusQuokka.collides(quokka.getQuokkaBounds())) {
-                    if (!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
-                        collectedQuokkas.set(bonusQuokkas.indexOf(bonusQuokka, false), true);
-                        bonusQuokka.dispose();
-                    }
-                }
-            }
             if(vineCheck) {
                 for (Vine vine : vines) {
                     if (vine.collides(quokka.getQuokkaBounds())) {
@@ -1388,13 +1372,34 @@ public class PlayState extends State implements InputProcessor{
                         break;
                     case 3:
                         meteors.add(new Meteor(500, 780, 0, 0));
-                        clouds.add(new EvilCloud(675, 300));
-                        bonusQuokkas.add(new BonusQuokka(700, 450));
+                        clouds.add(new EvilCloud(675, 250));
+                        bonusQuokkas.add(new BonusQuokka(700, 400));
                         meteors.add(new Meteor(1000, 780, 0, 0));
                         clouds.add(new EvilCloud(1200, 600));
                         clouds.add(new EvilCloud(1200, 50));
-                        meteors.add(new Meteor(1450, 780, 0, 0));
-                        happyCloud = new HappyCloud(1650, 300);
+                        meteors.add(new Meteor(1550, 780, 0, 0));
+                        happyCloud = new HappyCloud(1750, 300);
+                        break;
+                    case 4:
+                        walls.add(new Wall(350, 500));
+                        tallDinos.add(new TallDino(923, -195, -223, 400));
+                        bonusQuokkas.add(new BonusQuokka(0, 50));
+                        walls.add(new Wall(1000, 500));
+                        tallDinos.add(new TallDino(1573, -195, 427, 400));
+                        happyCloud = new HappyCloud(1000, 0);
+                        break;
+                    case 5:
+                        meteors.add(new Meteor(500, 780, 0, 0));
+                        meteors.add(new Meteor(675, 780, 0, 0));
+                        meteors.add(new Meteor(850, 780, 0, 0));
+                        meteors.add(new Meteor(1025, 780, 0, 0));
+                        meteors.add(new Meteor(1200, 780, 0, 0));
+                        happyCloud = new HappyCloud(1375, 50);
+                        meteors.add(new Meteor(1550, 780, 0, 0));
+                        meteors.add(new Meteor(1725, 780, 0, 0));
+                        bonusQuokkas.add(new BonusQuokka(1900, 50));
+                        break;
+                    case 6:
                         break;
                 }
                 break;
@@ -1561,6 +1566,7 @@ public class PlayState extends State implements InputProcessor{
             vineCheck = true;
             lineDraw = true;
             shouldFall = true;
+            shouldMove = true;
             hasCollided = false;
             lineCheck = false;
             paused = false;
