@@ -22,6 +22,12 @@ public class Obstacle {
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
     }
 
+    public Obstacle(float x, float y, float width, float height){
+        posObstacle = new Vector2(x, y);
+
+        obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, width, height);
+    }
+
     public Vector2 getPosObstacle() {
         return posObstacle;
     }

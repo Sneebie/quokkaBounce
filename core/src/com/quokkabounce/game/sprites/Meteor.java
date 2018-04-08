@@ -25,7 +25,7 @@ public class Meteor {
         originalPos = new Vector2(x, y);
         velMeteor = new Vector2(firstVelX, firstVelY);
         originalVel = new Vector2(firstVelX, firstVelY);
-        meteorTexture = new Texture("wallSwitch.png");
+        meteorTexture = new Texture("meteor.png");
         meteorBounds = new Rectangle(posMeteor.x, posMeteor.y, meteorTexture.getWidth(), meteorTexture.getHeight());
     }
 

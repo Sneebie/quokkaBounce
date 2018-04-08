@@ -1205,25 +1205,25 @@ public class PlayState extends State implements InputProcessor{
         sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
         sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
         sb.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setProjectionMatrix(cam.combined);
+        shapeRenderer.setAutoShapeType(true);
         if(vineDraw) {
             if (clickPos2.y != -100) {
                 shapeRenderer.setColor(Color.BROWN);
-                shapeRenderer.setProjectionMatrix(cam.combined);
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
                 shapeRenderer.line(clickPos, clickPos2);
-                shapeRenderer.end();
             } else if (clickPosTemp.y != -100) {
                 shapeRenderer.setColor(Color.YELLOW);
-                shapeRenderer.setProjectionMatrix(cam.combined);
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
                 shapeRenderer.line(clickPos, clickPosTemp);
-                shapeRenderer.end();
             }
         }
-        sb.begin();
         for(Obstacle nullZone : nullZones){
-            sb.draw(nullZone.getTexture(), nullZone.getPosObstacle().x, nullZone.getPosObstacle().y);
+            shapeRenderer.setColor(Color.BLACK);
+            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.rect(nullZone.getPosObstacle().x, nullZone.getPosObstacle().y, nullZone.getObstacleBounds().getWidth(), nullZone.getObstacleBounds().getHeight());
         }
+        shapeRenderer.end();
+        sb.begin();
         sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
@@ -1268,9 +1268,6 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Obstacle planet : planets){
             planet.dispose();
-        }
-        for(Obstacle nullZone : nullZones){
-            nullZone.dispose();
         }
         for(Obstacle wallSwitch: switches){
             wallSwitch.dispose();
@@ -1533,10 +1530,12 @@ public class PlayState extends State implements InputProcessor{
             case 4:
                 switch(level){
                     case 1:
-                        clouds.add(new EvilCloud(450, 500));
+                        clouds.add(new EvilCloud(450, 600));
                         clouds.add(new EvilCloud(450, 50));
-                        nullZones.add(new Obstacle(700, 0, "nullZone.png"));
-                        happyCloud = new HappyCloud(1000,50);
+                        nullZones.add(new Obstacle(700, 0, 580, 800));
+                        happyCloud = new HappyCloud(1600, 150);
+                        break;
+                    case 2:
                 }
                 break;
         }
@@ -1612,8 +1611,10 @@ public class PlayState extends State implements InputProcessor{
             currentPot = 13 * quokka.getPosition().y;
         }
         //coachLandmark
-        velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
-        velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
+        velocityTemp2.scl((float) Math.sqrt(2.0*(iniPot - currentPot)));
+        System.out.println(iniPot - (0.50 * Math.pow(velocityTemp2.len(), 2.0) + 13.0 * quokka.getPosition().y));
+        velocityTemp2.scl((float) (1.0/Math.sqrt(currentDT)));
+        System.out.println(iniPot - (0.50 * Math.pow(velocityTemp2.len() * Math.sqrt(currentDT), 2.0) + 13.0 * quokka.getPosition().y));
         return velocityTemp2;
     }
     private Vector3 resultVector(Vector3 velocity, Vector2 point1, Vector2 point2) {
@@ -1640,6 +1641,7 @@ public class PlayState extends State implements InputProcessor{
         //coachLandmark
         velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
         velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
+        System.out.println(1/2 * (Math.pow(velocityTemp2.x, 2) + Math.pow(velocityTemp2.y, 2)) + 13 * quokka.getPosition().y);
         return velocityTemp2;
     }
 

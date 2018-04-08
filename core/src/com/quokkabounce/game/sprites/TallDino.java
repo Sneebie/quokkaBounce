@@ -16,7 +16,7 @@ public class TallDino{
     private int dir;
 
     public TallDino(float x, float y, float endX, float speed){
-        setTexture("wall.png");
+        setTexture("tallDino.png");
         endPos = endX;
         startPos = x;
         dir = 1;
