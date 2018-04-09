@@ -1182,11 +1182,6 @@ public class PlayState extends State implements InputProcessor{
         sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
         sb.draw(levelBackground, levelBackgroundPos3.x, levelBackgroundPos3.y);
         sb.draw(levelBackground, levelBackgroundPos4.x, levelBackgroundPos4.y);
-        for(BonusQuokka bonusQuokka : bonusQuokkas){
-            if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
-                sb.draw(bonusQuokka.getTexture(), bonusQuokka.getPosQuokka().x, bonusQuokka.getPosQuokka().y);
-            }
-        }
         for(Obstacle wallSwitch: switches){
             sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
         }
@@ -1224,6 +1219,11 @@ public class PlayState extends State implements InputProcessor{
         }
         shapeRenderer.end();
         sb.begin();
+        for(BonusQuokka bonusQuokka : bonusQuokkas){
+            if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
+                sb.draw(bonusQuokka.getTexture(), bonusQuokka.getPosQuokka().x, bonusQuokka.getPosQuokka().y);
+            }
+        }
         sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
         for(Wall wall : walls){
             sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
@@ -1533,9 +1533,25 @@ public class PlayState extends State implements InputProcessor{
                         clouds.add(new EvilCloud(450, 600));
                         clouds.add(new EvilCloud(450, 50));
                         nullZones.add(new Obstacle(700, 0, 580, 800));
+                        bonusQuokkas.add(new BonusQuokka(990, 450));
                         happyCloud = new HappyCloud(1600, 150);
                         break;
                     case 2:
+                        clouds.add(new EvilCloud(250, 50));
+                        walls.add(new Wall(900, 250));
+                        bonusQuokkas.add(new BonusQuokka(1068, 500));
+                        happyCloud = new HappyCloud(1258, 50);
+                        break;
+                    case 3:
+                        nullZones.add(new Obstacle(400, 100, 900, 800));
+                        walls.add(new Wall(1300, 200));
+                        bonusQuokkas.add(new BonusQuokka(1100, 200));
+                        happyCloud = new HappyCloud(1450, 350);
+                        break;
+                    case 4:
+                        nullZones.add();
+                        break;
+
                 }
                 break;
         }
