@@ -1549,7 +1549,11 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(1450, 350);
                         break;
                     case 4:
-                        nullZones.add();
+                        nullZones.add(new Obstacle(400, 0, 300, 800));
+                        nullZones.add(new Obstacle(900, 0, 300, 800));
+                        nullZones.add(new Obstacle(1400, 0, 300, 800));
+                        bonusQuokkas.add(new BonusQuokka(1550, 500));
+                        happyCloud = new HappyCloud(1800, 50);
                         break;
 
                 }
