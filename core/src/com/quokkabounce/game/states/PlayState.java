@@ -58,7 +58,9 @@ public class PlayState extends State implements InputProcessor{
     private Array<Wall> walls;
     private Array<BonusQuokka> bonusQuokkas;
     private Array<Obstacle> switches;
+    private Array<Vector2> moveSpots;
     private Array<Obstacle> planets;
+    private Array<Obstacle> brushes;
     private Array<Obstacle> nullZones;
     private Array<Arrow> arrows;
     private Array<Array<Vine>> layerVines;
@@ -84,7 +86,9 @@ public class PlayState extends State implements InputProcessor{
         planets = new Array<Obstacle>();
         nullZones = new Array<Obstacle>();
         arrows = new Array<Arrow>();
+        brushes = new Array<Obstacle>();
         moveWalls = new Array<MoveWall>();
+        moveSpots = new Array<Vector2>();
         vines = new Array<Vine>();
         meteors = new Array<Meteor>();
         tallDinos = new Array<TallDino>();
@@ -325,7 +329,6 @@ public class PlayState extends State implements InputProcessor{
                 hasEdgeCollided = false;
                 if (outZone) {
                     quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                    System.out.println("boing bong");
                     hasCollided = true;
                     justHitTemp = true;
                 }
@@ -345,7 +348,6 @@ public class PlayState extends State implements InputProcessor{
                             tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2));
                             quokka.setPosition(quokka.getPosition().x, tempWall.y);
                             quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                            System.out.println("boing bong 2");
                         }
                     }
                     else if(doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2)){
@@ -361,7 +363,6 @@ public class PlayState extends State implements InputProcessor{
                             tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2));
                             quokka.setPosition(quokka.getPosition().x, tempWall.y);
                             quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                            System.out.println("boing bong 3");
                         }
                     }
                     else if(doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2)){
@@ -377,7 +378,6 @@ public class PlayState extends State implements InputProcessor{
                             tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2));
                             quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
                             quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                            System.out.println("boing bong 4");
                         }
                     }
                     else if(doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)){
@@ -393,7 +393,6 @@ public class PlayState extends State implements InputProcessor{
                             tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2));
                             quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
                             quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
-                            System.out.println("boing bong 5");
                         }
                     }
                 }
@@ -985,6 +984,9 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                 }
+                for(Obstacle brush : brushes){
+                    brush.move(dt);
+                }
                 for (EvilCloud cloud : clouds) {
                     if (cloud.collides(quokka.getQuokkaBounds())) {
                         gsm.set(new PlayState(gsm, world, level));
@@ -1027,14 +1029,12 @@ public class PlayState extends State implements InputProcessor{
                 if (justHit) {
                     if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
                         while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
-                            System.out.println("doing doing");
                             clickPos.set(clickPos.x, clickPos.y- 10, 0);
                             clickPos2.set(clickPos2.x, clickPos2.y- 10, 0);
                         }
                     }
                     else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
                         while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) ||quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
-                            System.out.println("doing yoing");
                             clickPos.set(clickPos.x, clickPos.y- 10, 0);
                             clickPos2.set(clickPos2.x, clickPos2.y- 10, 0);
                         }
@@ -1042,7 +1042,6 @@ public class PlayState extends State implements InputProcessor{
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                     while(doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2) && (doIntersect(quokka.getBottomLeft2(), quokka.getBottomRight2(), clickPos2d, clickPos2d2) || doIntersect(quokka.getBottomLeft2(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2) || doIntersect(quokka.getBottomRight2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))){
-                        System.out.println("zoing ZOING");
                         if(quokka.getVelocity().x < 0) {
                             clickPos.set(clickPos.x + 10, clickPos.y, 0);
                             clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
@@ -1185,6 +1184,9 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle wallSwitch: switches){
             sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
         }
+        for(Obstacle brush: brushes){
+            sb.draw(brush.getTexture(), brush.getPosObstacle().x, brush.getPosObstacle().y);
+        }
         for (Hawk hawk : hawks){
             sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
         }
@@ -1271,6 +1273,9 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Obstacle wallSwitch: switches){
             wallSwitch.dispose();
+        }
+        for(Obstacle brush: brushes){
+            brush.dispose();
         }
         for(MoveWall moveWall : moveWalls){
             moveWall.dispose();
@@ -1558,6 +1563,19 @@ public class PlayState extends State implements InputProcessor{
 
                 }
                 break;
+            case 5:
+                switch(level) {
+                    case 1:
+                        moveSpots.add(new Vector2(400, 400));
+                        moveSpots.add(new Vector2(500, 500));
+                        moveSpots.add(new Vector2(400, 500));
+                        moveSpots.add(new Vector2(500, 500));
+                        moveSpots.add(new Vector2(600, 500));
+                        brushes.add(new Obstacle(400, 400, "quokka.png", moveSpots));
+                        happyCloud = new HappyCloud(10000, 50);
+                        break;
+                }
+                break;
         }
         if(world == 3){
             for(int i = -220; i < happyCloud.getPosCloud().y; i+=595){
@@ -1632,9 +1650,7 @@ public class PlayState extends State implements InputProcessor{
         }
         //coachLandmark
         velocityTemp2.scl((float) Math.sqrt(2.0*(iniPot - currentPot)));
-        System.out.println(iniPot - (0.50 * Math.pow(velocityTemp2.len(), 2.0) + 13.0 * quokka.getPosition().y));
         velocityTemp2.scl((float) (1.0/Math.sqrt(currentDT)));
-        System.out.println(iniPot - (0.50 * Math.pow(velocityTemp2.len() * Math.sqrt(currentDT), 2.0) + 13.0 * quokka.getPosition().y));
         return velocityTemp2;
     }
     private Vector3 resultVector(Vector3 velocity, Vector2 point1, Vector2 point2) {
@@ -1661,7 +1677,6 @@ public class PlayState extends State implements InputProcessor{
         //coachLandmark
         velocityTemp2.scl((float) Math.sqrt(2*(iniPot - currentPot)));
         velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
-        System.out.println(1/2 * (Math.pow(velocityTemp2.x, 2) + Math.pow(velocityTemp2.y, 2)) + 13 * quokka.getPosition().y);
         return velocityTemp2;
     }
 

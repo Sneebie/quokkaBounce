@@ -19,7 +19,7 @@ public class QuokkaBounce extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		gsm = new GameStateManager();
 		Gdx.gl.glClearColor(1, 0, 0, 1);
-		gsm.push(new WorldState(gsm, 4, 1));
+		gsm.push(new WorldState(gsm, 5, 1));
 	}
 
 	@Override
