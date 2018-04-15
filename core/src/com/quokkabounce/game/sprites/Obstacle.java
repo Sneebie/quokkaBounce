@@ -10,12 +10,13 @@ import com.badlogic.gdx.utils.Array;
  */
 
 public class Obstacle {
-    private static int SPEED = 100;
+    private static int SPEED = 100, LINEBACK = 400;
     private Texture obstacleTexture;
     private Vector2 posObstacle, velObstacle;
     private Rectangle obstacleBounds;
     private Array<Vector2> moveSpots;
     private int moveTracker = 1;
+    private float totalDistance = 0;
 
     public Obstacle(float x, float y, String textureString){
         obstacleTexture = new Texture(textureString);
@@ -31,22 +32,38 @@ public class Obstacle {
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, width, height);
     }
 
-    public Obstacle(float x, float y, String textureString, Array<Vector2> moveSpots){
+    public Obstacle(String textureString, Array<Vector2> moveSpots){
         obstacleTexture = new Texture(textureString);
 
-        posObstacle = new Vector2(x, y);
+        posObstacle = new Vector2(moveSpots.get(0).x, moveSpots.get(0).y);
 
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
         this.moveSpots = new Array<Vector2>(moveSpots);
         velObstacle = new Vector2(moveSpots.get(moveTracker).x - moveSpots.get(moveTracker - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveTracker - 1).y);
-        System.out.println(velObstacle);
         velObstacle.scl(SPEED / velObstacle.len());
-        System.out.println(velObstacle);
+    }
+
+    public Array<Vector2> getMoveSpots() {
+        return moveSpots;
+    }
+
+    public int getMoveTracker() {
+        return moveTracker;
+    }
+
+    public float getTotalDistance() {
+        return totalDistance;
     }
 
     public void move(float dt) {
         velObstacle.scl(dt);
         posObstacle.add(velObstacle.x, velObstacle.y);
+        if(totalDistance < LINEBACK) {
+            totalDistance += Math.sqrt(Math.pow(velObstacle.x, 2) + Math.pow(velObstacle.y, 2));
+        }
+        else{
+            totalDistance = LINEBACK;
+        }
         velObstacle.scl(1/dt);
         obstacleBounds.setPosition(posObstacle.x, posObstacle.y);
         if(velObstacle.x > 0 && posObstacle.x >= moveSpots.get(moveTracker).x) {
@@ -77,7 +94,7 @@ public class Obstacle {
                 }
             }
         }
-        else if(velObstacle.x < 0 && posObstacle.x <= moveSpots.get(moveTracker).x) {
+        else if(velObstacle.x <= 0 && posObstacle.x <= moveSpots.get(moveTracker).x) {
             if(velObstacle.y > 0 && posObstacle.y >= moveSpots.get(moveTracker).y) {
                 if (moveTracker < moveSpots.size - 1) {
                     posObstacle.set(moveSpots.get(moveTracker));

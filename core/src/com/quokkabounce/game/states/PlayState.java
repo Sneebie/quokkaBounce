@@ -38,19 +38,18 @@ public class PlayState extends State implements InputProcessor{
     private static final double OCEANSLOW = 0.98;
     private static final float GRAVPOW = 2f;
     private static final float VIEWPORT_SCALER = 1.6f;
-    private static final int SHRINKRATE = 3;
     private static final int TOWERFALL = 100;
     private static final int WALLSPEED = 3;
 
     private Quokka quokka;
     private Button backButton, pauseButton;
     private Texture levelBackground;
-    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet, tempWall;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet, tempWall, backPoint, tempBack;
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT, iniPot, shortestDistance;
-    private int layer, finalLayer;
+    private int layer, finalLayer, pointCounter;
     private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided;
 
     private Array<EvilCloud> clouds;
@@ -141,6 +140,8 @@ public class PlayState extends State implements InputProcessor{
         quokkaSide = new Vector2();
         adjustedCenter = new Vector2();
         planetProj = new Vector2();
+        backPoint = new Vector2();
+        tempBack = new Vector2();
         gradientVector = new Vector3();
         touchInput = new Vector3();
         xdiff = new Vector2();
@@ -1152,6 +1153,27 @@ public class PlayState extends State implements InputProcessor{
         return (o4 == 0 && onSegment(p2, q1, q2));
     }
 
+    private Vector2 pointBetween(Vector2 p1, Vector2 p2, float distanceBetween){
+        final double x;
+        final double y;
+        if(p1.x != p2.x) {
+            final float slope = (p1.y - p2.y) / (p1.x - p2.x);
+            final float yInt = p2.y - slope * p2.x;
+            x = p2.x - (distanceBetween * (p2.x - p1.x)) / distance(p2, p1);
+            y = slope * x + yInt;
+        }
+        else if (p2.y > p1.y){
+            x = p1.x;
+            y = p2.y - distanceBetween;
+        }
+        else{
+            x = p1.x;
+            y = p2.y + distanceBetween;
+        }
+        tempBack.set((float) x, (float) y);
+        return tempBack;
+    }
+
     private Vector2 intersectionPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2){
         xdiff.set(a1.x - a2.x, b1.x - b2.x);
         ydiff.set(a1.y - a2.y, b1.y - b2.y);
@@ -1213,6 +1235,43 @@ public class PlayState extends State implements InputProcessor{
                 shapeRenderer.setColor(Color.YELLOW);
                 shapeRenderer.line(clickPos, clickPosTemp);
             }
+        }
+        for(Obstacle brush : brushes){
+            shapeRenderer.setColor(Color.BROWN);
+            pointCounter = 0;
+                float netDistance = 0;
+                int i = brush.getMoveTracker() - 1;
+                shapeRenderer.line(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
+                netDistance += distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
+                while(true){
+                    if(i != 0) {
+                        i = i > 0 ? i : brush.getMoveSpots().size + i;
+                        netDistance += distance(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1));
+                        if (netDistance > brush.getTotalDistance()) {
+                            break;
+                        }
+                        pointCounter++;
+                        shapeRenderer.line(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1));
+                    }
+                    else{
+                        netDistance += distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1));
+                        if (netDistance > brush.getTotalDistance()) {
+                            break;
+                        }
+                        pointCounter++;
+                        shapeRenderer.line(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1));
+                    }
+                    i--;
+                }
+                if(brush.getMoveTracker() - pointCounter > 1){
+                    shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), netDistance - brush.getTotalDistance()));
+                }
+                else if (brush.getMoveTracker() - pointCounter == 1) {
+                    shapeRenderer.line(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), netDistance - brush.getTotalDistance()));
+                }
+                else{
+                    shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), netDistance - brush.getTotalDistance()));
+                }
         }
         for(Obstacle nullZone : nullZones){
             shapeRenderer.setColor(Color.BLACK);
@@ -1566,12 +1625,19 @@ public class PlayState extends State implements InputProcessor{
             case 5:
                 switch(level) {
                     case 1:
-                        moveSpots.add(new Vector2(400, 400));
-                        moveSpots.add(new Vector2(500, 500));
-                        moveSpots.add(new Vector2(400, 500));
-                        moveSpots.add(new Vector2(500, 500));
-                        moveSpots.add(new Vector2(600, 500));
-                        brushes.add(new Obstacle(400, 400, "quokka.png", moveSpots));
+                        moveSpots.add(new Vector2(100, 100));
+                        moveSpots.add(new Vector2(200, 200));
+                        moveSpots.add(new Vector2(100, 300));
+                        moveSpots.add(new Vector2(0, 200));
+                        brushes.add(new Obstacle("quokka.png", moveSpots));
+                        moveSpots.clear();
+                        moveSpots.add(new Vector2(400, 100));
+                        moveSpots.add(new Vector2(500, 200));
+                        moveSpots.add(new Vector2(500, 100));
+                        moveSpots.add(new Vector2(700, 100));
+                        moveSpots.add(new Vector2(600, 400));
+                        moveSpots.add(new Vector2(500, 300));
+                        brushes.add(new Obstacle("quokka.png", moveSpots));
                         happyCloud = new HappyCloud(10000, 50);
                         break;
                 }
