@@ -91,9 +91,25 @@ public class Quokka {
 
     public void setPosition(Vector2 position) {
         this.position.set(position,0);
+        bottomLeft.set(position.x,position.y);
+        bottomRight.set(position.x + quokkaBounds.getWidth(), position.y);
+        upperLeft.set(position.x, position.y + quokkaBounds.getHeight());
+        upperRight.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
+        bottomLeft2.set(position.x,position.y);
+        bottomRight2.set(position.x + quokkaBounds.getWidth(), position.y);
+        upperLeft2.set(position.x, position.y + quokkaBounds.getHeight());
+        upperRight2.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
     }
     public void setPosition(float x, float y) {
         this.position.set(x, y, 0);
+        bottomLeft.set(position.x,position.y);
+        bottomRight.set(position.x + quokkaBounds.getWidth(), position.y);
+        upperLeft.set(position.x, position.y + quokkaBounds.getHeight());
+        upperRight.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
+        bottomLeft2.set(position.x,position.y);
+        bottomRight2.set(position.x + quokkaBounds.getWidth(), position.y);
+        upperLeft2.set(position.x, position.y + quokkaBounds.getHeight());
+        upperRight2.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
     }
 
     public Texture getTexture() {

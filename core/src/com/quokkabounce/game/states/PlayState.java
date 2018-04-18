@@ -987,6 +987,54 @@ public class PlayState extends State implements InputProcessor{
                 }
                 for(Obstacle brush : brushes){
                     brush.move(dt);
+                    shapeRenderer.setColor(Color.BROWN);
+                    pointCounter = 0;
+                    float netDistance = 0;
+                    int i = brush.getMoveTracker() - 1;
+                    if(lineBounce(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i))){
+                        break;
+                    }
+                    netDistance += distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
+                    while(true){
+                        if(i != 0) {
+                            i = i > 0 ? i : brush.getMoveSpots().size + i;
+                            netDistance += distance(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1));
+                            if (netDistance > brush.getTotalDistance()) {
+                                break;
+                            }
+                            pointCounter++;
+                            if(lineBounce(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1))){
+                                break;
+                            }
+                        }
+                        else{
+                            netDistance += distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1));
+                            if (netDistance > brush.getTotalDistance()) {
+                                break;
+                            }
+                            pointCounter++;
+                            if(lineBounce(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1))){
+                                break;
+                            }
+                        }
+                        i--;
+                    }
+                    if(brush.getMoveTracker() - pointCounter > 1){
+                        if(lineBounce(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), netDistance - brush.getTotalDistance()))){
+                            break;
+                        }
+                    }
+                    else if (brush.getMoveTracker() - pointCounter == 1) {
+                        if(lineBounce(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), netDistance - brush.getTotalDistance()))){
+                            break;
+                        }
+                    }
+                    else{
+                        if(lineBounce(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), netDistance - brush.getTotalDistance()))){
+                            break;
+                        }
+                    }
+                    pointCounter = 0;
                 }
                 for (EvilCloud cloud : clouds) {
                     if (cloud.collides(quokka.getQuokkaBounds())) {
@@ -1109,6 +1157,56 @@ public class PlayState extends State implements InputProcessor{
         else{
             final float slope = (clickPos.y - clickPos2.y) / (clickPos.x - clickPos2.x);
             return (slope * (x - clickPos2.x) + clickPos2.y);
+        }
+    }
+
+    private boolean lineBounce(Vector2 p1, Vector2 p2){
+        if(!justHit) {
+            boolean hitCorner = false;
+            if (doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), p1, p2)) {
+                hitCorner = true;
+                System.out.println("bl");
+                quokka.setPosition(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), p1, p2).x + 5, intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), p1, p2).y + 5);
+                quokka.setVelocity(resultVector(quokka.getVelocity(), p1, p2));
+            } else if (doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), p1, p2)) {
+                hitCorner = true;
+                System.out.println("br");
+                quokka.setPosition(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), p1, p2).x - quokka.getQuokkaBounds().getWidth() - 5, intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), p1, p2).y + 5);
+                quokka.setVelocity(resultVector(quokka.getVelocity(), p1, p2));
+            } else if (doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), p1, p2)) {
+                hitCorner = true;
+                System.out.println("ur");
+                quokka.setPosition(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), p1, p2).x - quokka.getQuokkaBounds().getWidth() - 5, intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), p1, p2).y - quokka.getQuokkaBounds().getHeight() - 5);
+                quokka.setVelocity(resultVector(quokka.getVelocity(), p1, p2));
+            } else if (doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), p1, p2)) {
+                hitCorner = true;
+                System.out.println("ul");
+                quokka.setPosition(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), p1, p2).x + 5, intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), p1, p2).y - quokka.getQuokkaBounds().getHeight() - 5);
+                quokka.setVelocity(resultVector(quokka.getVelocity(), p1, p2));
+            }
+            if (!hitCorner) {
+                if (doIntersect(quokka.getBottomLeft2(), quokka.getBottomRight2(), p1, p2)) {
+                    //quokka.setPosition(quokka.getPosition().x, );
+                    hitCorner = true;
+                }
+                if (doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), p1, p2)) {
+                    hitCorner = true;
+                }
+                if (doIntersect(quokka.getBottomLeft2(), quokka.getUpperLeft2(), p1, p2)) {
+                    hitCorner = true;
+                }
+                if (doIntersect(quokka.getBottomRight2(), quokka.getUpperRight2(), p1, p2)) {
+                    hitCorner = true;
+                }
+            }
+            if (hitCorner) {
+                justHit = true;
+            }
+            return hitCorner;
+        }
+        else{
+            System.out.println("oi");
+            return false;
         }
     }
 
