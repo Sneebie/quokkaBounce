@@ -40,9 +40,7 @@ public class Quokka {
         bottomRight.set(position.x + quokkaBounds.getWidth(), position.y);
         upperLeft.set(position.x, position.y + quokkaBounds.getHeight());
         upperRight.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
-        if (position.y > 0) {
-            velocity.add(gravity);
-        }
+        velocity.add(gravity);
         velocity.scl(dt);
         position.add(velocity.x, velocity.y, 0);
         velocity.scl(1/dt);
