@@ -61,6 +61,8 @@ public class PlayState extends State implements InputProcessor{
     private Array<Obstacle> planets;
     private Array<Obstacle> brushes;
     private Array<Obstacle> nullZones;
+    private Array<Obstacle> portals;
+    private Array<Obstacle> windGusts;
     private Array<Arrow> arrows;
     private Array<Array<Vine>> layerVines;
     private Array<Vine> vines;
@@ -86,6 +88,8 @@ public class PlayState extends State implements InputProcessor{
         nullZones = new Array<Obstacle>();
         arrows = new Array<Arrow>();
         brushes = new Array<Obstacle>();
+        portals = new Array<Obstacle>();
+        windGusts = new Array<Obstacle>();
         moveWalls = new Array<MoveWall>();
         moveSpots = new Array<Vector2>();
         vines = new Array<Vine>();
@@ -986,6 +990,16 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                 }
+                for(Obstacle portal : portals){
+                    if (portal.collides(quokka.getQuokkaBounds())) {
+                        if(portals.indexOf(portal, true)%2 == 0){
+                            quokka.setPosition(portals.get(portals.indexOf(portal, true) + 1).getPosObstacle());
+                        }
+                        else{
+                            quokka.setPosition(portals.get(portals.indexOf(portal, true) - 1).getPosObstacle());
+                        }
+                    }
+                }
                 for(Obstacle brush : brushes){
                     brush.move(dt);
                     shapeRenderer.setColor(Color.BROWN);
@@ -1073,7 +1087,13 @@ public class PlayState extends State implements InputProcessor{
             backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
             pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             if (shouldFall && !smallBounce) {
-                quokka.update(dt);
+                boolean inGust = false;
+                for(Obstacle windGust : windGusts){
+                    if(windGust.collides(quokka.getQuokkaBounds())){
+                        inGust = true;
+                    }
+                }
+                quokka.update(dt, inGust);
             } //gohere
             if (lineCheck && !hitWall) {
                 if (justHit) {
@@ -1123,6 +1143,7 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
             }
+
             if (quokka.getPosition().y + quokka.getTexture().getHeight() <= cam.position.y - cam.viewportHeight / 2) {
                 if (moveWalls.size == 0) {
                     gsm.set(new PlayState(gsm, world, level));
@@ -1435,6 +1456,9 @@ public class PlayState extends State implements InputProcessor{
         for(Vine vine : vines){
             sb.draw(vine.getTexture(), vine.getPosVine().x, vine.getPosVine().y);
         }
+        for(Obstacle portal : portals){
+            sb.draw(portal.getTexture(), portal.getPosObstacle().x, portal.getPosObstacle().y);
+        }
         sb.end();
         sb.setColor(1f, 1f, 1f, 1f);
     }
@@ -1486,6 +1510,9 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Arrow arrow: arrows){
             arrow.dispose();
+        }
+        for(Obstacle portal : portals){
+            portal.dispose();
         }
         backButton.dispose();
         pauseButton.dispose();
@@ -1624,13 +1651,6 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(700, 500, "horizontWall.png"));
                         happyCloud = new HappyCloud(10000,200);
                         break;
-                    case 2:
-                        levelBackground = new Texture("spaceBackground.png");
-                        planets.add(new Obstacle(300, 200, "greenPlanet.png"));
-                        planets.add(new Obstacle(900, 400, "greenPlanet.png"));
-                        happyCloud = new HappyCloud(1500, 300);
-                        planets.add(new Obstacle(1700, 400, "greenPlanet.png"));
-                        break;
                     case 3:
                         levelBackground = new Texture("spaceBackground.png");
                         planets.add(new Obstacle(300, 200, "greenPlanet.png"));
@@ -1692,6 +1712,7 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(1900, 50));
                         break;
                     case 6:
+//                        hawks.add(new Hawk())
                         break;
                 }
                 break;
@@ -1770,6 +1791,13 @@ public class PlayState extends State implements InputProcessor{
                         moveSpots.add(new Vector2(500, 300));
                         brushes.add(new Obstacle("quokka.png", moveSpots));
                         happyCloud = new HappyCloud(10000, 50);
+                        break;
+                    case 2:
+                        levelBackground = new Texture("spaceBackground.png");
+                        planets.add(new Obstacle(300, 200, "greenPlanet.png"));
+                        planets.add(new Obstacle(900, 400, "greenPlanet.png"));
+                        happyCloud = new HappyCloud(1500, 300);
+                        planets.add(new Obstacle(1700, 400, "greenPlanet.png"));
                         break;
                 }
                 break;

@@ -14,6 +14,7 @@ public class Quokka {
     private Vector3 position, velocity, gravity;
     private Texture quokka;
     private Rectangle quokkaBounds;
+    private static float GUSTSCALER = 1.5f;
 
     public Vector3 getGravity() {
         return gravity;
@@ -35,12 +36,17 @@ public class Quokka {
         velocity = new Vector3(0,0,0);
     }
 
-    public void update(float dt){
+    public void update(float dt, boolean inGust){
         bottomLeft.set(position.x,position.y);
         bottomRight.set(position.x + quokkaBounds.getWidth(), position.y);
         upperLeft.set(position.x, position.y + quokkaBounds.getHeight());
         upperRight.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
-        velocity.add(gravity);
+        if(inGust){
+            velocity.add(gravity.x, gravity.y*GUSTSCALER, gravity.z);
+        }
+        else {
+            velocity.add(gravity);
+        }
         velocity.scl(dt);
         position.add(velocity.x, velocity.y, 0);
         velocity.scl(1/dt);
