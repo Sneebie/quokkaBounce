@@ -14,6 +14,7 @@ import com.quokkabounce.game.QuokkaBounce;
 import com.quokkabounce.game.sprites.Arrow;
 import com.quokkabounce.game.sprites.BonusQuokka;
 import com.quokkabounce.game.sprites.Button;
+import com.quokkabounce.game.sprites.Drone;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Hawk;
@@ -70,6 +71,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<MoveWall> moveWalls;
     private Array<Meteor> meteors;
     private Array<TallDino> tallDinos;
+    private Array<Drone> drones;
     private BooleanArray collectedQuokkas;
     private boolean hitLeft[], hitRight[], hitBottom[], hitTop[];
     private Vector2 hitSide[];
@@ -81,6 +83,7 @@ public class PlayState extends State implements InputProcessor{
         clouds = new Array<EvilCloud>();
         walls = new Array<Wall>();
         hawks = new Array<Hawk>();
+        drones = new Array<Drone>();
         bonusQuokkas = new Array<BonusQuokka>();
         collectedQuokkas = new BooleanArray();
         switches = new Array<Obstacle>();
@@ -414,6 +417,14 @@ public class PlayState extends State implements InputProcessor{
                         hawk.move(true, dt, quokka.getPosition());
                     } else {
                         hawk.move(false, dt, quokka.getPosition());
+                    }
+                }
+                for(Drone drone : drones){
+                    if(drone.getPosDrone().x < (cam.position.x * VIEWPORT_SCALER)){
+                        drone.setStartMove(true);
+                    }
+                    if(drone.isStartMove()) {
+                        drone.move(dt, quokka.getPosition());
                     }
                 }
                 for (TallDino tallDino : tallDinos) {
