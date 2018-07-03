@@ -18,6 +18,8 @@ import com.quokkabounce.game.sprites.Drone;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Hawk;
+import com.quokkabounce.game.sprites.LaserBeam;
+import com.quokkabounce.game.sprites.LaserGun;
 import com.quokkabounce.game.sprites.Meteor;
 import com.quokkabounce.game.sprites.MoveWall;
 import com.quokkabounce.game.sprites.Obstacle;
@@ -72,6 +74,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Meteor> meteors;
     private Array<TallDino> tallDinos;
     private Array<Drone> drones;
+    private Array<LaserGun> laserGuns;
     private BooleanArray collectedQuokkas;
     private boolean hitLeft[], hitRight[], hitBottom[], hitTop[];
     private Vector2 hitSide[];
@@ -83,6 +86,7 @@ public class PlayState extends State implements InputProcessor{
         clouds = new Array<EvilCloud>();
         walls = new Array<Wall>();
         hawks = new Array<Hawk>();
+        laserGuns = new Array<LaserGun>();
         drones = new Array<Drone>();
         bonusQuokkas = new Array<BonusQuokka>();
         collectedQuokkas = new BooleanArray();
@@ -420,11 +424,19 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
                 for(Drone drone : drones){
-                    if(drone.getPosDrone().x < (cam.position.x * VIEWPORT_SCALER)){
+                    if(drone.getPosDrone().x > (cam.position.x - cam.viewportWidth / 2)){
                         drone.setStartMove(true);
                     }
                     if(drone.isStartMove()) {
                         drone.move(dt, quokka.getPosition());
+                    }
+                }
+                for(LaserGun laserGun : laserGuns){
+                    if(laserGun.getPosGun().x > (cam.position.x - cam.viewportWidth / 2)){
+                        laserGun.shoot(dt, quokka.getPosition());
+                    }
+                    if(laserGun.getMyBeam().getPosBeam().y > cam.viewportHeight || laserGun.getMyBeam().getPosBeam().y + laserGun.getMyBeam().getBeamBounds().getHeight() < 0 || laserGun.getMyBeam().getPosBeam().x + laserGun.getMyBeam().getBeamBounds().getWidth() < (cam.position.x - cam.viewportWidth / 2) || laserGun.getMyBeam().getPosBeam().x > (cam.position.x + cam.viewportWidth / 2)){
+                        laserGun.resetShot();
                     }
                 }
                 for (TallDino tallDino : tallDinos) {
@@ -1375,6 +1387,13 @@ public class PlayState extends State implements InputProcessor{
         for (Hawk hawk : hawks){
             sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
         }
+        for(LaserGun laserGun : laserGuns){
+            sb.draw(laserGun.getTexture(), laserGun.getPosGun().x, laserGun.getPosGun().y);
+            //add something about drawing the laser here
+        }
+        for(Drone drone: drones){
+            sb.draw(drone.getTexture(), drone.getPosDrone().x, drone.getPosDrone().y);
+        }
         for(Meteor meteor: meteors){
             sb.draw(meteor.getTexture(), meteor.getPosMeteor().x, meteor.getPosMeteor().y);
         }
@@ -1507,6 +1526,12 @@ public class PlayState extends State implements InputProcessor{
         }
         for(Hawk hawk : hawks){
             hawk.dispose();
+        }
+        for(LaserGun laserGun : laserGuns){
+            laserGun.dispose();
+        }
+        for(Drone drone : drones){
+            drone.dispose();
         }
         for(Meteor meteor: meteors){
             meteor.dispose();
