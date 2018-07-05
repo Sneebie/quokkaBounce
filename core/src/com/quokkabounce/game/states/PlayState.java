@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BooleanArray;
 import com.quokkabounce.game.QuokkaBounce;
+import com.quokkabounce.game.sprites.Airplane;
 import com.quokkabounce.game.sprites.Arrow;
 import com.quokkabounce.game.sprites.BonusQuokka;
 import com.quokkabounce.game.sprites.Button;
@@ -24,6 +25,7 @@ import com.quokkabounce.game.sprites.Meteor;
 import com.quokkabounce.game.sprites.MoveWall;
 import com.quokkabounce.game.sprites.Obstacle;
 import com.quokkabounce.game.sprites.Quokka;
+import com.quokkabounce.game.sprites.Stoplight;
 import com.quokkabounce.game.sprites.TallDino;
 import com.quokkabounce.game.sprites.Vine;
 import com.quokkabounce.game.sprites.Wall;
@@ -60,6 +62,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Wall> walls;
     private Array<BonusQuokka> bonusQuokkas;
     private Array<Obstacle> switches;
+    private Array<Stoplight> stoplights;
     private Array<Vector2> moveSpots;
     private Array<Obstacle> planets;
     private Array<Obstacle> brushes;
@@ -72,6 +75,7 @@ public class PlayState extends State implements InputProcessor{
     private Array<Texture> layerTextures;
     private Array<MoveWall> moveWalls;
     private Array<Meteor> meteors;
+    private Array<Airplane> airplanes;
     private Array<TallDino> tallDinos;
     private Array<Drone> drones;
     private Array<LaserGun> laserGuns;
@@ -101,6 +105,7 @@ public class PlayState extends State implements InputProcessor{
         moveSpots = new Array<Vector2>();
         vines = new Array<Vine>();
         meteors = new Array<Meteor>();
+        airplanes = new Array<Airplane>();
         tallDinos = new Array<TallDino>();
         layerTextures = new Array<Texture>();
         layerVines = new Array<Array<Vine>>();
@@ -1013,6 +1018,20 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                 }
+                for (Airplane airplane : airplanes) {
+                    if (airplane.getPosAirplane().x < (cam.position.x - cam.viewportWidth / 2)) {
+                        airplane.setStartFall(true);
+                    }
+                    if (airplane.isStartFall()) {
+                        airplane.move(dt);
+                        if (airplane.collides(quokka.getQuokkaBounds())) {
+                            if (airplanes.contains(airplane, true)) {
+                                gsm.set(new PlayState(gsm, world, level));
+                                break;
+                            }
+                        }
+                    }
+                }
                 for(Obstacle portal : portals){
                     if (portal.collides(quokka.getQuokkaBounds())) {
                         if(portals.indexOf(portal, true)%2 == 0){
@@ -1394,8 +1413,14 @@ public class PlayState extends State implements InputProcessor{
         for(Drone drone: drones){
             sb.draw(drone.getTexture(), drone.getPosDrone().x, drone.getPosDrone().y);
         }
+        for(Stoplight stoplight : stoplights){
+            sb.draw(stoplight.getTexture(), stoplight.getPosStoplight().x, stoplight.getPosStoplight().y);
+        }
         for(Meteor meteor: meteors){
             sb.draw(meteor.getTexture(), meteor.getPosMeteor().x, meteor.getPosMeteor().y);
+        }
+        for(Airplane airplane : airplanes){
+            sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
         }
         for(Arrow arrow : arrows){
             sb.draw(arrow.getTexture(), arrow.getPosArrow().x, arrow.getPosArrow().y);
@@ -1518,6 +1543,9 @@ public class PlayState extends State implements InputProcessor{
         for(Obstacle wallSwitch: switches){
             wallSwitch.dispose();
         }
+        for(Stoplight stoplight : stoplights){
+            stoplight.dispose();
+        }
         for(Obstacle brush: brushes){
             brush.dispose();
         }
@@ -1533,8 +1561,11 @@ public class PlayState extends State implements InputProcessor{
         for(Drone drone : drones){
             drone.dispose();
         }
-        for(Meteor meteor: meteors){
+        for(Meteor meteor: meteors) {
             meteor.dispose();
+        }
+        for(Airplane airplane : airplanes){
+            airplane.dispose();
         }
         for(Array<Vine> vineArray : layerVines){
             for(Vine vine: vineArray){

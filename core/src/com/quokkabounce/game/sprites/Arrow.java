@@ -122,5 +122,4 @@ public class Arrow {
         }
         arrowBounds.set(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
     }
-
 }
