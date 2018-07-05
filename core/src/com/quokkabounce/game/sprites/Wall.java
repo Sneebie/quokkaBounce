@@ -14,16 +14,14 @@ public class Wall{
     private Vector2 posWall, bl, br, ul, ur;
     private Rectangle wallBounds;
     private Array<Obstacle> wallSwitches;
-    private Stoplight stoplight;
     private float wallMove;
-    private boolean hasSwitch, moveWall, hasLight;
+    private boolean hasSwitch, moveWall;
 
     public Wall(float x, float y, String textureString){
         setTexture(textureString);
 
         posWall = new Vector2(x, y);
         hasSwitch = false;
-        hasLight = false;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
         moveWall = false;
         bl = new Vector2(x,y);
@@ -37,7 +35,6 @@ public class Wall{
 
         posWall = new Vector2(x, y);
         hasSwitch = false;
-        hasLight = false;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
         moveWall = false;
         bl = new Vector2(x,y);
@@ -51,7 +48,6 @@ public class Wall{
 
         posWall = new Vector2(x, y);
         hasSwitch = true;
-        hasLight = false;
         this.wallMove = wallMove;
         this.wallSwitches = wallSwitches;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
@@ -67,25 +63,8 @@ public class Wall{
 
         posWall = new Vector2(x, y);
         hasSwitch = true;
-        hasLight = false;
         this.wallMove = wallMove;
         this.wallSwitches = wallSwitches;
-        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
-        moveWall = false;
-        bl = new Vector2(x,y);
-        br = new Vector2(x + getWallBounds().getWidth(), y);
-        ul = new Vector2(x, y + getWallBounds().getHeight());
-        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
-    }
-
-    public Wall(float x, float y, Stoplight stoplight, float wallMove, String textureString){
-        setTexture(textureString);
-
-        posWall = new Vector2(x, y);
-        hasSwitch = false;
-        hasLight = true;
-        this.wallMove = wallMove;
-        this.stoplight = stoplight;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
         moveWall = false;
         bl = new Vector2(x,y);
@@ -164,9 +143,5 @@ public class Wall{
 
     public Rectangle getWallBounds() {
         return wallBounds;
-    }
-
-    public Stoplight getStoplight() {
-        return stoplight;
     }
 }

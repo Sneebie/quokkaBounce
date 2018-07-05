@@ -14,6 +14,8 @@ public class MoveWall {
     private Rectangle wallBounds;
     private Vector2 velocity;
     private int direction, distance;
+    private boolean hasLight;
+    private Stoplight stoplight;
 
     public MoveWall(float x, float y, float speed, float distance, int direction){
         setTexture();
@@ -31,8 +33,33 @@ public class MoveWall {
                 velocity = new Vector2(0, speed);
                 break;
         }
-
+        hasLight = false;
         posWall = new Vector2(x, y);
+        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
+    }
+
+    public MoveWall(float x, float y, float speed, float distance, int direction, Stoplight stoplight){
+        setTexture();
+        switch(direction){
+            case 0:
+                velocity = new Vector2(speed, 0);
+                break;
+            case 1:
+                velocity = new Vector2(0, -1 * speed);
+                break;
+            case 2:
+                velocity = new Vector2(-1 * speed, 0);
+                break;
+            case 3:
+                velocity = new Vector2(0, speed);
+                break;
+        }
+        posWall = new Vector2(x, y);
+        hasLight = true;
         wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
         bl = new Vector2(x,y);
         br = new Vector2(x + getWallBounds().getWidth(), y);
@@ -89,19 +116,39 @@ public class MoveWall {
     }
 
     public void update(float dt){
-        if(posWall.x >= distance || posWall.x <= -1 *distance){
-            velocity.set(-1 * velocity.x, 0);
+        if(hasLight){
+            if(stoplight.getLightColor() == "green" || stoplight.getLightColor() == "yellow"){
+                if (posWall.x >= distance || posWall.x <= -1 * distance) {
+                    velocity.set(-1 * velocity.x, 0);
+                }
+                if (posWall.y >= distance || posWall.y <= -1 * distance) {
+                    velocity.set(0, -1 * velocity.y);
+                }
+                velocity.scl(dt);
+                posWall.add(velocity.x, velocity.y);
+                velocity.scl(1 / dt);
+                wallBounds.set(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+                bl.set(posWall.x, posWall.y);
+                br.set(posWall.x + getWallBounds().getWidth(), posWall.y);
+                ul.set(posWall.x, posWall.y + getWallBounds().getHeight());
+                ur.set(posWall.x + getWallBounds().getWidth(), posWall.y + getWallBounds().getHeight());
+            }
         }
-        if(posWall.y >= distance || posWall.y <= -1 *distance){
-            velocity.set(0, -1 * velocity.y);
+        else {
+            if (posWall.x >= distance || posWall.x <= -1 * distance) {
+                velocity.set(-1 * velocity.x, 0);
+            }
+            if (posWall.y >= distance || posWall.y <= -1 * distance) {
+                velocity.set(0, -1 * velocity.y);
+            }
+            velocity.scl(dt);
+            posWall.add(velocity.x, velocity.y);
+            velocity.scl(1 / dt);
+            wallBounds.set(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+            bl.set(posWall.x, posWall.y);
+            br.set(posWall.x + getWallBounds().getWidth(), posWall.y);
+            ul.set(posWall.x, posWall.y + getWallBounds().getHeight());
+            ur.set(posWall.x + getWallBounds().getWidth(), posWall.y + getWallBounds().getHeight());
         }
-        velocity.scl(dt);
-        posWall.add(velocity.x, velocity.y);
-        velocity.scl(1/dt);
-        wallBounds.set(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
-        bl.set(posWall.x,posWall.y);
-        br.set(posWall.x + getWallBounds().getWidth(), posWall.y);
-        ul.set(posWall.x, posWall.y + getWallBounds().getHeight());
-        ur.set(posWall.x + getWallBounds().getWidth(), posWall.y + getWallBounds().getHeight());
     }
 }
