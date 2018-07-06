@@ -1863,9 +1863,9 @@ public class PlayState extends State implements InputProcessor{
                     case 2:
                         levelBackground = new Texture("spaceBackground.png");
                         planets.add(new Obstacle(300, 200, "greenPlanet.png"));
-                        //planets.add(new Obstacle(900, 400, "greenPlanet.png"));
+                        planets.add(new Obstacle(900, 400, "greenPlanet.png"));
                         happyCloud = new HappyCloud(1500, 300);
-                        //planets.add(new Obstacle(1700, 400, "greenPlanet.png"));
+                        planets.add(new Obstacle(1700, 400, "greenPlanet.png"));
                         break;
                 }
                 break;
