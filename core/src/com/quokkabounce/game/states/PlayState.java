@@ -99,6 +99,7 @@ public class PlayState extends State implements InputProcessor{
         nullZones = new Array<Obstacle>();
         arrows = new Array<Arrow>();
         brushes = new Array<Obstacle>();
+        stoplights = new Array<Stoplight>();
         portals = new Array<Obstacle>();
         windGusts = new Array<Obstacle>();
         moveWalls = new Array<MoveWall>();
