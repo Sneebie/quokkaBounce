@@ -14,6 +14,7 @@ public class Quokka {
     private Vector3 position, velocity, gravity;
     private Texture quokka;
     private Rectangle quokkaBounds;
+    private boolean touchingPortal;
     private static float GUSTSCALER = 1.5f;
 
     public Vector3 getGravity() {
@@ -34,6 +35,7 @@ public class Quokka {
         upperLeft2 = new Vector2(x, y+quokkaBounds.getHeight());
         upperRight2 = new Vector2(x+quokkaBounds.getWidth(), y+quokkaBounds.getHeight());
         velocity = new Vector3(0,0,0);
+        touchingPortal = false;
     }
 
     public void update(float dt, boolean inGust){
@@ -55,6 +57,14 @@ public class Quokka {
         bottomRight2.set(position.x + quokkaBounds.getWidth(), position.y);
         upperLeft2.set(position.x, position.y + quokkaBounds.getHeight());
         upperRight2.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
+    }
+
+    public boolean isTouchingPortal() {
+        return touchingPortal;
+    }
+
+    public void setTouchingPortal(boolean touchingPortal) {
+        this.touchingPortal = touchingPortal;
     }
 
     public Vector2 getBottomLeft() {

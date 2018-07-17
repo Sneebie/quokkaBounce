@@ -10,13 +10,13 @@ import com.badlogic.gdx.utils.Array;
  */
 
 public class Obstacle {
-    private static int SPEED = 100, LINEBACK = 800;
     private Texture obstacleTexture;
     private Vector2 posObstacle, velObstacle;
     private Rectangle obstacleBounds;
     private Array<Vector2> moveSpots;
     private int moveTracker = 1;
     private int netDistance = 0;
+    private int speed, lineback;
     private float totalDistance = 0;
 
     public Obstacle(float x, float y, String textureString){
@@ -33,20 +33,21 @@ public class Obstacle {
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, width, height);
     }
 
-    public Obstacle(String textureString, Array<Vector2> moveSpots){
+    public Obstacle(String textureString, Array<Vector2> moveSpots, int speed, int lineback){
         obstacleTexture = new Texture(textureString);
-
         posObstacle = new Vector2(moveSpots.get(0).x, moveSpots.get(0).y);
-
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
         this.moveSpots = new Array<Vector2>(moveSpots);
+        this.speed = speed;
+        this.lineback = lineback;
         double tempDist = 0;
         for(int i = 1; i < moveSpots.size - 1; i++){
             tempDist+=Math.sqrt(Math.pow(moveSpots.get(i).y-moveSpots.get(i-1).y, 2) + Math.pow(moveSpots.get(i).x-moveSpots.get(i-1).x, 2));
         }
-        netDistance = (int) Math.round(tempDist < LINEBACK ? tempDist : LINEBACK);
+        System.out.println(tempDist);
+        netDistance = (int) Math.round(tempDist < lineback ? tempDist : lineback);
         velObstacle = new Vector2(moveSpots.get(moveTracker).x - moveSpots.get(moveTracker - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveTracker - 1).y);
-        velObstacle.scl(SPEED / velObstacle.len());
+        velObstacle.scl(speed / velObstacle.len());
     }
 
     public Array<Vector2> getMoveSpots() {
@@ -59,6 +60,10 @@ public class Obstacle {
 
     public float getTotalDistance() {
         return totalDistance;
+    }
+
+    public int getLineback() {
+        return lineback;
     }
 
     public void move(float dt) {
@@ -78,12 +83,12 @@ public class Obstacle {
                     posObstacle.set(moveSpots.get(moveTracker));
                     moveTracker++;
                     velObstacle.set(moveSpots.get(moveTracker).x - moveSpots.get(moveTracker - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveTracker - 1).y);
-                    velObstacle.scl(SPEED / velObstacle.len());
+                    velObstacle.scl(speed / velObstacle.len());
                 } else {
                     posObstacle.set(moveSpots.get(moveTracker));
                     moveTracker = 0;
                     velObstacle.set(moveSpots.get(moveTracker).x - moveSpots.get(moveSpots.size - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveSpots.size - 1).y);
-                    velObstacle.scl(SPEED / velObstacle.len());
+                    velObstacle.scl(speed / velObstacle.len());
                 }
             }
             else if(velObstacle.y <= 0 && posObstacle.y <= moveSpots.get(moveTracker).y){
@@ -91,12 +96,12 @@ public class Obstacle {
                     posObstacle.set(moveSpots.get(moveTracker));
                     moveTracker++;
                     velObstacle.set(moveSpots.get(moveTracker).x - moveSpots.get(moveTracker - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveTracker - 1).y);
-                    velObstacle.scl(SPEED / velObstacle.len());
+                    velObstacle.scl(speed / velObstacle.len());
                 } else {
                     posObstacle.set(moveSpots.get(moveTracker));
                     moveTracker = 0;
                     velObstacle.set(moveSpots.get(moveTracker).x - moveSpots.get(moveSpots.size - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveSpots.size - 1).y);
-                    velObstacle.scl(SPEED / velObstacle.len());
+                    velObstacle.scl(speed / velObstacle.len());
                 }
             }
         }
@@ -106,12 +111,12 @@ public class Obstacle {
                     posObstacle.set(moveSpots.get(moveTracker));
                     moveTracker++;
                     velObstacle.set(moveSpots.get(moveTracker).x - moveSpots.get(moveTracker - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveTracker - 1).y);
-                    velObstacle.scl(SPEED / velObstacle.len());
+                    velObstacle.scl(speed / velObstacle.len());
                 } else {
                     posObstacle.set(moveSpots.get(moveTracker));
                     moveTracker = 0;
                     velObstacle.set(moveSpots.get(moveTracker).x - moveSpots.get(moveSpots.size - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveSpots.size - 1).y);
-                    velObstacle.scl(SPEED / velObstacle.len());
+                    velObstacle.scl(speed / velObstacle.len());
                 }
             }
             else if(velObstacle.y <= 0 && posObstacle.y <= moveSpots.get(moveTracker).y){
@@ -119,12 +124,12 @@ public class Obstacle {
                     posObstacle.set(moveSpots.get(moveTracker));
                     moveTracker++;
                     velObstacle.set(moveSpots.get(moveTracker).x - moveSpots.get(moveTracker - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveTracker - 1).y);
-                    velObstacle.scl(SPEED / velObstacle.len());
+                    velObstacle.scl(speed / velObstacle.len());
                 } else {
                     posObstacle.set(moveSpots.get(moveTracker));
                     moveTracker = 0;
                     velObstacle.set(moveSpots.get(moveTracker).x - moveSpots.get(moveSpots.size - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveSpots.size - 1).y);
-                    velObstacle.scl(SPEED / velObstacle.len());
+                    velObstacle.scl(speed / velObstacle.len());
                 }
             }
         }

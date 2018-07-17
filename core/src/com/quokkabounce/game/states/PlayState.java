@@ -53,7 +53,7 @@ public class PlayState extends State implements InputProcessor{
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
-    private float currentDT, iniPot, shortestDistance;
+    private float currentDT, iniPot, shortestDistance, camVel;
     private int layer, finalLayer, pointCounter;
     private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided;
 
@@ -996,7 +996,7 @@ public class PlayState extends State implements InputProcessor{
                     quokka.getGravity().set(0, -13, 0);
                 }
                 for (Meteor meteor : meteors) {
-                    if (meteor.getPosMeteor().x < (cam.position.x * VIEWPORT_SCALER)) {
+                    if (meteor.getPosMeteor().x < cam.position.x + cam.viewportWidth / 7) {
                         meteor.setStartFall(true);
                     }
                     if (meteor.isStartFall()) {
@@ -1034,66 +1034,103 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                 }
+                boolean touchingPortal = false;
                 for(Obstacle portal : portals){
                     if (portal.collides(quokka.getQuokkaBounds())) {
-                        if(portals.indexOf(portal, true)%2 == 0){
-                            quokka.setPosition(portals.get(portals.indexOf(portal, true) + 1).getPosObstacle());
-                        }
-                        else{
-                            quokka.setPosition(portals.get(portals.indexOf(portal, true) - 1).getPosObstacle());
+                        touchingPortal = true;
+                        if(!quokka.isTouchingPortal()) {
+                            if (portals.indexOf(portal, true) % 2 == 0) {
+                                quokka.setPosition(portals.get(portals.indexOf(portal, true) + 1).getPosObstacle().x + quokka.getPosition().x - portal.getPosObstacle().x, portals.get(portals.indexOf(portal, true) + 1).getPosObstacle().y + quokka.getPosition().y - portal.getPosObstacle().y);
+                                velocityTemp2.set(quokka.getVelocity().x / quokka.getVelocity().len(), quokka.getVelocity().y / quokka.getVelocity().len(), 0);
+                                float currentPot = 0;
+                                if (planets.size > 0) {
+                                    tempGrav.set(0, 0, 0);
+                                    for (Obstacle planet : planets) {
+                                        planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
+                                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                                        currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                    }
+                                } else {
+                                    currentPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
+                                }
+                                //coachLandmark
+                                velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0 * (iniPot - currentPot))));
+                                velocityTemp2.scl((float) (1.0 / Math.sqrt(currentDT)));
+                                quokka.getVelocity().set(velocityTemp2);
+                            } else {
+                                quokka.setPosition(portals.get(portals.indexOf(portal, true) - 1).getPosObstacle());
+                                velocityTemp2.set(quokka.getVelocity().x / quokka.getVelocity().len(), quokka.getVelocity().y / quokka.getVelocity().len(), 0);
+                                float currentPot = 0;
+                                if (planets.size > 0) {
+                                    tempGrav.set(0, 0, 0);
+                                    for (Obstacle planet : planets) {
+                                        planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
+                                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                                        currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                    }
+                                } else {
+                                    currentPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
+                                }
+                                //coachLandmark
+                                velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0 * (iniPot - currentPot))));
+                                velocityTemp2.scl((float) (1.0 / Math.sqrt(currentDT)));
+                                quokka.getVelocity().set(velocityTemp2);
+                            }
                         }
                     }
                 }
+                quokka.setTouchingPortal(touchingPortal);
                 for(Obstacle brush : brushes){
                     brush.move(dt);
                     shapeRenderer.setColor(Color.BROWN);
                     pointCounter = 0;
                     float netDistance = 0;
                     int i = brush.getMoveTracker() - 1;
-                    if(lineBounce(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i))){
-                        break;
-                    }
-                    netDistance += distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
-                    while(true){
-                        if(i != 0) {
-                            i = i > 0 ? i : brush.getMoveSpots().size + i;
-                            netDistance += distance(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1));
-                            if (netDistance > brush.getTotalDistance()) {
-                                break;
-                            }
-                            pointCounter++;
-                            if(lineBounce(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1))){
-                                break;
-                            }
-                        }
-                        else{
-                            netDistance += distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1));
-                            if (netDistance > brush.getTotalDistance()) {
-                                break;
-                            }
-                            pointCounter++;
-                            if(lineBounce(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1))){
-                                break;
-                            }
-                        }
-                        i--;
-                    }
-                    if(brush.getMoveTracker() - pointCounter > 1){
-                        if(lineBounce(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), netDistance - brush.getTotalDistance()))){
-                            break;
-                        }
-                    }
-                    else if (brush.getMoveTracker() - pointCounter == 1) {
-                        if(lineBounce(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), netDistance - brush.getTotalDistance()))){
-                            break;
-                        }
+                    if(quokka.getQuokkaBounds().contains(brush.getPosObstacle())){
                     }
                     else{
-                        if(lineBounce(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), netDistance - brush.getTotalDistance()))){
+                        if (lineBounce(brush.getPosObstacle(), distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i))) > brush.getLineback() ? pointBetween(brush.getPosObstacle(), brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)), brush.getLineback(), true) : brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)))) {
                             break;
                         }
+                        netDistance += distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
+                        while (true) {
+                            if (i != 0) {
+                                i = i > 0 ? i : brush.getMoveSpots().size + i;
+                                netDistance += distance(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1));
+                                if (netDistance > brush.getTotalDistance()) {
+                                    break;
+                                }
+                                pointCounter++;
+                                if (lineBounce(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1))) {
+                                    break;
+                                }
+                            } else {
+                                netDistance += distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1));
+                                if (netDistance > brush.getTotalDistance()) {
+                                    break;
+                                }
+                                pointCounter++;
+                                if (lineBounce(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1))) {
+                                    break;
+                                }
+                            }
+                            i--;
+                        }
+                        if (brush.getMoveTracker() - pointCounter > 1) {
+                            if (lineBounce(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())))) {
+                                break;
+                            }
+                        } else if (brush.getMoveTracker() - pointCounter == 1) {
+                            if (lineBounce(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) ? (float) distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) : (float) (netDistance - brush.getTotalDistance())))) {
+                                break;
+                            }
+                        } else {
+                            if (lineBounce(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())))) {
+                                break;
+                            }
+                        }
+                        pointCounter = 0;
                     }
-                    pointCounter = 0;
                 }
                 for (EvilCloud cloud : clouds) {
                     if (cloud.collides(quokka.getQuokkaBounds())) {
@@ -1247,6 +1284,53 @@ public class PlayState extends State implements InputProcessor{
                 quokka.setVelocity(resultVector(quokka.getVelocity(), p1, p2));
             }
         }
+        else{
+            float upLift, downLift, leftLift, rightLift, slope, yInt, liftMagnitude;
+            slope = (p2.y - p1.y) / (p2.x - p1.x);
+            yInt = p1.y - p1.x * slope;
+            char liftDir;
+            upLift = slope < 0 ? slope * quokka.getPosition().x + yInt - quokka.getPosition().y : slope * (quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()) + yInt - quokka.getPosition().y;
+            downLift = slope > 0 ? quokka.getPosition().y + quokka.getQuokkaBounds().getHeight() - slope * quokka.getPosition().x - yInt : quokka.getPosition().y + quokka.getQuokkaBounds().getHeight() - slope * (quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()) - yInt;
+            leftLift = slope > 0 ? quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() - (quokka.getPosition().y - yInt)/slope : quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() - (quokka.getPosition().y + quokka.getQuokkaBounds().getHeight() - yInt)/slope;
+            rightLift = slope < 0 ? (quokka.getPosition().y - yInt)/slope - quokka.getPosition().x :(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight() - yInt)/slope - quokka.getPosition().x;
+            liftDir = 'u';
+            liftMagnitude = upLift;
+            if(downLift < upLift){
+                liftDir = 'd';
+                liftMagnitude = downLift;
+            }
+            if(leftLift < liftMagnitude){
+                liftDir = 'l';
+                liftMagnitude = leftLift;
+            }
+            if(rightLift < liftMagnitude){
+                liftDir = 'r';
+            }
+            if(liftDir == 'u'){
+                float currentPos = quokka.getPosition().y;
+                while(quokka.getPosition().y - currentPos < upLift){
+                    quokka.getPosition().y += 10;
+                }
+            }
+            if(liftDir == 'd'){
+                float currentPos = quokka.getPosition().y;
+                while(currentPos - quokka.getPosition().y < downLift){
+                    quokka.getPosition().y -= 10;
+                }
+            }
+            if(liftDir == 'l'){
+                float currentPos = quokka.getPosition().x;
+                while(currentPos - quokka.getPosition().x < leftLift){
+                    quokka.getPosition().x -= 10;
+                }
+            }
+            if(liftDir == 'r'){
+                float currentPos = quokka.getPosition().x;
+                while(quokka.getPosition().x - currentPos < rightLift){
+                    quokka.getPosition().x += 10;
+                }
+            }
+        }
             if (!hitCorner) {
                 if (doIntersect(quokka.getBottomLeft2(), quokka.getBottomRight2(), p1, p2)) {
                     while(doIntersect(quokka.getBottomLeft2(), quokka.getBottomRight2(), p1, p2)){
@@ -1369,6 +1453,27 @@ public class PlayState extends State implements InputProcessor{
         return tempBack;
     }
 
+    private Vector2 pointBetween(Vector2 p1, Vector2 p2, float distanceBetween, boolean quokBack){
+        final double x;
+        final double y;
+        if(p1.x != p2.x) {
+            final float slope = (p1.y - p2.y) / (p1.x - p2.x);
+            final float yInt = p2.y - slope * p2.x;
+            x = p2.x - (distanceBetween * (p2.x - p1.x)) / distance(p2, p1);
+            y = slope * x + yInt;
+        }
+        else if (p2.y > p1.y){
+            x = p1.x;
+            y = p1.y + distanceBetween;
+        }
+        else{
+            x = p1.x;
+            y = p1.y - distanceBetween;
+        }
+        tempBack.set((float) x, (float) y);
+        return tempBack;
+    }
+
     private Vector2 intersectionPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2){
         xdiff.set(a1.x - a2.x, b1.x - b2.x);
         ydiff.set(a1.y - a2.y, b1.y - b2.y);
@@ -1449,7 +1554,7 @@ public class PlayState extends State implements InputProcessor{
             pointCounter = 0;
                 float netDistance = 0;
                 int i = brush.getMoveTracker() - 1;
-                shapeRenderer.line(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
+                shapeRenderer.line(brush.getPosObstacle(), distance(brush.getPosObstacle(),brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i))) > brush.getLineback() ? pointBetween(brush.getPosObstacle(),brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)), brush.getLineback(), true) : brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)));
                 netDistance += distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
                 while(true){
                     if(i != 0) {
@@ -1472,13 +1577,13 @@ public class PlayState extends State implements InputProcessor{
                     i--;
                 }
                 if(brush.getMoveTracker() - pointCounter > 1){
-                    shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), netDistance - brush.getTotalDistance()));
+                    shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())));
                 }
                 else if (brush.getMoveTracker() - pointCounter == 1) {
-                    shapeRenderer.line(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), netDistance - brush.getTotalDistance()));
+                    shapeRenderer.line(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) ? (float) distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) : (netDistance - brush.getTotalDistance())));
                 }
                 else{
-                    shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), netDistance - brush.getTotalDistance()));
+                    shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())));
                 }
         }
         for(Obstacle nullZone : nullZones){
@@ -1780,7 +1885,33 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(1900, 50));
                         break;
                     case 6:
-//                        hawks.add(new Hawk())
+                        switches.add(new Obstacle(400, 0,"wallSwitch.png"));
+                        walls.add(new Wall(200, 300, "horizontWall.png"));
+                        walls.add(new Wall(672, 422, switches, 1000));
+                        tallDinos.add(new TallDino(200, -305, 672, 200));
+                        meteors.add(new Meteor(750, 780, 0, 0));
+                        happyCloud = new HappyCloud(900, 150);
+                        break;
+                    case 7:
+                        walls.add(new Wall(200, -100));
+                        tallDinos.add(new TallDino(350, -100, 1350, 300));
+                        walls.add(new Wall(575, 601));
+                        meteors.add(new Meteor(720, 780, 0, 0));
+                        clouds.add(new EvilCloud(1070, 550));
+                        happyCloud = new HappyCloud(1600, 100);
+                        break;
+                    case 8:
+                        meteors.add(new Meteor(400, 880, 0, 0));
+                        meteors.add(new Meteor(600, 880, 0, 0));
+                        meteors.add(new Meteor(800, 880, 0, 0));
+                        meteors.add(new Meteor(1000, 880, 0, 0));
+                        tallDinos.add(new TallDino(200, -250, 400, 150));
+                        tallDinos.add(new TallDino(432, -250, 632, 150));
+                        tallDinos.add(new TallDino(1064, -250, 864, 150));
+                        tallDinos.add(new TallDino(1296, -250, 1096, 150));
+                        meteors.add(new Meteor(1644, 880, 0, 0));
+                        tallDinos.add(new TallDino(1528, -250, 1960, 150));
+                        happyCloud = new HappyCloud(2192, 150);
                         break;
                 }
                 break;
@@ -1820,12 +1951,12 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(990, 450));
                         happyCloud = new HappyCloud(1600, 150);
                         break;
-                    case 2:
+                    /*case 2:
                         clouds.add(new EvilCloud(250, 50));
                         walls.add(new Wall(900, 250));
                         bonusQuokkas.add(new BonusQuokka(1068, 500));
                         happyCloud = new HappyCloud(1258, 50);
-                        break;
+                        break;*/
                     case 3:
                         nullZones.add(new Obstacle(400, 100, 900, 800));
                         walls.add(new Wall(1300, 200));
@@ -1839,7 +1970,22 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(1550, 500));
                         happyCloud = new HappyCloud(1800, 50);
                         break;
-
+                    case 5:
+                        moveSpots.add(new Vector2(200, 650));
+                        moveSpots.add(new Vector2(200, 100));
+                        moveSpots.add(new Vector2(200.01f, 100));
+                        moveSpots.add(new Vector2(200.01f, 650));
+                        brushes.add(new Obstacle("quokka.png", moveSpots, 200, 400));
+                        clouds.add(new EvilCloud(300, 50));
+                        moveSpots.clear();
+                        moveSpots.add(new Vector2(600, 600));
+                        moveSpots.add(new Vector2(900, 150));
+                        moveSpots.add(new Vector2(1050, 250));
+                        moveSpots.add(new Vector2(750, 700));
+                        brushes.add(new Obstacle("quokka.png", moveSpots, 250, 600));
+                        walls.add(new Wall(1050, 0));
+                        happyCloud = new HappyCloud(1200, 50);
+                        break;
                 }
                 break;
             case 5:
@@ -1849,7 +1995,7 @@ public class PlayState extends State implements InputProcessor{
                         moveSpots.add(new Vector2(200, 200));
                         moveSpots.add(new Vector2(100, 300));
                         moveSpots.add(new Vector2(0, 200));
-                        brushes.add(new Obstacle("quokka.png", moveSpots));
+                        brushes.add(new Obstacle("quokka.png", moveSpots, 100, 800));
                         moveSpots.clear();
                         moveSpots.add(new Vector2(400, 100));
                         moveSpots.add(new Vector2(500, 200));
@@ -1857,15 +2003,46 @@ public class PlayState extends State implements InputProcessor{
                         moveSpots.add(new Vector2(700, 100));
                         moveSpots.add(new Vector2(600, 400));
                         moveSpots.add(new Vector2(500, 300));
-                        brushes.add(new Obstacle("quokka.png", moveSpots));
+                        brushes.add(new Obstacle("quokka.png", moveSpots, 100, 800));
                         happyCloud = new HappyCloud(10000, 50);
                         break;
-                    case 2:
+                    case 4:
                         levelBackground = new Texture("spaceBackground.png");
                         planets.add(new Obstacle(300, 200, "greenPlanet.png"));
                         planets.add(new Obstacle(900, 400, "greenPlanet.png"));
                         happyCloud = new HappyCloud(1500, 300);
                         planets.add(new Obstacle(1700, 400, "greenPlanet.png"));
+                        break;
+                    case 2:
+                        levelBackground = new Texture("spaceBackground.png");
+                        switches.add(new Obstacle(300, 0, "wallSwitch.png"));
+                        planets.add(new Obstacle(200, 300, "greenPlanet.png"));
+                        walls.add(new Wall(500, 380, switches, 1000));
+                        walls.add(new Wall(500, -215));
+                        planets.add(new Obstacle(800, 50, "greenPlanet.png"));
+                        happyCloud = new HappyCloud(1500, 300);
+                        break;
+                    case 3:
+                        break;
+                }
+                break;
+            case 6:
+                switch(level){
+                    case 1:
+                        walls.add(new Wall(-100,380));
+                        walls.add(new Wall(-100, -265));
+                        portals.add(new Obstacle(25, 50, "portal.png"));
+                        walls.add(new Wall(200,380));
+                        walls.add(new Wall(200, -265));
+                        portals.add(new Obstacle(450, 600, "portal.png"));
+                        clouds.add(new EvilCloud(550, 100));
+                        bonusQuokkas.add(new BonusQuokka(450, 0));
+                        clouds.add(new EvilCloud(850, 600));
+                        happyCloud = new HappyCloud(1100, 600);
+                        break;
+                    case 2:
+                        walls.add(new Wall(200, -50));
+                        laserGuns.add(new LaserGun(350, 50));
                         break;
                 }
                 break;
@@ -1874,6 +2051,12 @@ public class PlayState extends State implements InputProcessor{
             for(int i = -220; i < happyCloud.getPosCloud().y; i+=595){
                 walls.add(new Wall(-30, i, "wall.png"));
                 walls.add(new Wall(cam.viewportWidth- 10, i, "wall.png"));
+            }
+        }
+        if(world == 5){
+            for(int i = -220; i < happyCloud.getPosCloud().x; i+=595){
+                walls.add(new Wall(i, -100, "horizontWall.png"));
+                walls.add(new Wall(i, cam.viewportHeight - 10, "horizontWall.png"));
             }
         }
         collectedQuokkas.setSize(bonusQuokkas.size);
@@ -1942,10 +2125,7 @@ public class PlayState extends State implements InputProcessor{
             currentPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
         }
         //coachLandmark
-        System.out.print("potChange");
-        System.out.println(2.0*iniPot - currentPot);
         velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0*(iniPot - currentPot))));
-        System.out.println(0.5*Math.pow(velocityTemp2.len(),2) + currentPot);
         velocityTemp2.scl((float) (1.0/Math.sqrt(currentDT)));
         return velocityTemp2;
     }
