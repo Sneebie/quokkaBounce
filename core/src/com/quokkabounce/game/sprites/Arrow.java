@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Arrow {
     private static final double ATTACKSPEED = 1.5;
     private static final float HORIZONTALSPEED = -400;
-    private static final int ATTACKDELAY = 10;
+    private static final int ATTACKDELAY = 1;
 
     private int t, loopTime;
     private boolean alreadySpotted, shouldShoot, horizontal;
@@ -98,7 +98,6 @@ public class Arrow {
                 }
                 if (loopTime >= ATTACKDELAY) {
                     velArrow.scl(dt);
-                    System.out.println(velArrow);
                     posArrow.set(posArrow.x + velArrow.x, posArrow.y + velArrow.y);
                     velArrow.scl(1 / dt);
                 } else {
