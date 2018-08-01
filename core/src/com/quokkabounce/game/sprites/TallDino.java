@@ -9,20 +9,22 @@ import com.badlogic.gdx.math.Vector2;
  */
 
 public class TallDino{
-    private Texture tallDinoTexture;
+    private Texture tallDinoTexture, tallDinoTexture2;
     private Vector2 posTallDino, velTallDino;
     private Rectangle tallDinoBounds;
     private float endPos, startPos;
     private int dir;
+    private boolean flipped;
 
     public TallDino(float x, float y, float endX, float speed){
         setTexture("tallDino.png");
+        setTexture2("tallDino2.png");
         endPos = endX;
         startPos = x;
         dir = 1;
         posTallDino = new Vector2(x, y);
         velTallDino = new Vector2(speed, 0);
-        tallDinoBounds = new Rectangle(posTallDino.x, posTallDino.y, tallDinoTexture.getWidth(), tallDinoTexture.getHeight());
+        tallDinoBounds = new Rectangle(posTallDino.x + tallDinoTexture.getWidth() / 4, posTallDino.y, tallDinoTexture.getWidth() / 2, tallDinoTexture.getHeight());
     }
 
     public Vector2 getPosTallDino() {
@@ -30,7 +32,7 @@ public class TallDino{
     }
 
     public Texture getTexture() {
-        return tallDinoTexture;
+        return flipped? tallDinoTexture : tallDinoTexture2;
     }
 
     public boolean collides(Rectangle player) {
@@ -45,20 +47,28 @@ public class TallDino{
         tallDinoTexture = new Texture(textureString);
     }
 
+    public void setTexture2(String textureString) {
+        tallDinoTexture2 = new Texture(textureString);
+    }
+
     public void move(float dt){
         velTallDino.scl(dt);
         if(startPos < endPos) {
             if (getPosTallDino().x < startPos) {
                 dir = 1;
+                flipped = false;
             } else if (getPosTallDino().x >= endPos) {
                 dir = -1;
+                flipped = true;
             }
         }
         else{
             if (getPosTallDino().x < endPos) {
                 dir = 1;
+                flipped = false;
             } else if (getPosTallDino().x >= startPos) {
                 dir = -1;
+                flipped = true;
             }
         }
         posTallDino.add(velTallDino.x * dir, velTallDino.y * dir);

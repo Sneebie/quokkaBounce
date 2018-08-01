@@ -10,11 +10,11 @@ import com.badlogic.gdx.math.Vector3;
  */
 public class Arrow {
     private static final double ATTACKSPEED = 1.5;
-    private static final float HORIZONTALSPEED = -400;
+    private static final float HORIZONTALSPEED = -600;
     private static final int ATTACKDELAY = 1;
 
     private int t, loopTime;
-    private boolean alreadySpotted, shouldShoot, horizontal;
+    private boolean alreadySpotted, shouldShoot, horizontal, flipped;
 
     private Rectangle arrowBounds;
     private Texture arrowTexture;
@@ -23,7 +23,6 @@ public class Arrow {
     public Arrow(float x, float y, boolean horizontal) {
         loopTime = 0;
         t = 0;
-        arrowTexture = new Texture("wallSwitch.png");
         alreadySpotted = false;
         this.horizontal = horizontal;
         posArrow = new Vector2(x, y);
@@ -32,19 +31,25 @@ public class Arrow {
         if(horizontal){
             velArrow.set(HORIZONTALSPEED, 0);
         }
+        arrowTexture = new Texture(this.getPosArrow().x < 384 ? "arrow.png" : "arrow2.png");
         arrowBounds = new Rectangle(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
     }
     public Arrow(float x, float y) {
         loopTime = 0;
         t = 0;
-        arrowTexture = new Texture("wallSwitch.png");
+        flipped = false;
         alreadySpotted = false;
         horizontal = true;
         posArrow = new Vector2(x, y);
         initialPos = new Vector2(x, y);
         velArrow = new Vector2();
         velArrow.set(HORIZONTALSPEED, 0);
-        arrowBounds = new Rectangle(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
+        arrowTexture = new Texture(this.getPosArrow().x < 384 ? "arrow.png" : "arrow2.png");
+        arrowBounds = new Rectangle(posArrow.x + 7, posArrow.y + 19, arrowTexture.getWidth() - 7, 5);
+    }
+
+    public boolean isFlipped() {
+        return flipped;
     }
 
     public Rectangle getArrowBounds() {
@@ -90,7 +95,7 @@ public class Arrow {
         if(shouldShoot) {
             if(horizontal){
                 if (!alreadySpotted) {
-                    if(posQuokka.x > posArrow.x + arrowBounds.getWidth()){
+                    if(posQuokka.x > posArrow.x){
                         velArrow.set(-1 * velArrow.x, -1 * velArrow.y);
                     }
                     alreadySpotted = true;

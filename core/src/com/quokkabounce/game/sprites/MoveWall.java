@@ -67,6 +67,31 @@ public class MoveWall {
         ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
     }
 
+    public MoveWall(float x, float y, float speed, float distance, int direction, Stoplight stoplight, String textureString){
+        setTexture(textureString);
+        switch(direction){
+            case 0:
+                velocity = new Vector2(speed, 0);
+                break;
+            case 1:
+                velocity = new Vector2(0, -1 * speed);
+                break;
+            case 2:
+                velocity = new Vector2(-1 * speed, 0);
+                break;
+            case 3:
+                velocity = new Vector2(0, speed);
+                break;
+        }
+        posWall = new Vector2(x, y);
+        hasLight = true;
+        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
+    }
+
     public void setPosWall(float x, float y) {
         posWall.set(x, y);
         bl.set(x,y);
@@ -93,6 +118,10 @@ public class MoveWall {
 
     public void setTexture() {
         wallTexture = new Texture("wall.png");
+    }
+
+    public void setTexture(String textureString) {
+        wallTexture = new Texture(textureString);
     }
 
     public Rectangle getWallBounds() {
