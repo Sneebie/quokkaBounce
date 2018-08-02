@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -55,7 +58,7 @@ public class PlayState extends State implements InputProcessor{
     private HappyCloud happyCloud;
     private float currentDT, iniPot, shortestDistance, camVel;
     private int layer, finalLayer, pointCounter;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, level1, camUpdate;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -122,6 +125,7 @@ public class PlayState extends State implements InputProcessor{
         hitTop = new boolean[4];
         hitSide = new Vector2[2];
         layer = 0;
+        level1 = false;
         //warningTexture = new Texture("warning.png");
         finalLayer = 0;
         if(planets.size == 0 && nebulae.size == 0 && blackHoles.size == 0) {
@@ -145,6 +149,7 @@ public class PlayState extends State implements InputProcessor{
         hasCollided = false;
         hasEdgeCollided = false;
         smallMove = false;
+        camUpdate = false;
         vineCheck = true;
         Gdx.input.setInputProcessor(this);
         if(world!= 3) {
@@ -215,7 +220,6 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public void update(float dt) {
-        System.out.println(quokka.getPosition().x);
         if(!paused) {
             smallBounce = false;
             if (layerVines.size > 0) {
@@ -449,7 +453,7 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
                 for(Drone drone : drones){
-                    if(drone.getPosDrone().x > (cam.position.x - cam.viewportWidth / 2)){
+                    if(drone.getPosDrone().x > (cam.position.x - cam.viewportWidth * VIEWPORT_SCALER / 2)){
                         drone.setStartMove(true);
                     }
                     if(drone.isStartMove()) {
@@ -457,11 +461,13 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
                 for(LaserGun laserGun : laserGuns){
-                    if(laserGun.getPosGun().x > (cam.position.x - cam.viewportWidth / 2)){
-                        laserGun.shoot(dt, quokka.getPosition());
-                    }
+                    laserGun.shoot(dt, quokka.getPosition());
                     if(laserGun.getMyBeam().getPosBeam().y > cam.viewportHeight || laserGun.getMyBeam().getPosBeam().y + laserGun.getMyBeam().getBeamBounds().getHeight() < 0 || laserGun.getMyBeam().getPosBeam().x + laserGun.getMyBeam().getBeamBounds().getWidth() < (cam.position.x - cam.viewportWidth / 2) || laserGun.getMyBeam().getPosBeam().x > (cam.position.x + cam.viewportWidth / 2)){
                         laserGun.resetShot();
+                    }
+                    if(isCollision(laserGun.getMyBeam().getPolygon(), quokka.getQuokkaBounds())){
+                        gsm.set(new PlayState(gsm, world, level));
+                        break;
                     }
                 }
                 for (TallDino tallDino : tallDinos) {
@@ -936,7 +942,7 @@ public class PlayState extends State implements InputProcessor{
                 justPlanetTemp = false;
                 quokka.getGravity().set(0, 0, 0);
                 for (Obstacle planet : planets) {
-                    if (planet.collides(quokka.getQuokkaBounds())) {
+                    if (Intersector.overlaps(planet.getObstacleCircle(), quokka.getQuokkaBounds())) {
                         circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
                         adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
                         quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
@@ -1106,8 +1112,10 @@ public class PlayState extends State implements InputProcessor{
                     quokka.getGravity().set(0, -13, 0);
                 }
                 for (Meteor meteor : meteors) {
-                    if (meteor.getPosMeteor().x < cam.position.x + cam.viewportWidth / 7) {
-                        meteor.setStartFall(true);
+                    if(camUpdate) {
+                        if (meteor.getPosMeteor().x < cam.position.x + cam.viewportWidth / 7) {
+                            meteor.setStartFall(true);
+                        }
                     }
                     if (meteor.isStartFall()) {
                         meteor.move(dt);
@@ -1285,11 +1293,13 @@ public class PlayState extends State implements InputProcessor{
                 if (lineDraw) {
                     clickPosTemp.set(clickPosTemp.x + quokka.getBottomLeft2().x - quokka.getBottomLeft().x, clickPosTemp.y, 0);
                 }
+                camUpdate = true;
             }
-            backButton.getPosButton().x = cam.position.x - 800;
-            pauseButton.getPosButton().x = cam.position.x - 800;
-            backButton.getPosButton().y = cam.position.y + 100;
-            pauseButton.getPosButton().y = cam.position.y - 200;
+            backButton.getPosButton().x = cam.position.x - cam.viewportWidth / 2 + 15;
+            pauseButton.getPosButton().x = cam.position.x - cam.viewportWidth / 2 + 80;
+            backButton.getPosButton().y = cam.position.y + cam.viewportHeight / 2 - 65;
+            pauseButton.getPosButton().y = cam.position.y + cam.viewportHeight / 2 - 65;
+            System.out.println(backButton.getPosButton());
             backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
             pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             if (shouldFall && !smallBounce) {
@@ -1729,8 +1739,10 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
         }
         for(LaserGun laserGun : laserGuns){
-            sb.draw(laserGun.getTexture(), laserGun.getPosGun().x, laserGun.getPosGun().y);
-            //add something about drawing the laser here
+            sb.draw(laserGun.getGunRegion(), laserGun.getPosGun().x, laserGun.getPosGun().y, laserGun.getGunRegion().getRegionWidth() / 2, laserGun.getGunRegion().getRegionHeight() / 2, laserGun.getGunRegion().getRegionWidth(), laserGun.getGunRegion().getRegionHeight(), 1, 1, laserGun.getGunAngle());
+            if(laserGun.isDrawLaser()) {
+                sb.draw(laserGun.getMyBeam().getBeamRegion(), laserGun.getMyBeam().getPosBeam().x, laserGun.getMyBeam().getPosBeam().y, laserGun.getMyBeam().getBeamRegion().getRegionWidth() / 2, laserGun.getMyBeam().getBeamRegion().getRegionHeight() / 2, laserGun.getMyBeam().getBeamRegion().getRegionWidth(), laserGun.getMyBeam().getBeamRegion().getRegionHeight(), 1, 1, laserGun.getBeamAngle());
+            }
         }
         for(Drone drone: drones){
             sb.draw(drone.getTexture(), drone.getPosDrone().x, drone.getPosDrone().y);
@@ -1917,8 +1929,8 @@ public class PlayState extends State implements InputProcessor{
     }
 
     private void levelInit(int world, int level){
-        backButton = new Button(new Texture("level4Button.png"), 0, 500, 0);
-        pauseButton = new Button(new Texture("level4Button.png"), 0, 300, 0);
+        backButton = new Button(new Texture("back.png"), 0, 500, 0);
+        pauseButton = new Button(new Texture("pause.png"), 0, 300, 0);
         walls.add(new Wall(-1000, -220, "wall.png"));
         walls.add(new Wall(-1000, 375, "wall.png"));
         switch(world){
@@ -2465,6 +2477,10 @@ public class PlayState extends State implements InputProcessor{
             case 6:
                 switch(level){
                     case 1:
+                        laserGuns.add(new LaserGun(300, 300));
+                        happyCloud = new HappyCloud(5000, 300);
+                        break;
+                    /*case 1:
                         walls.add(new Wall(-100,380));
                         walls.add(new Wall(-100, -265));
                         portals.add(new Obstacle(25, 50, "portal.png"));
@@ -2475,7 +2491,7 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(450, 0));
                         clouds.add(new EvilCloud(850, 600));
                         happyCloud = new HappyCloud(1100, 600);
-                        break;
+                        break;*/
                     case 2:
                         walls.add(new Wall(200, -50));
                         laserGuns.add(new LaserGun(350, 50));
@@ -2744,7 +2760,7 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(1300, 50);
                         break;*/
                     case 1:
-                        
+                        break;
 
                 }
                 break;
@@ -2862,7 +2878,15 @@ public class PlayState extends State implements InputProcessor{
     public boolean keyDown(int keycode) {
         return false;
     }
-
+    private boolean isCollision(Polygon p, Rectangle r) {
+        Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width,
+                r.height, 0, r.height });
+        rPoly.setPosition(r.x, r.y);
+        if (Intersector.overlapConvexPolygons(rPoly, p)) {
+            return true;
+        }
+        return false;
+    }
     @Override
     public boolean keyUp(int keycode) {
         return false;

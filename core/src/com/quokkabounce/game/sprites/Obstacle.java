@@ -1,6 +1,7 @@
 package com.quokkabounce.game.sprites;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -13,6 +14,7 @@ public class Obstacle {
     private Texture obstacleTexture;
     private Vector2 posObstacle, velObstacle;
     private Rectangle obstacleBounds;
+    private Circle obstacleCircle;
     private Array<Vector2> moveSpots;
     private int moveTracker = 1;
     private int netDistance = 0;
@@ -25,6 +27,7 @@ public class Obstacle {
         posObstacle = new Vector2(x, y);
 
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
+        obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() / 2);
     }
 
     public Obstacle(float x, float y, float width, float height){
@@ -48,6 +51,10 @@ public class Obstacle {
         netDistance = (int) Math.round(tempDist < lineback ? tempDist : lineback);
         velObstacle = new Vector2(moveSpots.get(moveTracker).x - moveSpots.get(moveTracker - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveTracker - 1).y);
         velObstacle.scl(speed / velObstacle.len());
+    }
+
+    public Circle getObstacleCircle() {
+        return obstacleCircle;
     }
 
     public Array<Vector2> getMoveSpots() {
