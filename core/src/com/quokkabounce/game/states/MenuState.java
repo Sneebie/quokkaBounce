@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BooleanArray;
 import com.quokkabounce.game.QuokkaBounce;
 import com.quokkabounce.game.sprites.Button;
 
@@ -19,18 +20,37 @@ public class MenuState extends State implements InputProcessor{
     private Array<Button> buttons;
     private Button backButton;
     private static final double VIEWPORT_SCALER = 1.6;
-    private int permaLevel, currentWorld;
+    private int permaLevel, currentWorld, permaWorld;
+    private boolean[] collectedQuokkas;
 
-    public MenuState(GameStateManager gsm, int world, int level) {
+    public MenuState(GameStateManager gsm, int world, int level, boolean collectedQuokka) {
         super(gsm, world, level);
+        collectedQuokkas = new boolean[10];
         Gdx.input.setInputProcessor(this);
         Preferences prefs = Gdx.app.getPreferences("saveData");
+        permaWorld = prefs.getInteger("world", 1);
+        if(world > permaWorld){
+            prefs.putInteger("world", world);
+            prefs.flush();
+            permaWorld = world;
+        }
         permaLevel = prefs.getInteger("level" + world, 1);
         currentWorld = world;
         if(level > permaLevel){
             prefs.putInteger("level" + world, level);
             prefs.flush();
             permaLevel = level;
+        }
+        boolean currentQuokka;
+        for(int i = 0; i < level; i++) {
+            currentQuokka = prefs.getBoolean("collectedQuokka" + world + i, false);
+            if((i == level - 2) && collectedQuokka){
+                collectedQuokkas[i] = true;
+                prefs.putBoolean("collectedQuokka" + world + i, true);
+            }
+            else{
+                collectedQuokkas[i] = currentQuokka;
+            }
         }
         backButton = new Button(new Texture("level4Button.png"), -175, 500, 0);
         buttons = new Array<Button>();

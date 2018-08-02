@@ -84,7 +84,7 @@ public class WorldState extends State implements InputProcessor {
         touchInput.set(cam.unproject(touchInput));
         for(Button menuButton : buttons){
             if(menuButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
-                gsm.set(new MenuState(gsm, menuButton.getLevel(), 1));
+                gsm.set(new MenuState(gsm, menuButton.getLevel(), 1, false));
                 break;
             }
         }

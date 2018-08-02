@@ -16,6 +16,7 @@ public class Wall{
     private Array<Obstacle> wallSwitches;
     private float wallMove;
     private boolean hasSwitch, moveWall;
+    private int dir;
 
     public Wall(float x, float y, String textureString){
         setTexture(textureString);
@@ -43,9 +44,39 @@ public class Wall{
         ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
     }
 
+    public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove, int dir){
+        setTexture("wall.png");
+        this.dir = dir;
+        posWall = new Vector2(x, y);
+        hasSwitch = true;
+        this.wallMove = wallMove;
+        this.wallSwitches = wallSwitches;
+        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        moveWall = false;
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
+    }
+
+    public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove, int dir, String textureString){
+        setTexture(textureString);
+        this.dir = dir;
+        posWall = new Vector2(x, y);
+        hasSwitch = true;
+        this.wallMove = wallMove;
+        this.wallSwitches = wallSwitches;
+        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        moveWall = false;
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
+    }
+
     public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove){
         setTexture("wall.png");
-
+        this.dir = 1;
         posWall = new Vector2(x, y);
         hasSwitch = true;
         this.wallMove = wallMove;
@@ -60,7 +91,7 @@ public class Wall{
 
     public Wall(float x, float y, Array<Obstacle> wallSwitches, float wallMove, String textureString){
         setTexture(textureString);
-
+        this.dir = 1;
         posWall = new Vector2(x, y);
         hasSwitch = true;
         this.wallMove = wallMove;
@@ -71,6 +102,10 @@ public class Wall{
         br = new Vector2(x + getWallBounds().getWidth(), y);
         ul = new Vector2(x, y + getWallBounds().getHeight());
         ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
+    }
+
+    public int getDir() {
+        return dir;
     }
 
     public float getWallMove() {
