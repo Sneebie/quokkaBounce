@@ -25,7 +25,7 @@ public class MenuState extends State implements InputProcessor{
 
     public MenuState(GameStateManager gsm, int world, int level, boolean collectedQuokka) {
         super(gsm, world, level);
-        collectedQuokkas = new boolean[10];
+        collectedQuokkas = new boolean[11];
         Gdx.input.setInputProcessor(this);
         Preferences prefs = Gdx.app.getPreferences("saveData");
         permaWorld = prefs.getInteger("world", 1);
@@ -52,7 +52,7 @@ public class MenuState extends State implements InputProcessor{
                 collectedQuokkas[i] = currentQuokka;
             }
         }
-        backButton = new Button(new Texture("level4Button.png"), -175, 500, 0);
+        backButton = new Button(new Texture("back.png"), 15, 703, 0);
         buttons = new Array<Button>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         buttons.add(new Button(new Texture("level1Button.png"), 0, 100, 1));
@@ -72,7 +72,7 @@ public class MenuState extends State implements InputProcessor{
                                     buttons.add(new Button(new Texture("level4Button.png"), 600, 300, 8));
                                     if(permaLevel >= 9){
                                         buttons.add(new Button(new Texture("level4Button.png"), 700, 600, 9));
-                                        if(permaLevel >= 9){
+                                        if(permaLevel >= 10){
                                             buttons.add(new Button(new Texture("level4Button.png"), 900, 0, 10));
                                         }
                                     }

@@ -1300,6 +1300,7 @@ public class PlayState extends State implements InputProcessor{
             backButton.getPosButton().y = cam.position.y + cam.viewportHeight / 2 - 65;
             pauseButton.getPosButton().y = cam.position.y + cam.viewportHeight / 2 - 65;
             System.out.println(backButton.getPosButton());
+            System.out.println(backButton.getPosButton());
             backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
             pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             if (shouldFall && !smallBounce) {
