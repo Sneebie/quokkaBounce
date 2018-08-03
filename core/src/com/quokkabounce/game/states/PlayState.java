@@ -1140,6 +1140,12 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                     if (meteor.isStartFall()) {
+                        if (Intersector.overlaps(meteor.getMeteorCircle(), quokka.getQuokkaBounds())) {
+                            if (meteors.contains(meteor, true)) {
+                                gsm.set(new PlayState(gsm, world, level));
+                                break;
+                            }
+                        }
                         meteor.move(dt);
                         if (((meteor.getPosMeteor().x > clickPos.x) && (meteor.getPosMeteor().x < clickPos2.x)) || ((meteor.getPosMeteor().x < clickPos.x) && (meteor.getPosMeteor().x > clickPos2.x))) {
                             if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x, lineY(meteor.getPosMeteor().x))) {
@@ -1150,12 +1156,6 @@ public class PlayState extends State implements InputProcessor{
                             if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x + meteor.getTexture().getWidth(), lineY(meteor.getPosMeteor().x + meteor.getTexture().getWidth()))) {
                                 meteors.removeValue(meteor, true);
                                 meteor.dispose();
-                            }
-                        }
-                        if (meteor.collides(quokka.getQuokkaBounds())) {
-                            if (meteors.contains(meteor, true)) {
-                                gsm.set(new PlayState(gsm, world, level));
-                                break;
                             }
                         }
                     }
@@ -1204,7 +1204,7 @@ public class PlayState extends State implements InputProcessor{
                 }
                 boolean touchingPortal = false;
                 for(Obstacle portal : portals){
-                    if (portal.collides(quokka.getQuokkaBounds())) {
+                    if (Intersector.overlaps(portal.getObstacleCircle(), quokka.getQuokkaBounds())) {
                         touchingPortal = true;
                         if(!quokka.isTouchingPortal()) {
                             if (portals.indexOf(portal, true) % 2 == 0) {

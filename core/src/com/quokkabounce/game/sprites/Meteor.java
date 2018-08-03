@@ -5,6 +5,7 @@ package com.quokkabounce.game.sprites;
  */
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -17,6 +18,7 @@ public class Meteor {
     private Rectangle meteorBounds;
     private Texture meteorTexture;
     private Vector2 posMeteor, velMeteor, originalPos, originalVel, gravity;
+    private Circle meteorCircle;
     private boolean startFall;
 
     public Meteor(float x, float y, float firstVelX, float firstVelY){
@@ -27,6 +29,7 @@ public class Meteor {
         originalVel = new Vector2(firstVelX, firstVelY);
         meteorTexture = new Texture("meteor.png");
         meteorBounds = new Rectangle(posMeteor.x, posMeteor.y, meteorTexture.getWidth(), meteorTexture.getHeight());
+        meteorCircle = new Circle(posMeteor.x + meteorBounds.getWidth() / 2, posMeteor.y + meteorBounds.getWidth() / 2, meteorBounds.getWidth() / 2);
     }
 
     public Rectangle getMeteorBounds() {
@@ -35,6 +38,10 @@ public class Meteor {
 
     public Vector2 getPosMeteor() {
         return posMeteor;
+    }
+
+    public Circle getMeteorCircle() {
+        return meteorCircle;
     }
 
     public Texture getTexture() {
@@ -79,6 +86,7 @@ public class Meteor {
         posMeteor.add(velMeteor.x, velMeteor.y);
         velMeteor.scl(1/dt);
         meteorBounds.setPosition(posMeteor.x, posMeteor.y);
+        meteorCircle.setPosition(posMeteor.x + meteorBounds.getWidth() / 2, posMeteor.y + meteorBounds.getWidth() / 2);
     }
 
 }
