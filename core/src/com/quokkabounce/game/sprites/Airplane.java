@@ -17,6 +17,13 @@ public class Airplane {
         airplaneBounds = new Rectangle(posAirplane.x, posAirplane.y, airplaneTexture.getWidth(), airplaneTexture.getHeight());
     }
 
+    public Airplane(float x, float y, float firstVelX, float firstVelY, String textureString){
+        posAirplane = new Vector2(x, y);
+        velAirplane = new Vector2(firstVelX, firstVelY);
+        airplaneTexture = new Texture(textureString);
+        airplaneBounds = new Rectangle(posAirplane.x, posAirplane.y, airplaneTexture.getWidth(), airplaneTexture.getHeight());
+    }
+
     public Vector2 getPosAirplane() {
         return posAirplane;
     }

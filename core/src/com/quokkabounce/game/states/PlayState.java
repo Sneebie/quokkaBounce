@@ -22,6 +22,7 @@ import com.quokkabounce.game.sprites.Drone;
 import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Hawk;
+import com.quokkabounce.game.sprites.JumpFish;
 import com.quokkabounce.game.sprites.LaserBeam;
 import com.quokkabounce.game.sprites.LaserGun;
 import com.quokkabounce.game.sprites.Meteor;
@@ -81,6 +82,9 @@ public class PlayState extends State implements InputProcessor{
     private Array<MoveWall> moveWalls;
     private Array<Meteor> meteors;
     private Array<Airplane> airplanes;
+    private Array<Airplane> tropicBirds;
+    private Array<Airplane> tropicFish;
+    private Array<JumpFish> jumpFishes;
     private Array<TallDino> tallDinos;
     private Array<Drone> drones;
     private Array<LaserGun> laserGuns;
@@ -116,6 +120,9 @@ public class PlayState extends State implements InputProcessor{
         vines = new Array<Vine>();
         meteors = new Array<Meteor>();
         airplanes = new Array<Airplane>();
+        tropicBirds = new Array<Airplane>();
+        tropicFish = new Array<Airplane>();
+        jumpFishes = new Array<JumpFish>();
         tallDinos = new Array<TallDino>();
         layerTextures = new Array<Texture>();
         layerVines = new Array<Array<Vine>>();
@@ -462,6 +469,17 @@ public class PlayState extends State implements InputProcessor{
                     }
                     if(drone.isStartMove()) {
                         drone.move(dt, quokka.getPosition());
+                    }
+                }
+                for(JumpFish jumpFish : jumpFishes){
+                    if(isCollision(jumpFish.getPolygon(), quokka.getQuokkaBounds())){
+                        gsm.set(new PlayState(gsm, world, level));
+                    }
+                    if(jumpFish.getPosJumpFish().x > (cam.position.x - cam.viewportWidth * VIEWPORT_SCALER / 2)){
+                        jumpFish.setStartFall(true);
+                    }
+                    if(jumpFish.isStartFall()) {
+                        jumpFish.move(dt, quokka.getPosition());
                     }
                 }
                 for(LaserGun laserGun : laserGuns){
@@ -1147,13 +1165,41 @@ public class PlayState extends State implements InputProcessor{
                         airplane.setStartFall(true);
                     }
                     if (airplane.isStartFall()) {
-                        airplane.move(dt);
                         if (airplane.collides(quokka.getQuokkaBounds())) {
                             if (airplanes.contains(airplane, true)) {
                                 gsm.set(new PlayState(gsm, world, level));
                                 break;
                             }
                         }
+                        airplane.move(dt);
+                    }
+                }
+                for (Airplane airplane : tropicBirds) {
+                    if (airplane.getPosAirplane().x < (cam.position.x - cam.viewportWidth / 2)) {
+                        airplane.setStartFall(true);
+                    }
+                    if (airplane.isStartFall()) {
+                        if (airplane.collides(quokka.getQuokkaBounds())) {
+                            if (airplanes.contains(airplane, true)) {
+                                gsm.set(new PlayState(gsm, world, level));
+                                break;
+                            }
+                        }
+                        airplane.move(dt);
+                    }
+                }
+                for (Airplane airplane : tropicFish) {
+                    if (airplane.getPosAirplane().x < (cam.position.x - cam.viewportWidth / 2)) {
+                        airplane.setStartFall(true);
+                    }
+                    if (airplane.isStartFall()) {
+                        if (airplane.collides(quokka.getQuokkaBounds())) {
+                            if (airplanes.contains(airplane, true)) {
+                                gsm.set(new PlayState(gsm, world, level));
+                                break;
+                            }
+                        }
+                        airplane.move(dt);
                     }
                 }
                 boolean touchingPortal = false;
@@ -1754,6 +1800,9 @@ public class PlayState extends State implements InputProcessor{
         for(Drone drone: drones){
             sb.draw(drone.getDroneRegion(), drone.getPosDrone().x, drone.getPosDrone().y, drone.getDroneRegion().getRegionWidth() / 2, drone.getDroneRegion().getRegionHeight() / 2, drone.getDroneRegion().getRegionWidth(), drone.getDroneRegion().getRegionHeight(), 1, 1, drone.getDroneAngle());
         }
+        for(JumpFish jumpFish: jumpFishes){
+            sb.draw(jumpFish.getJumpFishRegion(), jumpFish.getPosJumpFish().x, jumpFish.getPosJumpFish().y, jumpFish.getJumpFishRegion().getRegionWidth() / 2, jumpFish.getJumpFishRegion().getRegionHeight() / 2, jumpFish.getJumpFishRegion().getRegionWidth(), jumpFish.getJumpFishRegion().getRegionHeight(), 1, 1, jumpFish.getJumpFishAngle());
+        }
         for(Stoplight stoplight : stoplights){
             sb.draw(stoplight.getTexture(), stoplight.getPosStoplight().x, stoplight.getPosStoplight().y);
         }
@@ -1767,6 +1816,24 @@ public class PlayState extends State implements InputProcessor{
             }
         }
         for(Airplane airplane : airplanes){
+            sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
+            if(airplane.getPosAirplane().y > 768){
+                sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
+            }
+            else if(airplane.getPosAirplane().y + airplane.getTexture().getHeight() < 0){
+                sb.draw(warningTexture, airplane.getPosAirplane().x, 10);
+            }
+        }
+        for(Airplane airplane : tropicBirds){
+            sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
+            if(airplane.getPosAirplane().y > 768){
+                sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
+            }
+            else if(airplane.getPosAirplane().y + airplane.getTexture().getHeight() < 0){
+                sb.draw(warningTexture, airplane.getPosAirplane().x, 10);
+            }
+        }
+        for(Airplane airplane : tropicFish){
             sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
             if(airplane.getPosAirplane().y > 768){
                 sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
@@ -1910,10 +1977,19 @@ public class PlayState extends State implements InputProcessor{
         for(Drone drone : drones){
             drone.dispose();
         }
+        for(JumpFish jumpFish : jumpFishes){
+            jumpFish.dispose();
+        }
         for(Meteor meteor: meteors) {
             meteor.dispose();
         }
         for(Airplane airplane : airplanes){
+            airplane.dispose();
+        }
+        for(Airplane airplane : tropicBirds){
+            airplane.dispose();
+        }
+        for(Airplane airplane : tropicFish){
             airplane.dispose();
         }
         for(Array<Vine> vineArray : layerVines){
