@@ -1299,8 +1299,6 @@ public class PlayState extends State implements InputProcessor{
             pauseButton.getPosButton().x = cam.position.x - cam.viewportWidth / 2 + 80;
             backButton.getPosButton().y = cam.position.y + cam.viewportHeight / 2 - 65;
             pauseButton.getPosButton().y = cam.position.y + cam.viewportHeight / 2 - 65;
-            System.out.println(backButton.getPosButton());
-            System.out.println(backButton.getPosButton());
             backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
             pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
             if (shouldFall && !smallBounce) {
@@ -1372,13 +1370,17 @@ public class PlayState extends State implements InputProcessor{
                         if (level == 10) {
                             gsm.set(new MenuState(gsm, world + 1, 1, collectedQuokkas.get(0)));
                         }
-                        gsm.set(new MenuState(gsm, world, level + 1, collectedQuokkas.get(0)));
+                        else {
+                            gsm.set(new MenuState(gsm, world, level + 1, collectedQuokkas.get(0)));
+                        }
                     }
                     else{
                         if (level == 10) {
                             gsm.set(new MenuState(gsm, world + 1, 1, false));
                         }
-                        gsm.set(new MenuState(gsm, world, level + 1, false));
+                        else {
+                            gsm.set(new MenuState(gsm, world, level + 1, false));
+                        }
                     }
                 }
             }

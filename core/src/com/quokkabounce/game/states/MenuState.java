@@ -47,6 +47,7 @@ public class MenuState extends State implements InputProcessor{
             if((i == level - 2) && collectedQuokka){
                 collectedQuokkas[i] = true;
                 prefs.putBoolean("collectedQuokka" + world + i, true);
+                prefs.flush();
             }
             else{
                 collectedQuokkas[i] = currentQuokka;
