@@ -453,6 +453,10 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
                 for(Drone drone : drones){
+                    if(isCollision(drone.getPolygon(), quokka.getQuokkaBounds())){
+                        gsm.set(new PlayState(gsm, world, level));
+                        break;
+                    }
                     if(drone.getPosDrone().x > (cam.position.x - cam.viewportWidth * VIEWPORT_SCALER / 2)){
                         drone.setStartMove(true);
                     }
@@ -461,13 +465,13 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
                 for(LaserGun laserGun : laserGuns){
-                    laserGun.shoot(dt, quokka.getPosition());
-                    if(laserGun.getMyBeam().getPosBeam().y > cam.viewportHeight || laserGun.getMyBeam().getPosBeam().y + laserGun.getMyBeam().getBeamBounds().getHeight() < 0 || laserGun.getMyBeam().getPosBeam().x + laserGun.getMyBeam().getBeamBounds().getWidth() < (cam.position.x - cam.viewportWidth / 2) || laserGun.getMyBeam().getPosBeam().x > (cam.position.x + cam.viewportWidth / 2)){
-                        laserGun.resetShot();
-                    }
                     if(isCollision(laserGun.getMyBeam().getPolygon(), quokka.getQuokkaBounds())){
                         gsm.set(new PlayState(gsm, world, level));
                         break;
+                    }
+                    laserGun.shoot(dt, quokka.getPosition());
+                    if(laserGun.getMyBeam().getPosBeam().y > cam.viewportHeight || laserGun.getMyBeam().getPosBeam().y + laserGun.getMyBeam().getBeamBounds().getHeight() < 0 || laserGun.getMyBeam().getPosBeam().x + laserGun.getMyBeam().getBeamBounds().getWidth() < (cam.position.x - cam.viewportWidth / 2) || laserGun.getMyBeam().getPosBeam().x > (cam.position.x + cam.viewportWidth / 2)){
+                        laserGun.resetShot();
                     }
                 }
                 for (TallDino tallDino : tallDinos) {
@@ -1748,7 +1752,7 @@ public class PlayState extends State implements InputProcessor{
             }
         }
         for(Drone drone: drones){
-            sb.draw(drone.getTexture(), drone.getPosDrone().x, drone.getPosDrone().y);
+            sb.draw(drone.getDroneRegion(), drone.getPosDrone().x, drone.getPosDrone().y, drone.getDroneRegion().getRegionWidth() / 2, drone.getDroneRegion().getRegionHeight() / 2, drone.getDroneRegion().getRegionWidth(), drone.getDroneRegion().getRegionHeight(), 1, 1, drone.getDroneAngle());
         }
         for(Stoplight stoplight : stoplights){
             sb.draw(stoplight.getTexture(), stoplight.getPosStoplight().x, stoplight.getPosStoplight().y);
@@ -2474,16 +2478,12 @@ public class PlayState extends State implements InputProcessor{
                         //need to figure out how to use multiple switches
                         break;
                     case 6:
-
+                        break;
                 }
                 break;
             case 6:
                 switch(level){
                     case 1:
-                        laserGuns.add(new LaserGun(300, 300));
-                        happyCloud = new HappyCloud(5000, 300);
-                        break;
-                    /*case 1:
                         walls.add(new Wall(-100,380));
                         walls.add(new Wall(-100, -265));
                         portals.add(new Obstacle(25, 50, "portal.png"));
@@ -2494,15 +2494,14 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(450, 0));
                         clouds.add(new EvilCloud(850, 600));
                         happyCloud = new HappyCloud(1100, 600);
-                        break;*/
+                        break;
                     case 2:
                         walls.add(new Wall(200, -50));
                         laserGuns.add(new LaserGun(350, 50));
                         clouds.add(new EvilCloud(600, 350));
                         bonusQuokkas.add(new BonusQuokka(600, 0));
                         walls.add(new Wall(1000, 350));
-                        laserGuns.add(new LaserGun(1000, 400));
-                        walls.add(new Wall(1250, 0));
+                        walls.add(new Wall(1400, -220));
                         happyCloud = new HappyCloud(1450, 50);
                         break;
                     case 3:
@@ -2763,6 +2762,9 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(1300, 50);
                         break;*/
                     case 1:
+                        levelBackground = new Texture("level2Background.png");
+                        hawks.add(new Hawk(400,150));
+                        happyCloud = new HappyCloud(850, 300);
                         break;
 
                 }
