@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class LaserGun {
     private static final float ATTACKSPEED = 400f;
+    private static final float ANGLEADJUSTER = 0.36f;
 
     private Texture gunTexture;
     private TextureRegion gunRegion;
@@ -39,8 +40,8 @@ public class LaserGun {
         }
         myBeam = new LaserBeam(centerPoint.x, posGun.y + gunBounds.getHeight());
         gunAngle *= Math.PI / 180;
-        tempPos.x = (float) (Math.cos(gunAngle) * (myBeam.getPosBeam().x - centerPoint.x) - Math.sin(gunAngle) * (myBeam.getPosBeam().y - centerPoint.y) + centerPoint.x);
-        tempPos.y = (float) (Math.sin(gunAngle) * (myBeam.getPosBeam().x - centerPoint.x) + Math.cos(gunAngle) * (myBeam.getPosBeam().y - centerPoint.y) + centerPoint.y);
+        tempPos.x = (float) (Math.cos(gunAngle + ANGLEADJUSTER) * (myBeam.getPosBeam().x - centerPoint.x) - Math.sin(gunAngle + ANGLEADJUSTER) * (myBeam.getPosBeam().y - centerPoint.y) + centerPoint.x);
+        tempPos.y = (float) (Math.sin(gunAngle + ANGLEADJUSTER) * (myBeam.getPosBeam().x - centerPoint.x) + Math.cos(gunAngle + ANGLEADJUSTER) * (myBeam.getPosBeam().y - centerPoint.y) + centerPoint.y);
         gunAngle *= 180/ Math.PI;
         myBeam.getPosBeam().set(tempPos);
     }
@@ -109,8 +110,8 @@ public class LaserGun {
         drawLaser = false;
         myBeam.getPosBeam().set(centerPoint.x, posGun.y + gunBounds.getHeight());
         gunAngle *= Math.PI / 180;
-        tempPos.x = (float) (Math.cos(gunAngle) * (myBeam.getPosBeam().x - centerPoint.x) - Math.sin(gunAngle) * (myBeam.getPosBeam().y - centerPoint.y) + centerPoint.x);
-        tempPos.y = (float) (Math.sin(gunAngle) * (myBeam.getPosBeam().x - centerPoint.x) + Math.cos(gunAngle) * (myBeam.getPosBeam().y - centerPoint.y) + centerPoint.y);
+        tempPos.x = (float) (Math.cos(gunAngle + ANGLEADJUSTER) * (myBeam.getPosBeam().x - centerPoint.x) - Math.sin(gunAngle + ANGLEADJUSTER) * (myBeam.getPosBeam().y - centerPoint.y) + centerPoint.x);
+        tempPos.y = (float) (Math.sin(gunAngle + ANGLEADJUSTER) * (myBeam.getPosBeam().x - centerPoint.x) + Math.cos(gunAngle + ANGLEADJUSTER) * (myBeam.getPosBeam().y - centerPoint.y) + centerPoint.y);
         gunAngle *= 180/ Math.PI;
         myBeam.getPosBeam().set(tempPos);
         alreadyShot=false;
