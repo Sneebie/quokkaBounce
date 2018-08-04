@@ -24,6 +24,7 @@ public class TallDino{
         dir = 1;
         posTallDino = new Vector2(x, y);
         velTallDino = new Vector2(speed, 0);
+        flipped = false;
         tallDinoBounds = new Rectangle(posTallDino.x + tallDinoTexture.getWidth() / 4, posTallDino.y, tallDinoTexture.getWidth() / 2, tallDinoTexture.getHeight());
     }
 

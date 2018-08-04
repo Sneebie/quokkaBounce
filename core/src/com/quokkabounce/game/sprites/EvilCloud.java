@@ -18,7 +18,7 @@ public class EvilCloud extends Cloud{
 
         posCloud = new Vector2(x, y);
 
-        cloudBounds = new Rectangle(posCloud.x, posCloud.y, evilCloud.getWidth(), evilCloud.getHeight());
+        cloudBounds = new Rectangle(posCloud.x + 20, posCloud.y + 31, 222, 77);
     }
 
     @Override

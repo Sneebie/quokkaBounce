@@ -2546,14 +2546,14 @@ public class PlayState extends State implements InputProcessor{
                         nebulae.add(new Obstacle(250, 300, "blackHole.png"));
                         switches.add(new Obstacle(300, 50, "wallSwitch.png"));
                         walls.add(new Wall(550, -13));
-                        walls.add(new Wall(550, 588, switches, 200));
+                        walls.add(new Wall(550, 588, switches.get(0), 200));
                         switches.add(new Obstacle(900, 550, "wallSwitch.png"));
                         nebulae.add(new Obstacle(900, 225, "blackHole.png"));
-                        walls.add(new Wall(1200, -345));
+                        walls.add(new Wall(1200, -345, switches.get(1), -250));
                         walls.add(new Wall(1200, 250));
-                        //need to figure out how to use multiple switches
                         break;
                     case 6:
+                        //planets.add(new Obstacle());
                         break;
                 }
                 break;

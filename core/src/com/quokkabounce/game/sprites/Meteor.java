@@ -29,7 +29,7 @@ public class Meteor {
         originalVel = new Vector2(firstVelX, firstVelY);
         meteorTexture = new Texture("meteor.png");
         meteorBounds = new Rectangle(posMeteor.x, posMeteor.y, meteorTexture.getWidth(), meteorTexture.getHeight());
-        meteorCircle = new Circle(posMeteor.x + meteorBounds.getWidth() / 2, posMeteor.y + meteorBounds.getWidth() / 2, meteorBounds.getWidth() / 2);
+        meteorCircle = new Circle(posMeteor.x + meteorBounds.getWidth() / 2, posMeteor.y + meteorBounds.getWidth() / 2, meteorBounds.getWidth() / 2 * 0.9f);
     }
 
     public Rectangle getMeteorBounds() {

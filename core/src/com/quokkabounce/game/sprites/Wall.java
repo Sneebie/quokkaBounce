@@ -103,6 +103,36 @@ public class Wall{
         ul = new Vector2(x, y + getWallBounds().getHeight());
         ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
     }
+    public Wall(float x, float y, Obstacle wallSwitch, float wallMove){
+        setTexture("wall.png");
+        this.dir = 1;
+        posWall = new Vector2(x, y);
+        hasSwitch = true;
+        this.wallMove = wallMove;
+        wallSwitches = new Array<Obstacle>();
+        wallSwitches.add(wallSwitch);
+        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        moveWall = false;
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
+    }
+    public Wall(float x, float y, Obstacle wallSwitch, float wallMove, String textureString){
+        setTexture(textureString);
+        this.dir = 1;
+        posWall = new Vector2(x, y);
+        hasSwitch = true;
+        this.wallMove = wallMove;
+        wallSwitches = new Array<Obstacle>();
+        wallSwitches.add(wallSwitch);
+        wallBounds = new Rectangle(posWall.x, posWall.y, wallTexture.getWidth(), wallTexture.getHeight());
+        moveWall = false;
+        bl = new Vector2(x,y);
+        br = new Vector2(x + getWallBounds().getWidth(), y);
+        ul = new Vector2(x, y + getWallBounds().getHeight());
+        ur = new Vector2(x + getWallBounds().getWidth(), y + getWallBounds().getHeight());
+    }
 
     public int getDir() {
         return dir;
