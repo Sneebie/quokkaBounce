@@ -2709,10 +2709,10 @@ public class PlayState extends State implements InputProcessor{
                         break;
                     case 3:
                         drones.add(new Drone(-100, 50));
-                        drones.add(new Drone(400, 600));
+                        //drones.add(new Drone(400, 600));
                         walls.add(new Wall(650, 350));
                         walls.add(new Wall(950, -150));
-                        drones.add(new Drone(1200, 50));
+                        //drones.add(new Drone(1200, 50));
                         clouds.add(new EvilCloud(1500, 250));
                         bonusQuokkas.add(new BonusQuokka(1550, 0));
                         clouds.add(new EvilCloud(1750, 250));

@@ -24,7 +24,7 @@ public class Drone {
     private Vector2 posDrone, velDrone;
     private Polygon polygon;
     private boolean startMove;
-    private static final float DRONESPEED = 350f;
+    private static final float DRONESPEED = 200f;
     private float droneAngle;
 
     public Drone(float x, float y){
@@ -93,20 +93,28 @@ public class Drone {
     }
 
     public void move(float dt, Vector3 quokkaPos){
-        if(50 < posDrone.x + droneBounds.getWidth() / 2) {
-            droneAngle = (float) ((Math.atan((650- posDrone.y - droneBounds.getWidth() / 2) / (50 - posDrone.x - droneBounds.getWidth() / 2)) * 180 / Math.PI) + 90);
+        boolean angleFlipped;
+        if(quokkaPos.x < posDrone.x + droneBounds.getWidth() / 2) {
+            droneAngle = (float) ((Math.atan((quokkaPos.y - posDrone.y - droneBounds.getHeight() / 2) / (quokkaPos.x - posDrone.x - droneBounds.getWidth() / 2)) * 180 / Math.PI));
+            angleFlipped = false;
         }
         else{
-            droneAngle = (float) ((Math.atan((650 - posDrone.y - droneBounds.getWidth() / 2) / (50 - posDrone.x - droneBounds.getWidth() / 2)) * 180 / Math.PI) - 90);
+            droneAngle = (float) ((Math.atan((quokkaPos.y - posDrone.y - droneBounds.getHeight() / 2) / (quokkaPos.x - posDrone.x - droneBounds.getWidth() / 2)) * 180 / Math.PI) + 180);
+            angleFlipped = true;
         }
-        velDrone.y = (float) (Math.sin(Math.atan(Math.abs(posDrone.x-quokkaPos.x) / Math.abs(posDrone.y - quokkaPos.y))));
-        velDrone.x = (float) (Math.cos(Math.atan(Math.abs(posDrone.x-quokkaPos.x) / Math.abs(posDrone.y - quokkaPos.y))));
-        velDrone.scl(1/velDrone.len());
-        velDrone.scl(DRONESPEED);
-        velDrone.scl(dt);
+        if(!angleFlipped) {
+            velDrone.y = (float) Math.sin((droneAngle + 180) * Math.PI / 180);
+            velDrone.x = (float) Math.cos((droneAngle + 180) * Math.PI / 180);
+        }
+        else{
+            velDrone.y = (float) Math.sin((droneAngle - 180) * Math.PI / 180);
+            velDrone.x = (float) Math.cos((droneAngle - 180) * Math.PI / 180);
+        }
+        velDrone.scl(DRONESPEED * dt);
         posDrone.add(velDrone);
         droneBounds.setPosition(posDrone);
         polygon.setPosition(posDrone.x, posDrone.y);
+        polygon.setRotation(droneAngle);
     }
 
 }
