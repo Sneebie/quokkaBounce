@@ -1205,10 +1205,12 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
                 boolean touchingPortal = false;
+                boolean touchedPortal = false;
                 for(Obstacle portal : portals){
                     if (Intersector.overlaps(portal.getObstacleCircle(), quokka.getQuokkaBounds())) {
                         touchingPortal = true;
-                        if(!quokka.isTouchingPortal()) {
+                        if(!(quokka.isTouchingPortal() || touchedPortal)) {
+                            touchedPortal = true;
                             if (portals.indexOf(portal, true) % 2 == 0) {
                                 quokka.setPosition(portals.get(portals.indexOf(portal, true) + 1).getPosObstacle().x + quokka.getPosition().x - portal.getPosObstacle().x, portals.get(portals.indexOf(portal, true) + 1).getPosObstacle().y + quokka.getPosition().y - portal.getPosObstacle().y);
                                 velocityTemp2.set(quokka.getVelocity().x / quokka.getVelocity().len(), quokka.getVelocity().y / quokka.getVelocity().len(), 0);
