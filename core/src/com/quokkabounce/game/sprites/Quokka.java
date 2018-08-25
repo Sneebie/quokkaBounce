@@ -113,6 +113,7 @@ public class Quokka {
         bottomRight2.set(position.x + quokkaBounds.getWidth(), position.y);
         upperLeft2.set(position.x, position.y + quokkaBounds.getHeight());
         upperRight2.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
+        quokkaBounds.setPosition(position.x, position.y);
     }
     public void setPosition(float x, float y) {
         this.position.set(x, y, 0);
@@ -124,6 +125,7 @@ public class Quokka {
         bottomRight2.set(position.x + quokkaBounds.getWidth(), position.y);
         upperLeft2.set(position.x, position.y + quokkaBounds.getHeight());
         upperRight2.set(position.x + quokkaBounds.getWidth(),position.y + quokkaBounds.getHeight());
+        quokkaBounds.setPosition(position.x, position.y);
     }
 
     public Texture getTexture() {

@@ -47,7 +47,6 @@ public class Obstacle {
         for(int i = 1; i < moveSpots.size - 1; i++){
             tempDist+=Math.sqrt(Math.pow(moveSpots.get(i).y-moveSpots.get(i-1).y, 2) + Math.pow(moveSpots.get(i).x-moveSpots.get(i-1).x, 2));
         }
-        System.out.println(tempDist);
         netDistance = (int) Math.round(tempDist < lineback ? tempDist : lineback);
         velObstacle = new Vector2(moveSpots.get(moveTracker).x - moveSpots.get(moveTracker - 1).x, moveSpots.get(moveTracker).y - moveSpots.get(moveTracker - 1).y);
         velObstacle.scl(speed / velObstacle.len());

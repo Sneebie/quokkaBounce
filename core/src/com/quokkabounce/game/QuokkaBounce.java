@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quokkabounce.game.states.GameStateManager;
+import com.quokkabounce.game.states.IntroState;
 import com.quokkabounce.game.states.WorldState;
 
 public class QuokkaBounce extends ApplicationAdapter {
@@ -19,7 +20,7 @@ public class QuokkaBounce extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		gsm = new GameStateManager();
 		Gdx.gl.glClearColor(1, 0, 0, 1);
-		gsm.push(new WorldState(gsm, 1, 1));
+		gsm.push(new IntroState(gsm, 1, 1));
 	}
 
 	@Override
