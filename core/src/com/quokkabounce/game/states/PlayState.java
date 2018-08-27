@@ -2481,12 +2481,24 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(1250, 0));
                         happyCloud = new HappyCloud(1500, 50);
                         break;*/
+                    case 4:
+                        nullZones.add(new Obstacle(300, 459, 500, 359));
+                        nullZones.add(new Obstacle(300, -200, 500, 509));
+                        walls.add(new Wall(950, 380));
+                        clouds.add(new EvilCloud(1250, 50));
+                        moveSpots.add(new Vector2(1375, 768));
+                        moveSpots.add(new Vector2(1625, 440));
+                        moveSpots.add(new Vector2(1625.01f, 440));
+                        moveSpots.add(new Vector2(1375.01f, 768));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        happyCloud = new HappyCloud(1950, 400);
+                        break;
                     case 5:
                         nullZones.add(new Obstacle(200, -300, 600, 1068));
                         moveSpots.add(new Vector2(250, 300));
                         moveSpots.add(new Vector2(750, 300));
                         moveSpots.add(new Vector2(750, 300.01f));
-                        moveSpots.add(new Vector2(250f, 300.01f));
+                        moveSpots.add(new Vector2(250, 300.01f));
                         brushes.add(new Obstacle("brush.png", moveSpots, 250, 250));
                         nullZones.add(new Obstacle(1200, -300, 1200, 1068));
                         moveSpots.clear();
@@ -2561,13 +2573,17 @@ public class PlayState extends State implements InputProcessor{
                         brushes.add(new Obstacle("brush.png", moveSpots,50, 700));
                         happyCloud=new HappyCloud(-300, 50);
                         break;*/
-                    case 9:
+                    /*case 9:
                         moveSpots.add(new Vector2(60, 400));
                         moveSpots.add(new Vector2(60, 100));
                         moveSpots.add(new Vector2(60.01f, 400));
                         moveSpots.add(new Vector2(60.01f, 100));
                         brushes.add(new Obstacle("brush.png", moveSpots, 200, 300));
                         happyCloud = new HappyCloud(2000, 30);
+                        break;*/
+                    case 9:
+                        break;
+                    case 10:
                         break;
                 }
                 break;
@@ -2681,6 +2697,13 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(2450, 308);
                         break;
                     case 10:
+                        nebulae.add(new Obstacle(300, 350, "blackHole.png"));
+                        clouds.add(new EvilCloud(550, 50));
+                        blackHoles.add(new Obstacle(800, 500, "blackHole.png"));
+                        planets.add(new Obstacle(1100, 20, "greenPlanet.png"));
+                        blackHoles.add(new Obstacle(1400, 500, "blackHole.png"));
+                        planets.add(new Obstacle(1600, 300, "greenPlanet.png"));
+                        happyCloud = new HappyCloud(1900, 250);
                         break;
                 }
                 break;
@@ -2810,6 +2833,14 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(2296, 400);
                         break;
                     case 10:
+                        laserGuns.add(new LaserGun(-100, 700));
+                        laserGuns.add(new LaserGun(-100, 250));
+                        walls.add(new Wall(300, 575));
+                        clouds.add(new EvilCloud(550, 30));
+                        walls.add(new Wall(950, 575));
+                        laserGuns.add(new LaserGun(1100, 600));
+                        clouds.add(new EvilCloud(1250, 50));
+                        happyCloud = new HappyCloud(1550, 400);
                         break;
                 }
                 break;
@@ -2929,6 +2960,17 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(2290, 550);
                         break;
                     case 10:
+                        walls.add(new Wall(250, -250));
+                        walls.add(new Wall(373, 222, "horizontWall.png"));
+                        stoplights.add(new Stoplight(2063, 145));
+                        moveWalls.add(new MoveWall(968, 222, 250, 500, 0, stoplights.get(0), "horizontWall.png"));
+                        walls.add(new Wall(1563, 345));
+                        bonusQuokkas.add(new BonusQuokka(1743, 550));
+                        walls.add(new Wall(1940, 345));
+                        clouds.add(new EvilCloud(1890, -50));
+                        clouds.add(new EvilCloud(2440, 250));
+                        airplanes.add(new Airplane(2740, 500, -100, 0));
+                        happyCloud = new HappyCloud(2740, 50);
                         break;
                 }
                 break;
