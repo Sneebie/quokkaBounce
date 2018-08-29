@@ -40,7 +40,7 @@ import com.quokkabounce.game.sprites.Wall;
 
 public class PlayState extends State implements InputProcessor{
     private static final int HAWKSIGHT = 400;
-    private static final int ARROWHEIGHT = 200;
+    private static final int ARROWHEIGHT = 130;
     private static final float GOODGRAV = -500000000f;
     private static final float DEPTHSCALER = 0.0001f;
     private static final double OCEANSLOW = 0.98;
@@ -525,7 +525,7 @@ public class PlayState extends State implements InputProcessor{
                                         }
                                     }
                                 }
-                                switches.removeIndex(switches.indexOf(wallSwitch, false));
+                                switches.removeValue(wallSwitch, false);
                                 wallSwitch.dispose();
                             }
                         }
@@ -1499,9 +1499,6 @@ public class PlayState extends State implements InputProcessor{
     }
 
     private boolean lineBounce(Vector2 p1, Vector2 p2){
-        if(justHitBrush) {
-            System.out.println(justHitBrush);
-        }
         if(!justHitBrush) {
             boolean hitCorner = false;
             boolean bounce1 = false;
@@ -2336,11 +2333,11 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(490, 1550);
                         break;
                     case 5:
-                        arrows.add(new Arrow(0, 900));
-                        arrows.add(new Arrow(0, 1100));
+                        arrows.add(new Arrow(0, 1000));
+                        arrows.add(new Arrow(0, 300));
                         walls.add(new Wall(0, 1300, "horizontWall.png"));
                         walls.add(new Wall(850, 1000));
-                        bonusQuokkas.add(new BonusQuokka(1000, 1200));
+                        bonusQuokkas.add(new BonusQuokka(1000, 1100));
                         walls.add(new Wall(850, 1595, "horizontWall.png"));
                         clouds.add(new EvilCloud(600, 2017));
                         happyCloud = new HappyCloud(850, 1768);
@@ -2351,10 +2348,10 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(565, 1123));
                         switches.add(new Obstacle(798, 1868, "wallSwitch.png"));
                         walls.add(new Wall(93, 1718, switches, -718, 0,"horizontWall.png"));
-                        walls.add(new Wall(675, 2000, "horizontWall.png"));
-                        walls.add(new Wall(439, 2000, switches, 964, 0));
+                        walls.add(new Wall(675, 2200, "horizontWall.png"));
+                        walls.add(new Wall(552, 2200, switches, -400, 1));
                         bonusQuokkas.add(new BonusQuokka(376, 1450));
-                        happyCloud = new HappyCloud(720, 2123);
+                        happyCloud = new HappyCloud(720, 2323);
                         break;
                     case 7:
                         walls.add(new Wall(678, 0));
@@ -2482,16 +2479,16 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(1500, 50);
                         break;*/
                     case 4:
-                        nullZones.add(new Obstacle(300, 459, 500, 359));
-                        nullZones.add(new Obstacle(300, -200, 500, 509));
-                        walls.add(new Wall(950, 380));
-                        clouds.add(new EvilCloud(1250, 50));
-                        moveSpots.add(new Vector2(1375, 768));
-                        moveSpots.add(new Vector2(1625, 440));
-                        moveSpots.add(new Vector2(1625.01f, 440));
-                        moveSpots.add(new Vector2(1375.01f, 768));
+                        nullZones.add(new Obstacle(300, 459, 1000, 359));
+                        nullZones.add(new Obstacle(300, -200, 1000, 509));
+                        walls.add(new Wall(1450, 380));
+                        clouds.add(new EvilCloud(1650, 50));
+                        moveSpots.add(new Vector2(1875, 768));
+                        moveSpots.add(new Vector2(2125, 440));
+                        moveSpots.add(new Vector2(2125.01f, 440));
+                        moveSpots.add(new Vector2(1875.01f, 768));
                         brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        happyCloud = new HappyCloud(1950, 400);
+                        happyCloud = new HappyCloud(2450, 400);
                         break;
                     case 5:
                         nullZones.add(new Obstacle(200, -300, 600, 1068));
@@ -2583,41 +2580,36 @@ public class PlayState extends State implements InputProcessor{
                         break;*/
                     case 9:
                         walls.add(new Wall(300, 384));
-                        nullZones.add(new Obstacle(423, -200, 492,968));
+                        nullZones.add(new Obstacle(523, -200, 342,968));
                         switches.add(new Obstacle(669, 75, "wallSwitch.png"));
+                        walls.add(new Wall(1665, -325, switches.get(0), 420));
                         switches.add(new Obstacle(669, 590, "wallSwitch.png"));
+                        walls.add(new Wall(1788, -325, switches.get(1), 420));
                         clouds.add(new EvilCloud(1165, 50));
-                        walls.add(new Wall(1665, 220));
-                        walls.add(new Wall(1788, 220));
-                        walls.add(new Wall(1665, -375, switches.get(0), -420));
-                        walls.add(new Wall(1788, -275, switches.get(1), -420));
+                        walls.add(new Wall(1665, 270));
+                        walls.add(new Wall(1788, 270));
                         happyCloud = new HappyCloud(2011, 280);
                         break;
                     case 10:
                         moveSpots.add(new Vector2(-150, 0));
                         moveSpots.add(new Vector2(-150, 758));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        moveSpots.add(new Vector2(-150.01f, 758));
+                        moveSpots.add(new Vector2(-150.01f, 0));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 220, 220));
                         moveSpots.clear();
-                        moveSpots.add(new Vector2(-25, 50));
-                        moveSpots.add(new Vector2(150, 275));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        moveSpots.add(new Vector2(-75, 100));
+                        moveSpots.add(new Vector2(150, 325));
+                        moveSpots.add(new Vector2(150.01f, 325));
+                        moveSpots.add(new Vector2(-75.01f, 100));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 250, 250));
                         moveSpots.clear();
-                        moveSpots.add(new Vector2(200, 500));
-                        moveSpots.add(new Vector2(350, 690));
+                        moveSpots.add(new Vector2(350, 130));
+                        moveSpots.add(new Vector2(650, 130));
+                        moveSpots.add(new Vector2(650.01f, 130));
+                        moveSpots.add(new Vector2(350.01f, 130));
                         brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(450, 380));
-                        moveSpots.add(new Vector2(750, 380));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(1000, 230));
-                        moveSpots.add(new Vector2(1500, 230));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(1800, 758));
-                        moveSpots.add(new Vector2(1800, 0));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        happyCloud = new HappyCloud(1520, 120);
+                        nullZones.add(new Obstacle(-300, -200, 1000, 968));
+                        happyCloud = new HappyCloud(720, 20);
                         break;
                 }
                 break;
