@@ -2582,8 +2582,42 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(2000, 30);
                         break;*/
                     case 9:
+                        walls.add(new Wall(300, 384));
+                        nullZones.add(new Obstacle(423, -200, 492,968));
+                        switches.add(new Obstacle(669, 75, "wallSwitch.png"));
+                        switches.add(new Obstacle(669, 590, "wallSwitch.png"));
+                        clouds.add(new EvilCloud(1165, 50));
+                        walls.add(new Wall(1665, 220));
+                        walls.add(new Wall(1788, 220));
+                        walls.add(new Wall(1665, -375, switches.get(0), -420));
+                        walls.add(new Wall(1788, -275, switches.get(1), -420));
+                        happyCloud = new HappyCloud(2011, 280);
                         break;
                     case 10:
+                        moveSpots.add(new Vector2(-150, 0));
+                        moveSpots.add(new Vector2(-150, 758));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        moveSpots.clear();
+                        moveSpots.add(new Vector2(-25, 50));
+                        moveSpots.add(new Vector2(150, 275));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        moveSpots.clear();
+                        moveSpots.add(new Vector2(200, 500));
+                        moveSpots.add(new Vector2(350, 690));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        moveSpots.clear();
+                        moveSpots.add(new Vector2(450, 380));
+                        moveSpots.add(new Vector2(750, 380));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        moveSpots.clear();
+                        moveSpots.add(new Vector2(1000, 230));
+                        moveSpots.add(new Vector2(1500, 230));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        moveSpots.clear();
+                        moveSpots.add(new Vector2(1800, 758));
+                        moveSpots.add(new Vector2(1800, 0));
+                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
+                        happyCloud = new HappyCloud(1520, 120);
                         break;
                 }
                 break;
