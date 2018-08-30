@@ -24,7 +24,7 @@ public class Drone {
     private Vector2 posDrone, velDrone;
     private Polygon polygon;
     private boolean startMove;
-    private static final float DRONESPEED = 200f;
+    private static final float DRONESPEED = 155f;
     private float droneAngle;
 
     public Drone(float x, float y){
@@ -37,11 +37,12 @@ public class Drone {
         polygon = new Polygon(new float[]{0,0,droneBounds.width,0,droneBounds.width,droneBounds.height,0,droneBounds.height});
         polygon.setOrigin(droneBounds.width/2, droneBounds.height/2);
         if(50 < posDrone.x + droneBounds.getWidth() / 2) {
-            droneAngle = (float) ((Math.atan((650- posDrone.y - droneBounds.getWidth() / 2) / (50 - posDrone.x - droneBounds.getWidth() / 2)) * 180 / Math.PI) + 90);
+            droneAngle = (float) ((Math.atan((650 - posDrone.y - droneBounds.getHeight() / 2) / (50 - posDrone.x - droneBounds.getWidth() / 2)) * 180 / Math.PI));
         }
         else{
-            droneAngle = (float) ((Math.atan((650 - posDrone.y - droneBounds.getWidth() / 2) / (50 - posDrone.x - droneBounds.getWidth() / 2)) * 180 / Math.PI) - 90);
+            droneAngle = (float) ((Math.atan((650 - posDrone.y - droneBounds.getHeight() / 2) / (50 - posDrone.x - droneBounds.getWidth() / 2)) * 180 / Math.PI) + 180);
         }
+        polygon.setRotation(droneAngle);
     }
 
     public Rectangle getDroneBounds() {
