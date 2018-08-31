@@ -49,6 +49,8 @@ public class PlayState extends State implements InputProcessor{
     private static final float VIEWPORT_SCALER = 1.6f;
     private static final int TOWERFALL = 100;
     private static final int WALLSPEED = 3;
+    private static final float TIMELIMIT = 0.05f;
+    private static final float TIMEMINIMUM = 0.004f;
 
     private Quokka quokka;
     private Button backButton, pauseButton;
@@ -229,7 +231,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public void update(float dt) {
-        if((!paused) && dt < 0.07) {
+        if((!paused) && dt < TIMELIMIT && dt > TIMEMINIMUM) {
             smallBounce = false;
             if (layerVines.size > 0) {
                 levelBackground = (layerTextures.get(layer));
