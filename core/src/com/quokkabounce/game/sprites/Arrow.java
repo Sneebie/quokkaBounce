@@ -32,6 +32,7 @@ public class Arrow {
             velArrow.set(HORIZONTALSPEED, 0);
         }
         arrowTexture = new Texture(this.getPosArrow().x < 384 ? "arrow.png" : "arrow2.png");
+        arrowTexture = new Texture((this.getPosArrow().x + arrowTexture.getWidth() / 2) < 384 ? "arrow.png" : "arrow2.png");
         arrowBounds = new Rectangle(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
     }
     public Arrow(float x, float y) {
@@ -45,6 +46,7 @@ public class Arrow {
         velArrow = new Vector2();
         velArrow.set(HORIZONTALSPEED, 0);
         arrowTexture = new Texture(this.getPosArrow().x < 384 ? "arrow.png" : "arrow2.png");
+        arrowTexture = new Texture((this.getPosArrow().x + arrowTexture.getWidth() / 2) < 384 ? "arrow.png" : "arrow2.png");
         arrowBounds = new Rectangle(posArrow.x + 7, posArrow.y + 19, arrowTexture.getWidth() - 7, 5);
     }
 
@@ -95,7 +97,7 @@ public class Arrow {
         if(shouldShoot) {
             if(horizontal){
                 if (!alreadySpotted) {
-                    if(posQuokka.x > posArrow.x){
+                    if((this.getPosArrow().x + arrowTexture.getWidth() / 2) < 384){
                         velArrow.set(-1 * velArrow.x, -1 * velArrow.y);
                     }
                     alreadySpotted = true;

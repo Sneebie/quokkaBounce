@@ -229,7 +229,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public void update(float dt) {
-        if(!paused) {
+        if((!paused) && dt < 0.07) {
             smallBounce = false;
             if (layerVines.size > 0) {
                 levelBackground = (layerTextures.get(layer));
@@ -1448,6 +1448,9 @@ public class PlayState extends State implements InputProcessor{
             }
             cam.update();
         }
+        else{
+            System.out.println(dt);
+        }
     }
     private void planetFixer(){
         float currentPot = 0f;
@@ -2413,11 +2416,10 @@ public class PlayState extends State implements InputProcessor{
                         break;
                     case 10:
                         walls.add(new Wall(93, 850, "horizontWall.png"));
-                        arrows.add(new Arrow(538, 875));
+                        arrows.add(new Arrow(-50, 875));
                         walls.add(new Wall(688, 850));
                         arrows.add(new Arrow(1180, 1245));
-                        walls.add(new Wall(330, 1100));
-                        walls.add(new Wall(330, 1695));
+                        walls.add(new Wall(330, 1595));
                         happyCloud = new HappyCloud(-50, 1595);
                         break;
                 }
