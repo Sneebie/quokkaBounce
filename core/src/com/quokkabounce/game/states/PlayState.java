@@ -49,8 +49,8 @@ public class PlayState extends State implements InputProcessor{
     private static final float VIEWPORT_SCALER = 1.6f;
     private static final int TOWERFALL = 100;
     private static final int WALLSPEED = 3;
-    private static final float TIMELIMIT = 0.05f;
-    private static final float TIMEMINIMUM = 0.004f;
+    private static final float TIMELIMIT = 0.035f;
+    private static final float TIMEMINIMUM = 0.008f;
 
     private Quokka quokka;
     private Button backButton, pauseButton;
@@ -2379,17 +2379,17 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(595, 1200));
                         walls.add(new Wall(595, 1795));
                         walls.add(new Wall(718, 2267, "horizontWall.png"));
-                        clouds.add(new EvilCloud(800, 1323));
+                        clouds.add(new EvilCloud(750, 1323));
                         portals.add(new Obstacle(900, 2067, "portal.png"));
-                        walls.add(new Wall(718, 2667, "horizontWall.png"));
-                        bonusQuokkas.add(new BonusQuokka(800, 2400));
-                        walls.add(new Wall(595, 2667));
-                        walls.add(new Wall(718, 3139));
-                        portals.add(new Obstacle(550, 2167, "portal.png"));
+                        bonusQuokkas.add(new BonusQuokka(900, 1870));
+                        walls.add(new Wall(595, 2267));
+                        walls.add(new Wall(595, 2862));
+                        walls.add(new Wall(718, 3334, "horizontWall.png"));
+                        portals.add(new Obstacle(400, 2067, "portal.png"));
                         walls.add(new Wall(-100, 2167));
-                        portals.add(new Obstacle(250, 2367, "portal.png"));
-                        portals.add(new Obstacle(720, 2810, "portal.png"));
-                        happyCloud = new HappyCloud(1000, 2810);
+                        portals.add(new Obstacle(400, 2610, "portal.png"));
+                        portals.add(new Obstacle(720, 2610, "portal.png"));
+                        happyCloud = new HappyCloud(850, 2860);
                         break;
                     case 9:
                         arrows.add(new Arrow(50, 1300));
