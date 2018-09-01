@@ -126,6 +126,6 @@ public class Arrow {
                 }
             }
         }
-        arrowBounds.set(posArrow.x, posArrow.y, arrowTexture.getWidth(), arrowTexture.getHeight());
+        arrowBounds.set(posArrow.x + 7, posArrow.y + 19, arrowTexture.getWidth() - 7, 5);
     }
 }
