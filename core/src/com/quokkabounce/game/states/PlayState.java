@@ -1270,6 +1270,12 @@ public class PlayState extends State implements InputProcessor{
                                 velocityTemp2.scl((float) (1.0 / Math.sqrt(currentDT)));
                                 quokka.getVelocity().set(velocityTemp2);
                             }
+                            cam.position.x = quokka.getPosition().x + 80;
+                            if (lineDraw) {
+                                clickPosTemp.set(clickPosTemp.x + quokka.getBottomLeft2().x - quokka.getBottomLeft().x, clickPosTemp.y, 0);
+                            }
+                            camUpdate = true;
+                            updateBackgroundPortal();
                         }
                     }
                 }
@@ -1822,125 +1828,69 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public void render(SpriteBatch sb) {
-        sb.setProjectionMatrix(cam.combined);
-        sb.begin();
-        if(moveWalls.size!=0){
-            sb.setColor(DEPTHSCALER * (quokka.getPosition().y - 650) + 1, DEPTHSCALER * (quokka.getPosition().y - 650) + 1, DEPTHSCALER * (quokka.getPosition().y - 650) + 1, 1f);
-        }
-        sb.draw(levelBackground, levelBackgroundPos1.x, levelBackgroundPos1.y);
-        sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
-        sb.draw(levelBackground, levelBackgroundPos3.x, levelBackgroundPos3.y);
-        sb.draw(levelBackground, levelBackgroundPos4.x, levelBackgroundPos4.y);
-        sb.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setProjectionMatrix(cam.combined);
-        shapeRenderer.setAutoShapeType(true);
-        for(Obstacle windGust :windGusts){
-            shapeRenderer.setColor(Color.GREEN);
-            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(windGust.getPosObstacle().x, windGust.getPosObstacle().y, windGust.getObstacleBounds().getWidth(), windGust.getObstacleBounds().getHeight());
-        }
-        shapeRenderer.set(ShapeRenderer.ShapeType.Line);
-        if(vineDraw) {
-            if (clickPos2.y != -100) {
+            sb.setProjectionMatrix(cam.combined);
+            sb.begin();
+            if (moveWalls.size != 0) {
+                sb.setColor(DEPTHSCALER * (quokka.getPosition().y - 650) + 1, DEPTHSCALER * (quokka.getPosition().y - 650) + 1, DEPTHSCALER * (quokka.getPosition().y - 650) + 1, 1f);
+            }
+            sb.draw(levelBackground, levelBackgroundPos1.x, levelBackgroundPos1.y);
+            sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
+            sb.draw(levelBackground, levelBackgroundPos3.x, levelBackgroundPos3.y);
+            sb.draw(levelBackground, levelBackgroundPos4.x, levelBackgroundPos4.y);
+            sb.end();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setProjectionMatrix(cam.combined);
+            shapeRenderer.setAutoShapeType(true);
+            for (Obstacle windGust : windGusts) {
+                shapeRenderer.setColor(Color.GREEN);
+                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.rect(windGust.getPosObstacle().x, windGust.getPosObstacle().y, windGust.getObstacleBounds().getWidth(), windGust.getObstacleBounds().getHeight());
+            }
+            shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+            if (vineDraw) {
+                if (clickPos2.y != -100) {
+                    shapeRenderer.setColor(Color.BROWN);
+                    shapeRenderer.line(clickPos, clickPos2);
+                } else if (clickPosTemp.y != -100) {
+                    shapeRenderer.setColor(Color.YELLOW);
+                    shapeRenderer.line(clickPos, clickPosTemp);
+                }
+            }
+            for (Obstacle nullZone : nullZones) {
+                shapeRenderer.setColor(Color.BLACK);
+                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+                shapeRenderer.rect(nullZone.getPosObstacle().x, nullZone.getPosObstacle().y, nullZone.getObstacleBounds().getWidth(), nullZone.getObstacleBounds().getHeight());
+            }
+            shapeRenderer.end();
+            sb.begin();
+            for (Wall wall : walls) {
+                sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
+            }
+            for (Obstacle wallSwitch : switches) {
+                sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
+            }
+            for (Obstacle brush : brushes) {
+                sb.draw(brush.getTexture(), brush.getPosObstacle().x, brush.getPosObstacle().y);
+            }
+            for (Stoplight stoplight : stoplights) {
+                sb.draw(stoplight.getTexture(), stoplight.getPosStoplight().x, stoplight.getPosStoplight().y);
+            }
+            if (layer == finalLayer) {
+                sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
+            }
+            sb.end();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setProjectionMatrix(cam.combined);
+            shapeRenderer.setAutoShapeType(true);
+            for (Obstacle brush : brushes) {
                 shapeRenderer.setColor(Color.BROWN);
-                shapeRenderer.line(clickPos, clickPos2);
-            } else if (clickPosTemp.y != -100) {
-                shapeRenderer.setColor(Color.YELLOW);
-                shapeRenderer.line(clickPos, clickPosTemp);
-            }
-        }
-        for(Obstacle nullZone : nullZones){
-            shapeRenderer.setColor(Color.BLACK);
-            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.rect(nullZone.getPosObstacle().x, nullZone.getPosObstacle().y, nullZone.getObstacleBounds().getWidth(), nullZone.getObstacleBounds().getHeight());
-        }
-        shapeRenderer.end();
-        sb.begin();
-        for(Wall wall : walls){
-            sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
-        }
-        for(Obstacle wallSwitch: switches){
-            sb.draw(wallSwitch.getTexture(), wallSwitch.getPosObstacle().x, wallSwitch.getPosObstacle().y);
-        }
-        for(Obstacle brush: brushes){
-            sb.draw(brush.getTexture(), brush.getPosObstacle().x, brush.getPosObstacle().y);
-        }
-        for (Hawk hawk : hawks){
-            sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
-        }
-        for(LaserGun laserGun : laserGuns){
-            sb.draw(laserGun.getGunRegion(), laserGun.getPosGun().x, laserGun.getPosGun().y, laserGun.getGunRegion().getRegionWidth() / 2, laserGun.getGunRegion().getRegionHeight() / 2, laserGun.getGunRegion().getRegionWidth(), laserGun.getGunRegion().getRegionHeight(), 1, 1, laserGun.getGunAngle());
-            if(laserGun.isDrawLaser()) {
-                sb.draw(laserGun.getMyBeam().getBeamRegion(), laserGun.getMyBeam().getPosBeam().x, laserGun.getMyBeam().getPosBeam().y, laserGun.getMyBeam().getBeamRegion().getRegionWidth() / 2, laserGun.getMyBeam().getBeamRegion().getRegionHeight() / 2, laserGun.getMyBeam().getBeamRegion().getRegionWidth(), laserGun.getMyBeam().getBeamRegion().getRegionHeight(), 1, 1, laserGun.getBeamAngle());
-            }
-        }
-        for(Drone drone: drones){
-            sb.draw(drone.getDroneRegion(), drone.getPosDrone().x, drone.getPosDrone().y, drone.getDroneRegion().getRegionWidth() / 2, drone.getDroneRegion().getRegionHeight() / 2, drone.getDroneRegion().getRegionWidth(), drone.getDroneRegion().getRegionHeight(), 1, 1, drone.getDroneAngle());
-        }
-        for(JumpFish jumpFish: jumpFishes){
-            sb.draw(jumpFish.getJumpFishRegion(), jumpFish.getPosJumpFish().x, jumpFish.getPosJumpFish().y, jumpFish.getJumpFishRegion().getRegionWidth() / 2, jumpFish.getJumpFishRegion().getRegionHeight() / 2, jumpFish.getJumpFishRegion().getRegionWidth(), jumpFish.getJumpFishRegion().getRegionHeight(), 1, 1, jumpFish.getJumpFishAngle());
-        }
-        for(Stoplight stoplight : stoplights){
-            sb.draw(stoplight.getTexture(), stoplight.getPosStoplight().x, stoplight.getPosStoplight().y);
-        }
-        for(Meteor meteor: meteors){
-            sb.draw(meteor.getTexture(), meteor.getPosMeteor().x, meteor.getPosMeteor().y);
-            if(meteor.getPosMeteor().y > 768){
-                //sb.draw(warningTexture, meteor.getPosMeteor().x, 700);
-            }
-            else if(meteor.getPosMeteor().y + meteor.getTexture().getHeight() < 0){
-                //sb.draw(warningTexture, meteor.getPosMeteor().x, 10);
-            }
-        }
-        for(Airplane airplane : airplanes){
-            sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
-            if(airplane.getPosAirplane().y > 768){
-                sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
-            }
-            else if(airplane.getPosAirplane().y + airplane.getTexture().getHeight() < 0){
-                sb.draw(warningTexture, airplane.getPosAirplane().x, 10);
-            }
-        }
-        for(Airplane airplane : tropicBirds){
-            sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
-            if(airplane.getPosAirplane().y > 768){
-                sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
-            }
-            else if(airplane.getPosAirplane().y + airplane.getTexture().getHeight() < 0){
-                sb.draw(warningTexture, airplane.getPosAirplane().x, 10);
-            }
-        }
-        for(Airplane airplane : tropicFish){
-            sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
-            if(airplane.getPosAirplane().y > 768){
-                sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
-            }
-            else if(airplane.getPosAirplane().y + airplane.getTexture().getHeight() < 0){
-                sb.draw(warningTexture, airplane.getPosAirplane().x, 10);
-            }
-        }
-        for(Arrow arrow : arrows){
-            sb.draw(arrow.getTexture(), arrow.getPosArrow().x, arrow.getPosArrow().y);
-        }
-        if(layer == finalLayer) {
-            sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
-        }
-        sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
-        sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
-        sb.end();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setProjectionMatrix(cam.combined);
-        shapeRenderer.setAutoShapeType(true);
-        for(Obstacle brush : brushes){
-            shapeRenderer.setColor(Color.BROWN);
-            pointCounter = 0;
+                pointCounter = 0;
                 float netDistance = 0;
                 int i = brush.getMoveTracker() - 1;
-                shapeRenderer.line(brush.getPosObstacle(), distance(brush.getPosObstacle(),brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i))) > brush.getLineback() ? pointBetween(brush.getPosObstacle(),brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)), brush.getLineback(), true) : brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)));
+                shapeRenderer.line(brush.getPosObstacle(), distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i))) > brush.getLineback() ? pointBetween(brush.getPosObstacle(), brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)), brush.getLineback(), true) : brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)));
                 netDistance += distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
-                while(true){
-                    if(i != 0) {
+                while (true) {
+                    if (i != 0) {
                         i = i > 0 ? i : brush.getMoveSpots().size + i;
                         netDistance += distance(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1));
                         if (netDistance > brush.getTotalDistance()) {
@@ -1948,8 +1898,7 @@ public class PlayState extends State implements InputProcessor{
                         }
                         pointCounter++;
                         shapeRenderer.line(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1));
-                    }
-                    else{
+                    } else {
                         netDistance += distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1));
                         if (netDistance > brush.getTotalDistance()) {
                             break;
@@ -1959,50 +1908,100 @@ public class PlayState extends State implements InputProcessor{
                     }
                     i--;
                 }
-                if(brush.getMoveTracker() - pointCounter > 1){
+                if (brush.getMoveTracker() - pointCounter > 1) {
                     shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())));
-                }
-                else if (brush.getMoveTracker() - pointCounter == 1) {
+                } else if (brush.getMoveTracker() - pointCounter == 1) {
                     shapeRenderer.line(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) ? (float) distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) : (netDistance - brush.getTotalDistance())));
-                }
-                else{
+                } else {
                     shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())));
                 }
-        }
-        shapeRenderer.end();
-        sb.begin();
-        for(BonusQuokka bonusQuokka : bonusQuokkas){
-            if(!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
-                sb.draw(bonusQuokka.getTexture(), bonusQuokka.getPosQuokka().x, bonusQuokka.getPosQuokka().y);
             }
-        }
-        for(Obstacle portal : portals){
-            sb.draw(portal.getTexture(), portal.getPosObstacle().x, portal.getPosObstacle().y);
-        }
-        sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
-        for(TallDino tallDino : tallDinos){
-            sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
-        }
-        for(MoveWall moveWall : moveWalls){
-            sb.draw(moveWall.getTexture(), moveWall.getPosWall().x, moveWall.getPosWall().y);
-        }
-        for(EvilCloud cloud: clouds) {
-            sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
-        }
-        for(Obstacle planet : planets){
-            sb.draw(planet.getTexture(), planet.getPosObstacle().x, planet.getPosObstacle().y);
-        }
-        for(Obstacle blackHole : blackHoles){
-            sb.draw(blackHole.getTexture(), blackHole.getPosObstacle().x, blackHole.getPosObstacle().y);
-        }
-        for(Obstacle nebula : nebulae){
-            sb.draw(nebula.getTexture(), nebula.getPosObstacle().x, nebula.getPosObstacle().y);
-        }
-        for(Vine vine : vines){
+            shapeRenderer.end();
+            sb.begin();
+            for (BonusQuokka bonusQuokka : bonusQuokkas) {
+                if (!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
+                    sb.draw(bonusQuokka.getTexture(), bonusQuokka.getPosQuokka().x, bonusQuokka.getPosQuokka().y);
+                }
+            }
+            for (Obstacle portal : portals) {
+                sb.draw(portal.getTexture(), portal.getPosObstacle().x, portal.getPosObstacle().y);
+            }
+            for (MoveWall moveWall : moveWalls) {
+                sb.draw(moveWall.getTexture(), moveWall.getPosWall().x, moveWall.getPosWall().y);
+            }
+            for (EvilCloud cloud : clouds) {
+                sb.draw(cloud.getTexture(), cloud.getPosCloud().x, cloud.getPosCloud().y);
+            }
+            for (Obstacle planet : planets) {
+                sb.draw(planet.getTexture(), planet.getPosObstacle().x, planet.getPosObstacle().y);
+            }
+            for (Obstacle blackHole : blackHoles) {
+                sb.draw(blackHole.getTexture(), blackHole.getPosObstacle().x, blackHole.getPosObstacle().y);
+            }
+            for (Obstacle nebula : nebulae) {
+                sb.draw(nebula.getTexture(), nebula.getPosObstacle().x, nebula.getPosObstacle().y);
+            }
+        /*for(Vine vine : vines){
             sb.draw(vine.getTexture(), vine.getPosVine().x, vine.getPosVine().y);
-        }
-        sb.end();
-        sb.setColor(1f, 1f, 1f, 1f);
+        }*/
+            for (TallDino tallDino : tallDinos) {
+                sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
+            }
+            for (Hawk hawk : hawks) {
+                sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
+            }
+            for (Meteor meteor : meteors) {
+                sb.draw(meteor.getTexture(), meteor.getPosMeteor().x, meteor.getPosMeteor().y);
+                if (meteor.getPosMeteor().y > 768) {
+                    //sb.draw(warningTexture, meteor.getPosMeteor().x, 700);
+                } else if (meteor.getPosMeteor().y + meteor.getTexture().getHeight() < 0) {
+                    //sb.draw(warningTexture, meteor.getPosMeteor().x, 10);
+                }
+            }
+            for (Arrow arrow : arrows) {
+                sb.draw(arrow.getTexture(), arrow.getPosArrow().x, arrow.getPosArrow().y);
+            }
+            for (Airplane airplane : airplanes) {
+                sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
+                if (airplane.getPosAirplane().y > 768) {
+                    sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
+                } else if (airplane.getPosAirplane().y + airplane.getTexture().getHeight() < 0) {
+                    sb.draw(warningTexture, airplane.getPosAirplane().x, 10);
+                }
+            }
+            for (Airplane airplane : tropicBirds) {
+                sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
+                if (airplane.getPosAirplane().y > 768) {
+                    sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
+                } else if (airplane.getPosAirplane().y + airplane.getTexture().getHeight() < 0) {
+                    sb.draw(warningTexture, airplane.getPosAirplane().x, 10);
+                }
+            }
+            for (Airplane airplane : tropicFish) {
+                sb.draw(airplane.getTexture(), airplane.getPosAirplane().x, airplane.getPosAirplane().y);
+                if (airplane.getPosAirplane().y > 768) {
+                    sb.draw(warningTexture, airplane.getPosAirplane().x, 700);
+                } else if (airplane.getPosAirplane().y + airplane.getTexture().getHeight() < 0) {
+                    sb.draw(warningTexture, airplane.getPosAirplane().x, 10);
+                }
+            }
+            for (JumpFish jumpFish : jumpFishes) {
+                sb.draw(jumpFish.getJumpFishRegion(), jumpFish.getPosJumpFish().x, jumpFish.getPosJumpFish().y, jumpFish.getJumpFishRegion().getRegionWidth() / 2, jumpFish.getJumpFishRegion().getRegionHeight() / 2, jumpFish.getJumpFishRegion().getRegionWidth(), jumpFish.getJumpFishRegion().getRegionHeight(), 1, 1, jumpFish.getJumpFishAngle());
+            }
+            for (LaserGun laserGun : laserGuns) {
+                sb.draw(laserGun.getGunRegion(), laserGun.getPosGun().x, laserGun.getPosGun().y, laserGun.getGunRegion().getRegionWidth() / 2, laserGun.getGunRegion().getRegionHeight() / 2, laserGun.getGunRegion().getRegionWidth(), laserGun.getGunRegion().getRegionHeight(), 1, 1, laserGun.getGunAngle());
+                if (laserGun.isDrawLaser()) {
+                    sb.draw(laserGun.getMyBeam().getBeamRegion(), laserGun.getMyBeam().getPosBeam().x, laserGun.getMyBeam().getPosBeam().y, laserGun.getMyBeam().getBeamRegion().getRegionWidth() / 2, laserGun.getMyBeam().getBeamRegion().getRegionHeight() / 2, laserGun.getMyBeam().getBeamRegion().getRegionWidth(), laserGun.getMyBeam().getBeamRegion().getRegionHeight(), 1, 1, laserGun.getBeamAngle());
+                }
+            }
+            for (Drone drone : drones) {
+                sb.draw(drone.getDroneRegion(), drone.getPosDrone().x, drone.getPosDrone().y, drone.getDroneRegion().getRegionWidth() / 2, drone.getDroneRegion().getRegionHeight() / 2, drone.getDroneRegion().getRegionWidth(), drone.getDroneRegion().getRegionHeight(), 1, 1, drone.getDroneAngle());
+            }
+            sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
+            sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
+            sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
+            sb.end();
+            sb.setColor(1f, 1f, 1f, 1f);
     }
 
     @Override
@@ -2104,10 +2103,16 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(400, 375, switches, 500));
                         happyCloud = new HappyCloud(10000,200);
                         break;*/
-                    case 1:
+                    /*case 1:
                         levelBackground = new Texture("level1Background.png");
                         bonusQuokkas.add(new BonusQuokka(200, 400));
                         happyCloud = new HappyCloud(500, 200);
+                        break;*/
+                    case 1:
+                        levelBackground = new Texture("level2Background.png");
+                        happyCloud = new HappyCloud(30000, 500);
+                        portals.add(new Obstacle(300, 200, "portal.png"));
+                        portals.add(new Obstacle(15000, 200, "portal.png"));
                         break;
                     case 2:
                         levelBackground = new Texture("level2Background.png");
@@ -3106,6 +3111,43 @@ public class PlayState extends State implements InputProcessor{
                 levelBackgroundPos1.sub(levelBackground.getWidth()*2, 0);
                 levelBackgroundPos3.sub(levelBackground.getWidth()*2, 0);
             }
+        }
+        if(moveWalls.size!=0 || world == 3){
+            if(cam.position.y - (cam.viewportHeight / 2) > levelBackgroundPos1.y + levelBackground.getHeight()) {
+                levelBackgroundPos1.add(0, levelBackground.getHeight() * 2);
+                levelBackgroundPos2.add(0, levelBackground.getHeight() * 2);
+            }
+            if(cam.position.y - (cam.viewportHeight / 2) > levelBackgroundPos3.y + levelBackground.getHeight()){
+                levelBackgroundPos3.add(0, levelBackground.getHeight() * 2);
+                levelBackgroundPos4.add(0, levelBackground.getHeight() * 2);
+            }
+            if((cam.position.y +(cam.viewportHeight / 2) < levelBackgroundPos1.y + levelBackground.getHeight())&&(cam.position.y + (cam.viewportHeight / 2) < levelBackgroundPos3.y + levelBackground.getHeight())) {
+                if(levelBackgroundPos3.y > levelBackgroundPos1.y){
+                    levelBackgroundPos3.sub(0, levelBackground.getHeight() * 2);
+                    levelBackgroundPos4.sub(0, levelBackground.getHeight() * 2);
+                }
+                else if(levelBackgroundPos1.y > levelBackgroundPos3.y){
+                    levelBackgroundPos1.sub(0, levelBackground.getHeight() * 2);
+                    levelBackgroundPos2.sub(0, levelBackground.getHeight() * 2);
+                }
+            }
+        }
+    }
+
+    private void updateBackgroundPortal(){
+        while((cam.position.x +(cam.viewportWidth / 2) < levelBackgroundPos1.x + levelBackground.getWidth())&&(cam.position.x + (cam.viewportWidth / 2) < levelBackgroundPos2.x + levelBackground.getWidth())) {
+            levelBackgroundPos2.sub(levelBackground.getWidth() * 2, 0);
+            levelBackgroundPos4.sub(levelBackground.getWidth() * 2, 0);
+            levelBackgroundPos1.sub(levelBackground.getWidth() * 2, 0);
+            levelBackgroundPos3.sub(levelBackground.getWidth() * 2, 0);
+        }
+        while(cam.position.x - (cam.viewportWidth / 2) > levelBackgroundPos1.x + levelBackground.getWidth()) {
+            levelBackgroundPos1.add(levelBackground.getWidth() * 2, 0);
+            levelBackgroundPos3.add(levelBackground.getWidth() * 2, 0);
+        }
+        while(cam.position.x - (cam.viewportWidth / 2) > levelBackgroundPos2.x + levelBackground.getWidth()){
+            levelBackgroundPos2.add(levelBackground.getWidth() * 2, 0);
+            levelBackgroundPos4.add(levelBackground.getWidth() * 2, 0);
         }
         if(moveWalls.size!=0 || world == 3){
             if(cam.position.y - (cam.viewportHeight / 2) > levelBackgroundPos1.y + levelBackground.getHeight()) {
