@@ -30,6 +30,9 @@ public class WorldState extends State implements InputProcessor {
             prefs.flush();
             permaWorld = world;
         }
+        if(permaWorld > 6){
+            permaWorld = 6;
+        }
         buttons = new Array<Button>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         buttons.add(new Button(new Texture("level1Button.png"), 0, 100, 1));

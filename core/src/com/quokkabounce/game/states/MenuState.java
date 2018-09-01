@@ -34,6 +34,9 @@ public class MenuState extends State implements InputProcessor{
             prefs.flush();
             permaWorld = world;
         }
+        if(world > 6){
+            world = 6;
+        }
         permaLevel = prefs.getInteger("level" + world, 1);
         currentWorld = world;
         if(level > permaLevel){
