@@ -2668,11 +2668,10 @@ public class PlayState extends State implements InputProcessor{
                         break;*/
                     case 3:
                         nebulae.add(new Obstacle(250, 300, "blackHole.png"));
-                        bonusQuokkas.add(new BonusQuokka(750, 600));
+                        bonusQuokkas.add(new BonusQuokka(750, 550));
                         blackHoles.add(new Obstacle(800, 300, "blackHole.png"));
-                        planets.add(new Obstacle(1100, 600, "greenPlanet.png"));
-                        planets.add(new Obstacle(1650, 50, "greenPlanet.png"));
-                        planets.add(new Obstacle(1650, 460, "greenPlanet.png"));
+                        planets.add(new Obstacle(1650, 30, "greenPlanet.png"));
+                        planets.add(new Obstacle(1650, 520, "greenPlanet.png"));
                         happyCloud = new HappyCloud(2050, 250);
                         break;
                     case 4:
