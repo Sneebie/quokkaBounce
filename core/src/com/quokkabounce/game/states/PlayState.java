@@ -1377,15 +1377,48 @@ public class PlayState extends State implements InputProcessor{
             if (lineCheck && !hitWall) {
                 if (justHit) {
                     if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
-                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
-                            clickPos.set(clickPos.x, clickPos.y- 10, 0);
-                            clickPos2.set(clickPos2.x, clickPos2.y- 10, 0);
+                        if(world!= 5) {
+                            while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
+                                clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                                clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                            }
+                        }
+                        else{
+                            if(quokka.getVelocity().y < 0){
+                                while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
+                                    clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                                }
+
+                            }
+                            else {
+                                while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
+                                    clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                                }
+                            }
                         }
                     }
                     else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
-                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) ||quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
-                            clickPos.set(clickPos.x, clickPos.y- 10, 0);
-                            clickPos2.set(clickPos2.x, clickPos2.y- 10, 0);
+                        if(world!=5) {
+                            while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                                clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                                clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                            }
+                        }
+                        else{
+                            if (quokka.getVelocity().y < 0) {
+                                while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                                    clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                                }
+                            }
+                            else {
+                                while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                                    clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                                }
+                            }
                         }
                     }
                     clickPos2d.set(clickPos.x, clickPos.y);
@@ -2610,16 +2643,15 @@ public class PlayState extends State implements InputProcessor{
                 }
                 break;
             case 5:
+                levelBackground = new Texture("spaceBackground.png");
                 switch(level) {
                     case 1:
-                        levelBackground = new Texture("spaceBackground.png");
                         planets.add(new Obstacle(300, 200, "greenPlanet.png"));
                         planets.add(new Obstacle(900, 400, "greenPlanet.png"));
                         happyCloud = new HappyCloud(1500, 300);
                         planets.add(new Obstacle(1700, 400, "greenPlanet.png"));
                         break;
                     case 2:
-                        levelBackground = new Texture("spaceBackground.png");
                         switches.add(new Obstacle(300, 0, "wallSwitch.png"));
                         planets.add(new Obstacle(200, 300, "greenPlanet.png"));
                         walls.add(new Wall(500, 380, switches, 1000));

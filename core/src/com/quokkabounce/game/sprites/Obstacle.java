@@ -27,7 +27,12 @@ public class Obstacle {
         posObstacle = new Vector2(x, y);
 
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
-        obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() / 2);
+        if(textureString!="blackHole.png") {
+            obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() * 0.45f);
+        }
+        else{
+            obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() * 0.38f);
+        }
     }
 
     public Obstacle(float x, float y, float width, float height){
