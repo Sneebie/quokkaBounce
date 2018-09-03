@@ -464,7 +464,7 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
                 for(Drone drone : drones){
-                    if(isCollision(drone.getPolygon(), quokka.getQuokkaBounds())){
+                    if(drone.isStartMove() && isCollision(drone.getPolygon(), quokka.getQuokkaBounds())){
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
