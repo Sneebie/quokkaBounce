@@ -2878,9 +2878,9 @@ public class PlayState extends State implements InputProcessor{
                     case 5:
                         walls.add(new Wall(0, 427, "horizontWall.png"));
                         walls.add(new Wall(-595, 427, "horizontWall.png"));
-                        portals.add(new Obstacle(431, 266, "portal.png"));
-                        portals.add(new Obstacle(781, 550, "portal.png"));
+                        portals.add(new Obstacle(781, 600, "portal.png"));
                         portals.add(new Obstacle(-300, 266, "portal.png"));
+                        portals.add(new Obstacle(331, 266, "portal.png"));
                         walls.add(new Wall(-718, -45));
                         walls.add(new Wall(595, -45));
                         clouds.add(new EvilCloud(751, 350));
@@ -2890,8 +2890,8 @@ public class PlayState extends State implements InputProcessor{
                         portals.add(new Obstacle(1300, 550, "portal.png"));
                         clouds.add(new EvilCloud(1850, 595));
                         walls.add(new Wall(2100, 0));
-                        portals.add(new Obstacle(2223, 350, "portal.png"));
-                        happyCloud = new HappyCloud(2463, 100);
+                        portals.add(new Obstacle(2243, 350, "portal.png"));
+                        happyCloud = new HappyCloud(2483, 100);
                         break;
                     case 6:
                         walls.add(new Wall(650, 250));
