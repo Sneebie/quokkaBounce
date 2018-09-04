@@ -23,7 +23,6 @@ import com.quokkabounce.game.sprites.EvilCloud;
 import com.quokkabounce.game.sprites.HappyCloud;
 import com.quokkabounce.game.sprites.Hawk;
 import com.quokkabounce.game.sprites.JumpFish;
-import com.quokkabounce.game.sprites.LaserBeam;
 import com.quokkabounce.game.sprites.LaserGun;
 import com.quokkabounce.game.sprites.Meteor;
 import com.quokkabounce.game.sprites.MoveWall;
@@ -55,13 +54,13 @@ public class PlayState extends State implements InputProcessor{
     private Quokka quokka;
     private Button backButton, pauseButton;
     private Texture levelBackground;
-    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet, tempWall, backPoint, tempBack, temp2;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet, tempWall, tempBack, temp2;
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
-    private float currentDT, iniPot, shortestDistance, camVel;
+    private float currentDT, iniPot, shortestDistance;
     private int layer, finalLayer, pointCounter;
-    private boolean shouldFall, endPoint, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallMove, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, level1, camUpdate, justWall;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, level1, camUpdate, justWall, justBouncedPlanet;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -151,14 +150,12 @@ public class PlayState extends State implements InputProcessor{
         touchingWall = false;
         justHit = false;
         justPlanet = false;
-        endPoint = false;
         paused = false;
         smallBounce = false;
         shouldMove = false;
         justPaused = false;
         hasCollided = false;
         hasEdgeCollided = false;
-        smallMove = false;
         camUpdate = false;
         vineCheck = true;
         justHitBrush = false;
@@ -180,7 +177,6 @@ public class PlayState extends State implements InputProcessor{
         quokkaSide = new Vector2();
         adjustedCenter = new Vector2();
         planetProj = new Vector2();
-        backPoint = new Vector2();
         tempBack = new Vector2();
         gradientVector = new Vector3();
         touchInput = new Vector3();
@@ -294,20 +290,16 @@ public class PlayState extends State implements InputProcessor{
                         if (((quokka.getPosition().x < clickPos.x) && (clickPos.x < (quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()))) && ((quokka.getPosition().x < clickPos2.x) && (clickPos2.x < (quokka.getPosition().x + quokka.getQuokkaBounds().getWidth())))) {
                             if (doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)) {
                                 outZone = true;
-                                smallMove = true;
                                 for (Obstacle nullZone : nullZones) {
                                     if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2))) {
                                         outZone = false;
-                                        smallMove = false;
                                     }
                                 }
                             } else if (doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)) {
                                 outZone = true;
-                                smallMove = true;
                                 for (Obstacle nullZone : nullZones) {
                                     if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2))) {
                                         outZone = false;
-                                        smallMove = false;
                                     }
                                 }
                             }
@@ -359,20 +351,16 @@ public class PlayState extends State implements InputProcessor{
                         if (((quokka.getPosition().x < clickPos.x) && (clickPos.x < (quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()))) && ((quokka.getPosition().x < clickPos2.x) && (clickPos2.x < (quokka.getPosition().x + quokka.getQuokkaBounds().getWidth())))) {
                             if (doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)) {
                                 justHitTemp = true;
-                                smallMove = true;
                                 for (Obstacle nullZone : nullZones) {
                                     if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2))) {
                                         justHitTemp = false;
-                                        smallMove = false;
                                     }
                                 }
                             } else if (doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)) {
                                 justHitTemp = true;
-                                smallMove = true;
                                 for (Obstacle nullZone : nullZones) {
                                     if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2))) {
                                         justHitTemp = false;
-                                        smallMove = false;
                                     }
                                 }
                             }
@@ -1011,6 +999,7 @@ public class PlayState extends State implements InputProcessor{
                 }
                 justPlanetTemp = false;
                 quokka.getGravity().set(0, 0, 0);
+                boolean tempBouncedWall = false;
                 for (Obstacle planet : planets) {
                     if (Intersector.overlaps(planet.getObstacleCircle(), quokka.getQuokkaBounds())) {
                         circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
@@ -1025,7 +1014,6 @@ public class PlayState extends State implements InputProcessor{
                             intersectionPoint.set(0, 0);
                         }
                         intersectionPoint.add(quokka.getPosition().x, quokka.getPosition().y);
-
                         adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y - quokka.getQuokkaBounds().getHeight());
                         quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
                         planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
@@ -1040,7 +1028,6 @@ public class PlayState extends State implements InputProcessor{
                         if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
                             intersectionPoint.set(intersectionPointTemp);
                         }
-
                         adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
                         quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
                         planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
@@ -1055,7 +1042,6 @@ public class PlayState extends State implements InputProcessor{
                         if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
                             intersectionPoint.set(intersectionPointTemp);
                         }
-
                         adjustedCenter.set(circleCenter.x - quokka.getPosition().x - quokka.getQuokkaBounds().getWidth(), circleCenter.y - quokka.getPosition().y);
                         quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
                         planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
@@ -1205,6 +1191,10 @@ public class PlayState extends State implements InputProcessor{
                                 meteors.removeValue(meteor, true);
                                 meteor.dispose();
                             }
+                        }
+                        else if(meteor.getMeteorBounds().contains(clickPos.x, clickPos.y) || meteor.getMeteorBounds().contains(clickPos2.x, clickPos2.y)){
+                            meteors.removeValue(meteor, true);
+                            meteor.dispose();
                         }
                     }
                 }
@@ -2217,9 +2207,9 @@ public class PlayState extends State implements InputProcessor{
                         levelBackground = new Texture("level3Background.png");
                         clouds.add(new EvilCloud(200, 300));
                         walls.add(new Wall(900, 450));
-                        clouds.add(new EvilCloud(1500, 150));
-                        bonusQuokkas.add(new BonusQuokka(1785, 150));
-                        happyCloud = new HappyCloud(1710,400);
+                        clouds.add(new EvilCloud(1420, 270));
+                        bonusQuokkas.add(new BonusQuokka(1825, 120));
+                        happyCloud = new HappyCloud(1730,350);
                         break;
                     case 6:
                         levelBackground = new Texture("level1Background.png");
@@ -2378,9 +2368,9 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(525, 70));
                         walls.add(new Wall(200, 300, "horizontStump.png"));
                         walls.add(new Wall(672, 422, switches, 1000, "stump.png"));
-                        tallDinos.add(new TallDino(200, -305, 672, 200));
-                        meteors.add(new Meteor(750, 780, 0, 0));
-                        happyCloud = new HappyCloud(900, 150);
+                        tallDinos.add(new TallDino(250, -305, 722, 200));
+                        meteors.add(new Meteor(810, 780, 0, 0));
+                        happyCloud = new HappyCloud(1200, 150);
                         break;
                     case 7:
                         levelBackground = new Texture("dino1Back.png");
