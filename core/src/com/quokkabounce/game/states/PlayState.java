@@ -736,25 +736,25 @@ public class PlayState extends State implements InputProcessor{
                             if(minArea == 0){
                                 while (wall.collides(quokka.getQuokkaBounds())){
                                     quokka.setPosition(quokka.getPosition().x - 10, quokka.getPosition().y);
-                                    quokka.setVelocity(resultVector(quokka.getVelocity(), wall.getBl(), wall.getUl()));
+                                    //quokka.setVelocity(resultVector(quokka.getVelocity(), wall.getBl(), wall.getUl()));
                                 }
                             }
                             else if(minArea == 1){
                                 while (wall.collides(quokka.getQuokkaBounds())){
                                     quokka.setPosition(quokka.getPosition().x, quokka.getPosition().y + 10);
-                                    quokka.setVelocity(resultVector(quokka.getVelocity(), wall.getUl(), wall.getUr()));
+                                    //quokka.setVelocity(resultVector(quokka.getVelocity(), wall.getUl(), wall.getUr()));
                                 }
                             }
                             else if(minArea == 2){
                                 while (wall.collides(quokka.getQuokkaBounds())){
                                     quokka.setPosition(quokka.getPosition().x + 10, quokka.getPosition().y);
-                                    quokka.setVelocity(resultVector(quokka.getVelocity(), wall.getBr(), wall.getUr()));
+                                    //quokka.setVelocity(resultVector(quokka.getVelocity(), wall.getBr(), wall.getUr()));
                                 }
                             }
                             else{
                                 while (wall.collides(quokka.getQuokkaBounds())){
                                     quokka.setPosition(quokka.getPosition().x, quokka.getPosition().y - 10);
-                                    quokka.setVelocity(resultVector(quokka.getVelocity(), wall.getBl(), wall.getBr()));
+                                    //quokka.setVelocity(resultVector(quokka.getVelocity(), wall.getBl(), wall.getBr()));
                                 }
                             }
                         }
