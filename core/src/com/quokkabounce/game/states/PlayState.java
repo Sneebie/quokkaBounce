@@ -50,6 +50,7 @@ public class PlayState extends State implements InputProcessor{
     private static final int WALLSPEED = 3;
     private static final float TIMELIMIT = 0.035f;
     private static final float TIMEMINIMUM = 0.008f;
+    private static final float LINEWIDTH = 3;
 
     private Quokka quokka;
     private Button backButton, pauseButton;
@@ -1916,14 +1917,14 @@ public class PlayState extends State implements InputProcessor{
                 shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
                 shapeRenderer.rect(windGust.getPosObstacle().x, windGust.getPosObstacle().y, windGust.getObstacleBounds().getWidth(), windGust.getObstacleBounds().getHeight());
             }
-            shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
             if (vineDraw) {
                 if (clickPos2.y != -100) {
                     shapeRenderer.setColor(Color.BROWN);
-                    shapeRenderer.line(clickPos, clickPos2);
+                    shapeRenderer.rectLine(clickPos.x, clickPos.y, clickPos2.x, clickPos2.y, LINEWIDTH);
                 } else if (clickPosTemp.y != -100) {
                     shapeRenderer.setColor(Color.YELLOW);
-                    shapeRenderer.line(clickPos, clickPosTemp);
+                    shapeRenderer.rectLine(clickPos.x, clickPos.y, clickPosTemp.x, clickPosTemp.y, LINEWIDTH);
                 }
             }
             for (Obstacle nullZone : nullZones) {
@@ -2159,8 +2160,18 @@ public class PlayState extends State implements InputProcessor{
     private void levelInit(int world, int level){
         backButton = new Button(new Texture("back.png"), 0, 500, 0);
         pauseButton = new Button(new Texture("pause.png"), 0, 300, 0);
-        walls.add(new Wall(-1000, -220, "wall.png"));
-        walls.add(new Wall(-1000, 375, "wall.png"));
+        if(world == 1) {
+            walls.add(new Wall(-1000, -220, "wall.png"));
+            walls.add(new Wall(-1000, 375, "wall.png"));
+        }
+        else if(world == 2){
+            walls.add(new Wall(-1000, -220, "stump.png"));
+            walls.add(new Wall(-1000, 375, "stump.png"));
+        }
+        else if(world == 5){
+            walls.add(new Wall(-1000, -220, "asteroidBelt.png"));
+            walls.add(new Wall(-1000, 375, "asteroidBelt.png"));
+        }
         switch(world){
             case 1:
                 switch(level){
@@ -3181,7 +3192,7 @@ public class PlayState extends State implements InputProcessor{
             }
         }
         if(world == 5){
-            for(int i = -220; i < happyCloud.getPosCloud().x; i+=595){
+            for(int i = -877; i < happyCloud.getPosCloud().x + 2000; i+=595){
                 walls.add(new Wall(i, -100, "horizontAsteroidBelt.png"));
                 walls.add(new Wall(i, cam.viewportHeight - 10, "horizontAsteroidBelt.png"));
             }
