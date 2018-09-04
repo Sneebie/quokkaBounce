@@ -27,11 +27,14 @@ public class Obstacle {
         posObstacle = new Vector2(x, y);
 
         obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
-        if(textureString!="blackHole.png") {
+        if(textureString=="greenPlanet.png") {
             obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() * 0.45f);
         }
-        else{
+        else if(textureString == "blackHole.png"){
             obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() * 0.38f);
+        }
+        else{
+            obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() / 2);
         }
     }
 
