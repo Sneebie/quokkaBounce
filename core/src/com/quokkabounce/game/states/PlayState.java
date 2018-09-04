@@ -50,7 +50,7 @@ public class PlayState extends State implements InputProcessor{
     private static final int WALLSPEED = 3;
     private static final float TIMELIMIT = 0.035f;
     private static final float TIMEMINIMUM = 0.008f;
-    private static final float LINEWIDTH = 3;
+    private static final float LINEWIDTH = 2.5f;
 
     private Quokka quokka;
     private Button backButton, pauseButton;
@@ -1950,7 +1950,7 @@ public class PlayState extends State implements InputProcessor{
                 sb.draw(happyCloud.getTexture(), happyCloud.getPosCloud().x, happyCloud.getPosCloud().y);
             }
             sb.end();
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setProjectionMatrix(cam.combined);
             shapeRenderer.setAutoShapeType(true);
             for (Obstacle brush : brushes) {
@@ -1958,7 +1958,7 @@ public class PlayState extends State implements InputProcessor{
                 pointCounter = 0;
                 float netDistance = 0;
                 int i = brush.getMoveTracker() - 1;
-                shapeRenderer.line(brush.getPosObstacle(), distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i))) > brush.getLineback() ? pointBetween(brush.getPosObstacle(), brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)), brush.getLineback(), true) : brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)));
+                shapeRenderer.rectLine(brush.getPosObstacle(), distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i))) > brush.getLineback() ? pointBetween(brush.getPosObstacle(), brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)), brush.getLineback(), true) : brush.getMoveSpots().get(i = (i >= 0 ? i : brush.getMoveSpots().size + i)), LINEWIDTH);
                 netDistance += distance(brush.getPosObstacle(), brush.getMoveSpots().get(i = i >= 0 ? i : brush.getMoveSpots().size + i));
                 while (true) {
                     if (i != 0) {
@@ -1968,23 +1968,23 @@ public class PlayState extends State implements InputProcessor{
                             break;
                         }
                         pointCounter++;
-                        shapeRenderer.line(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1));
+                        shapeRenderer.rectLine(brush.getMoveSpots().get(i), brush.getMoveSpots().get(i - 1), LINEWIDTH);
                     } else {
                         netDistance += distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1));
                         if (netDistance > brush.getTotalDistance()) {
                             break;
                         }
                         pointCounter++;
-                        shapeRenderer.line(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1));
+                        shapeRenderer.rectLine(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), LINEWIDTH);
                     }
                     i--;
                 }
                 if (brush.getMoveTracker() - pointCounter > 1) {
-                    shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())));
+                    shapeRenderer.rectLine(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())), LINEWIDTH);
                 } else if (brush.getMoveTracker() - pointCounter == 1) {
-                    shapeRenderer.line(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) ? (float) distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) : (netDistance - brush.getTotalDistance())));
+                    shapeRenderer.rectLine(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) ? (float) distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) : (netDistance - brush.getTotalDistance())), LINEWIDTH);
                 } else {
-                    shapeRenderer.line(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())));
+                    shapeRenderer.rectLine(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), pointBetween(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) ? (float) distance(brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 1), brush.getMoveSpots().get(brush.getMoveSpots().size + brush.getMoveTracker() - pointCounter - 2)) : (netDistance - brush.getTotalDistance())), LINEWIDTH);
                 }
             }
             shapeRenderer.end();
