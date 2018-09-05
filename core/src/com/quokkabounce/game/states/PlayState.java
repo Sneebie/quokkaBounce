@@ -48,8 +48,8 @@ public class PlayState extends State implements InputProcessor{
     private static final float VIEWPORT_SCALER = 1.6f;
     private static final int TOWERFALL = 100;
     private static final int WALLSPEED = 3;
-    private static final float TIMELIMIT = 0.035f;
-    private static final float TIMEMINIMUM = 0.008f;
+    private static final float TIMELIMIT = 0.025f;
+    private static final float TIMEMINIMUM = 0.0011f;
     private static final float LINEWIDTH = 2.5f;
 
     private Quokka quokka;
@@ -228,6 +228,7 @@ public class PlayState extends State implements InputProcessor{
 
     @Override
     public void update(float dt) {
+        //System.out.println(dt);
         if((!paused) && dt < TIMELIMIT && dt > TIMEMINIMUM) {
             smallBounce = false;
             if (layerVines.size > 0) {
@@ -1562,6 +1563,9 @@ public class PlayState extends State implements InputProcessor{
                 }
             }
             cam.update();
+        }
+        else{
+            System.out.println(dt);
         }
     }
     private void planetFixer(){
