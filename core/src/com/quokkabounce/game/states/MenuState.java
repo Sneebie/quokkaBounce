@@ -18,6 +18,7 @@ import com.quokkabounce.game.sprites.Button;
 public class MenuState extends State implements InputProcessor{
     private Texture levelSelectBackground;
     private Array<Button> buttons;
+    private Array<Texture> numbers;
     private Button backButton;
     private static final double VIEWPORT_SCALER = 1.6;
     private int permaLevel, currentWorld, permaWorld;
@@ -58,26 +59,30 @@ public class MenuState extends State implements InputProcessor{
         }
         backButton = new Button(new Texture("back.png"), 15, 703, 0);
         buttons = new Array<Button>();
+        numbers = new Array<Texture>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
-        buttons.add(new Button(new Texture("level1Button.png"), 0, 100, 1));
+        for(int i = 1; i<=10; i++){
+            numbers.add(new Texture("numbers/number" + i + ".png"));
+        }
+        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 0, 100, 1));
         if(permaLevel >= 2){
-            buttons.add(new Button(new Texture("level2Button.png"), 0, 300, 2));
+            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 0, 300, 2));
             if(permaLevel >= 3){
-                buttons.add(new Button(new Texture("level3Button.png"), 100, 500, 3));
+                buttons.add(new Button(new Texture("levelButton" + world + ".png"), 100, 500, 3));
                 if(permaLevel >= 4){
-                    buttons.add(new Button(new Texture("level4Button.png"), 300, 0, 4));
+                    buttons.add(new Button(new Texture("levelButton" + world + ".png"), 300, 0, 4));
                     if(permaLevel >= 5){
-                        buttons.add(new Button(new Texture("level4Button.png"), 300, 300, 5));
+                        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 300, 300, 5));
                         if(permaLevel >= 6){
-                            buttons.add(new Button(new Texture("level4Button.png"), 400, 600, 6));
+                            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 400, 600, 6));
                             if(permaLevel >= 7){
-                                buttons.add(new Button(new Texture("level4Button.png"), 600, 0, 7));
+                                buttons.add(new Button(new Texture("levelButton" + world + ".png"), 600, 0, 7));
                                 if(permaLevel >= 8){
-                                    buttons.add(new Button(new Texture("level4Button.png"), 600, 300, 8));
+                                    buttons.add(new Button(new Texture("levelButton" + world + ".png"), 600, 300, 8));
                                     if(permaLevel >= 9){
-                                        buttons.add(new Button(new Texture("level4Button.png"), 700, 600, 9));
+                                        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 700, 600, 9));
                                         if(permaLevel >= 10){
-                                            buttons.add(new Button(new Texture("level4Button.png"), 900, 0, 10));
+                                            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 900, 0, 10));
                                         }
                                     }
                                 }
@@ -87,7 +92,7 @@ public class MenuState extends State implements InputProcessor{
                 }
             }
         }
-        levelSelectBackground = new Texture("levelSelectBackground.png");
+        levelSelectBackground = new Texture("levelSelectBackground" + world + ".png");
     }
 
     @Override
@@ -105,8 +110,10 @@ public class MenuState extends State implements InputProcessor{
         sb.begin();
         sb.draw(levelSelectBackground, cam.position.x - cam.viewportWidth / 2, 0, cam.viewportWidth, cam.viewportHeight);
         sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
-        for (Button button : buttons){
+        for (int i = 0; i < 10; i++){
+            Button button = buttons.get(i);
             sb.draw(button.getTexture(), button.getPosButton().x, button.getPosButton().y);
+            sb.draw(numbers.get(i), button.getPosButton().x + button.getTexture().getWidth() / 2 - numbers.get(i).getWidth() / 2, button.getPosButton().y + button.getTexture().getHeight() / 2 - numbers.get(i).getHeight() / 2);
         }
         sb.end();
     }
