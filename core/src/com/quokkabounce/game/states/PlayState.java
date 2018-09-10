@@ -1420,6 +1420,20 @@ public class PlayState extends State implements InputProcessor{
             } //gohere
             if (lineCheck && !hitWall) {
                 if (justHit) {
+                    if(world == 5 && clickPos.x > quokka.getPosition().x && clickPos.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()&& clickPos2.x > quokka.getPosition().x && clickPos2.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()){
+                        if(quokka.getVelocity().x < 0) {
+                            clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                            clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                            clickPos2d.set(clickPos.x, clickPos.y);
+                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                        }
+                        else{
+                            clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                            clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                            clickPos2d.set(clickPos.x, clickPos.y);
+                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                        }
+                    }
                     if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
                         if(world!= 5) {
                             while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
@@ -2186,10 +2200,15 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(400, 375, switches, 500));
                         happyCloud = new HappyCloud(10000,200);
                         break;*/
-                    case 1:
+                    /*case 1:
                         levelBackground = new Texture("level1Background.png");
                         bonusQuokkas.add(new BonusQuokka(200, 400));
                         happyCloud = new HappyCloud(500, 200);
+                        break;*/
+                    case 1:
+                        levelBackground = new Texture("level2Background.png");
+                        hawks.add(new Hawk(400,150));
+                        happyCloud = new HappyCloud(850, 300);
                         break;
                     /*case 1:
                         levelBackground = new Texture("level2Background.png");
