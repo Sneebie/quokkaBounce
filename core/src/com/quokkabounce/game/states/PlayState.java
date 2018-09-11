@@ -1438,8 +1438,10 @@ public class PlayState extends State implements InputProcessor{
                             }
                         }
                     }
-                    if(world == 5){
+                    boolean vertHit = false;
+                    if(true){
                         if(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft())){
+                            vertHit = true;
                             if(intersectionPoint(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft()).x >= quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() / 2){
                                 while(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft())){
                                     clickPos.set(clickPos.x + 10, clickPos.y, 0);
@@ -1458,6 +1460,7 @@ public class PlayState extends State implements InputProcessor{
                             }
                         }
                         else if(doIntersect(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight())){
+                            vertHit = true;
                             if(intersectionPoint(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight()).x >= quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() / 2){
                                 while(doIntersect(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight())){
                                     clickPos.set(clickPos.x + 10, clickPos.y, 0);
@@ -1476,7 +1479,7 @@ public class PlayState extends State implements InputProcessor{
                             }
                         }
                     }
-                    if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
+                    if (!vertHit && (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x)))) {
                         if(world!= 5) {
                             while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
                                 clickPos.set(clickPos.x, clickPos.y - 10, 0);
