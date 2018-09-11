@@ -1422,18 +1422,44 @@ public class PlayState extends State implements InputProcessor{
                 if (justHit) {
                     if(world == 5 && clickPos.x > quokka.getPosition().x && clickPos.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()&& clickPos2.x > quokka.getPosition().x && clickPos2.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()){
                         if(quokka.getVelocity().x < 0) {
-                            clickPos.set(clickPos.x + 10, clickPos.y, 0);
-                            clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
-                            clickPos2d.set(clickPos.x, clickPos.y);
-                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            while(clickPos.x > quokka.getPosition().x && clickPos.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()&& clickPos2.x > quokka.getPosition().x && clickPos2.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()) {
+                                clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
                         }
                         else{
-                            clickPos.set(clickPos.x - 10, clickPos.y, 0);
-                            clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
-                            clickPos2d.set(clickPos.x, clickPos.y);
-                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            while(clickPos.x > quokka.getPosition().x && clickPos.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()&& clickPos2.x > quokka.getPosition().x && clickPos2.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()) {
+                                clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                                clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
                         }
                     }
+                    /*if(world == 5){
+                        clickPos2d.set(clickPos.x, clickPos.y);
+                        clickPos2d2.set(clickPos2.x, clickPos2.y);
+                        if(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getUpperRight())){
+                            if(intersectionPoint(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getUpperRight()).y >= quokka.getPosition().y + quokka.getQuokkaBounds().getHeight() / 2){
+                                while(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getUpperRight())){
+                                    clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                    clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                            else{
+                                while(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getUpperRight())){
+                                    clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                                    clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                        }
+                    }*/
                     if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
                         if(world!= 5) {
                             while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
