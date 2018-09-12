@@ -110,7 +110,7 @@ public class MenuState extends State implements InputProcessor{
         sb.begin();
         sb.draw(levelSelectBackground, cam.position.x - cam.viewportWidth / 2, 0, cam.viewportWidth, cam.viewportHeight);
         sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < permaLevel - 1; i++){
             Button button = buttons.get(i);
             sb.draw(button.getTexture(), button.getPosButton().x, button.getPosButton().y);
             sb.draw(numbers.get(i), button.getPosButton().x + button.getTexture().getWidth() / 2 - numbers.get(i).getWidth() / 2, button.getPosButton().y + button.getTexture().getHeight() / 2 - numbers.get(i).getHeight() / 2);
