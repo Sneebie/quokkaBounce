@@ -1438,46 +1438,7 @@ public class PlayState extends State implements InputProcessor{
                             }
                         }
                     }
-                    boolean vertHit = false;
-                        if(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft())){
-                            vertHit = true;
-                            if(quokka.getVelocity().x < 0){
-                                while(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft())){
-                                    clickPos.set(clickPos.x + 10, clickPos.y, 0);
-                                    clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
-                                    clickPos2d.set(clickPos.x, clickPos.y);
-                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                                }
-                            }
-                            else{
-                                while(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft())){
-                                    clickPos.set(clickPos.x - 10, clickPos.y, 0);
-                                    clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
-                                    clickPos2d.set(clickPos.x, clickPos.y);
-                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                                }
-                            }
-                        }
-                        else if(doIntersect(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight())){
-                            vertHit = true;
-                            if(quokka.getVelocity().x < 0){
-                                while(doIntersect(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight())){
-                                    clickPos.set(clickPos.x + 10, clickPos.y, 0);
-                                    clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
-                                    clickPos2d.set(clickPos.x, clickPos.y);
-                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                                }
-                            }
-                            else{
-                                while(doIntersect(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight())){
-                                    clickPos.set(clickPos.x - 10, clickPos.y, 0);
-                                    clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
-                                    clickPos2d.set(clickPos.x, clickPos.y);
-                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                                }
-                            }
-                        }
-                    if (!vertHit && (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x)))) {
+                    if ((((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x)))) {
                         if(world!= 5) {
                             while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
                                 clickPos.set(clickPos.x, clickPos.y - 10, 0);
@@ -1556,6 +1517,42 @@ public class PlayState extends State implements InputProcessor{
                                         clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
                                     }
                                 }
+                            }
+                        }
+                    }
+                    else if(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft())){
+                        if(quokka.getVelocity().x < 0){
+                            while(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft())){
+                                clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
+                        }
+                        else{
+                            while(doIntersect(clickPos2d, clickPos2d2, quokka.getBottomRight(), quokka.getBottomLeft())){
+                                clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                                clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
+                        }
+                    }
+                    else if(doIntersect(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight())){
+                        if(quokka.getVelocity().x < 0){
+                            while(doIntersect(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight())){
+                                clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
+                        }
+                        else{
+                            while(doIntersect(clickPos2d, clickPos2d2, quokka.getUpperLeft(), quokka.getUpperRight())){
+                                clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                                clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
                             }
                         }
                     }
