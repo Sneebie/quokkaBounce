@@ -2017,10 +2017,18 @@ public class PlayState extends State implements InputProcessor{
                 if (clickPos2.y != -100) {
                     shapeRenderer.setColor(Color.BROWN);
                     shapeRenderer.rectLine(clickPos.x, clickPos.y, clickPos2.x, clickPos2.y, LINEWIDTH);
+                    System.out.println(clickPos.x);
+                    System.out.println(clickPos.y);
+                    System.out.println(clickPos2.x);
+                    System.out.println(clickPos2.y);
                 } else if (clickPosTemp.y != -100) {
                     shapeRenderer.setColor(Color.YELLOW);
                     shapeRenderer.rectLine(clickPos.x, clickPos.y, clickPosTemp.x, clickPosTemp.y, LINEWIDTH);
                 }
+            }
+            if(world == 1 && level == 1){
+                shapeRenderer.setColor(Color.YELLOW);
+                shapeRenderer.rectLine(-142, 334, 174, 244, LINEWIDTH);
             }
             for (Obstacle nullZone : nullZones) {
                 shapeRenderer.setColor(Color.BLACK);
