@@ -64,25 +64,25 @@ public class MenuState extends State implements InputProcessor{
         for(int i = 1; i<=10; i++){
             numbers.add(new Texture("numbers/number" + i + ".png"));
         }
-        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 0, 100, 1));
+        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 100, 50, 1));
         if(permaLevel >= 2){
-            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 0, 300, 2));
+            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 100, 300, 2));
             if(permaLevel >= 3){
-                buttons.add(new Button(new Texture("levelButton" + world + ".png"), 100, 500, 3));
+                buttons.add(new Button(new Texture("levelButton" + world + ".png"), 100, 550, 3));
                 if(permaLevel >= 4){
-                    buttons.add(new Button(new Texture("levelButton" + world + ".png"), 300, 0, 4));
+                    buttons.add(new Button(new Texture("levelButton" + world + ".png"), 400, 50, 4));
                     if(permaLevel >= 5){
-                        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 300, 300, 5));
+                        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 400, 300, 5));
                         if(permaLevel >= 6){
-                            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 400, 600, 6));
+                            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 400, 550, 6));
                             if(permaLevel >= 7){
-                                buttons.add(new Button(new Texture("levelButton" + world + ".png"), 600, 0, 7));
+                                buttons.add(new Button(new Texture("levelButton" + world + ".png"), 700, 50, 7));
                                 if(permaLevel >= 8){
-                                    buttons.add(new Button(new Texture("levelButton" + world + ".png"), 600, 300, 8));
+                                    buttons.add(new Button(new Texture("levelButton" + world + ".png"), 700, 300, 8));
                                     if(permaLevel >= 9){
-                                        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 700, 600, 9));
+                                        buttons.add(new Button(new Texture("levelButton" + world + ".png"), 700, 550, 9));
                                         if(permaLevel >= 10){
-                                            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 900, 0, 10));
+                                            buttons.add(new Button(new Texture("levelButton" + world + ".png"), 1000, 50, 10));
                                         }
                                     }
                                 }
