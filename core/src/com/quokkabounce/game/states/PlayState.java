@@ -2277,16 +2277,16 @@ public class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(400, 375, switches, 500));
                         happyCloud = new HappyCloud(10000,200);
                         break;*/
-                    /*case 1:
+                    case 1:
                         levelBackground = new Texture("level1Background.png");
                         bonusQuokkas.add(new BonusQuokka(200, 400));
                         happyCloud = new HappyCloud(500, 200);
-                        break;*/
-                    case 1:
+                        break;
+                    /*case 1:
                         levelBackground = new Texture("level2Background.png");
                         hawks.add(new Hawk(400,150));
                         happyCloud = new HappyCloud(850, 300);
-                        break;
+                        break;*/
                     /*case 1:
                         levelBackground = new Texture("level2Background.png");
                         happyCloud = new HappyCloud(30000, 500);
