@@ -2013,6 +2013,16 @@ public class PlayState extends State implements InputProcessor{
                 shapeRenderer.rect(windGust.getPosObstacle().x, windGust.getPosObstacle().y, windGust.getObstacleBounds().getWidth(), windGust.getObstacleBounds().getHeight());
             }
             shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
+            if(world == 1 && level == 1){
+                shapeRenderer.setColor(Color.YELLOW);
+                boolean yesLine = true;
+                for(int i = -142; i <= 258; i+=50) {
+                    if(yesLine) {
+                        shapeRenderer.rectLine(i, (float)(-0.286*i + 293), i + 50, (float)(-0.286*(i+50) + 293), LINEWIDTH);
+                    }
+                    yesLine = !yesLine;
+                }
+            }
             if (vineDraw) {
                 if (clickPos2.y != -100) {
                     shapeRenderer.setColor(Color.BROWN);
@@ -2025,10 +2035,6 @@ public class PlayState extends State implements InputProcessor{
                     shapeRenderer.setColor(Color.YELLOW);
                     shapeRenderer.rectLine(clickPos.x, clickPos.y, clickPosTemp.x, clickPosTemp.y, LINEWIDTH);
                 }
-            }
-            if(world == 1 && level == 1){
-                shapeRenderer.setColor(Color.YELLOW);
-                shapeRenderer.rectLine(-142, 334, 174, 244, LINEWIDTH);
             }
             for (Obstacle nullZone : nullZones) {
                 shapeRenderer.setColor(Color.BLACK);
