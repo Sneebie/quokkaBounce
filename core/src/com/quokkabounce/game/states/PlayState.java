@@ -1448,7 +1448,6 @@ public class PlayState extends State implements InputProcessor{
                         else{
                             if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
                                 if(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x)) {
-                                    System.out.println("flag1");
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
@@ -1464,7 +1463,6 @@ public class PlayState extends State implements InputProcessor{
                             }
                             else if(quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
                                 if(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x + quokka.getTexture().getWidth())) {
-                                    System.out.println("flag1");
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
@@ -1489,7 +1487,6 @@ public class PlayState extends State implements InputProcessor{
                         else{
                             if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
                                 if(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x)) {
-                                    System.out.println("flag1");
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
@@ -1505,7 +1502,6 @@ public class PlayState extends State implements InputProcessor{
                             }
                             else if(quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
                                 if(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x + quokka.getTexture().getWidth())) {
-                                    System.out.println("flag1");
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
@@ -2023,14 +2019,20 @@ public class PlayState extends State implements InputProcessor{
                     yesLine = !yesLine;
                 }
             }
+            else if(world == 2 && level == 2){
+                shapeRenderer.setColor(Color.YELLOW);
+                boolean yesLine = true;
+                for(int i = 610; i <= 860; i+=50) {
+                    if(yesLine) {
+                        shapeRenderer.rectLine(i, 500, i + 50, 500, LINEWIDTH);
+                    }
+                    yesLine = !yesLine;
+                }
+            }
             if (vineDraw) {
                 if (clickPos2.y != -100) {
                     shapeRenderer.setColor(Color.BROWN);
                     shapeRenderer.rectLine(clickPos.x, clickPos.y, clickPos2.x, clickPos2.y, LINEWIDTH);
-                    System.out.println(clickPos.x);
-                    System.out.println(clickPos.y);
-                    System.out.println(clickPos2.x);
-                    System.out.println(clickPos2.y);
                 } else if (clickPosTemp.y != -100) {
                     shapeRenderer.setColor(Color.YELLOW);
                     shapeRenderer.rectLine(clickPos.x, clickPos.y, clickPosTemp.x, clickPosTemp.y, LINEWIDTH);
@@ -2451,7 +2453,7 @@ public class PlayState extends State implements InputProcessor{
                         switches.add(new Obstacle(650, 120, "wallSwitch.png"));
                         bonusQuokkas.add(new BonusQuokka(750, -30));
                         walls.add(new Wall(450, -445, switches, -215, "stump.png"));
-                        meteors.add(new Meteor(600, 780, 0, 0));
+                        meteors.add(new Meteor(650, 780, 0, 0));
                         walls.add(new Wall(900, -80, "stump.png"));
                         happyCloud = new HappyCloud(1200, 50);
                         break;
