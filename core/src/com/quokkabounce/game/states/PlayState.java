@@ -3016,13 +3016,13 @@ public class PlayState extends State implements InputProcessor{
                         laserGuns.add(new LaserGun(350, 50));
                         clouds.add(new EvilCloud(600, 350));
                         bonusQuokkas.add(new BonusQuokka(700, 0));
-                        walls.add(new Wall(1100, 350));
+                        walls.add(new Wall(1100, 350, "futureWall.png"));
                         walls.add(new Wall(1500, -220));
                         happyCloud = new HappyCloud(1650, 50);
                         break;
                     case 3:
                         drones.add(new Drone(400, 600));
-                        walls.add(new Wall(650, 350));
+                        walls.add(new Wall(652, 350, "futureWall.png"));
                         walls.add(new Wall(950, -150));
                         drones.add(new Drone(1300, 50));
                         clouds.add(new EvilCloud(1500, 250));
