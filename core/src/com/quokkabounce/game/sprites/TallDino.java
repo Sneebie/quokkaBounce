@@ -74,6 +74,6 @@ public class TallDino{
         }
         posTallDino.add(velTallDino.x * dir, velTallDino.y * dir);
         velTallDino.scl(1/dt);
-        tallDinoBounds.setPosition(posTallDino.x, posTallDino.y);
+        tallDinoBounds.setPosition(posTallDino.x + tallDinoTexture.getWidth() / 4, posTallDino.y);
     }
 }

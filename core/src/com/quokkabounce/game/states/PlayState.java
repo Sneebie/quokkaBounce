@@ -268,6 +268,7 @@ public class PlayState extends State implements InputProcessor{
                     if ((((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x)))) {
                         if(world!= 5) {
                             while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth())))) {
+                                System.out.println("circle");
                                 clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                 clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
                             }
@@ -305,6 +306,7 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                     else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
+                        System.out.println("square");
                         if(world!=5) {
                             while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
                                 clickPos.set(clickPos.x, clickPos.y - 10, 0);
@@ -1997,6 +1999,9 @@ public class PlayState extends State implements InputProcessor{
             sb.draw(levelBackground, levelBackgroundPos2.x, levelBackgroundPos2.y);
             sb.draw(levelBackground, levelBackgroundPos3.x, levelBackgroundPos3.y);
             sb.draw(levelBackground, levelBackgroundPos4.x, levelBackgroundPos4.y);
+        for (Obstacle nebula : nebulae) {
+            sb.draw(nebula.getTexture(), nebula.getPosObstacle().x, nebula.getPosObstacle().y);
+        }
             sb.end();
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setProjectionMatrix(cam.combined);
@@ -2117,9 +2122,6 @@ public class PlayState extends State implements InputProcessor{
             }
             for (Obstacle blackHole : blackHoles) {
                 sb.draw(blackHole.getTexture(), blackHole.getPosObstacle().x, blackHole.getPosObstacle().y);
-            }
-            for (Obstacle nebula : nebulae) {
-                sb.draw(nebula.getTexture(), nebula.getPosObstacle().x, nebula.getPosObstacle().y);
             }
         /*for(Vine vine : vines){
             sb.draw(vine.getTexture(), vine.getPosVine().x, vine.getPosVine().y);
@@ -2995,13 +2997,14 @@ public class PlayState extends State implements InputProcessor{
                 }
                 break;
             case 6:
+                levelBackground = new Texture("futureBackground.png");
                 switch(level){
                     case 1:
-                        walls.add(new Wall(-100,380));
-                        walls.add(new Wall(-100, -215));
+                        walls.add(new Wall(-100,380, "futureWall.png"));
+                        walls.add(new Wall(-100, -215, "futureWall.png"));
                         portals.add(new Obstacle(25, 50, "portal.png"));
-                        walls.add(new Wall(200,380));
-                        walls.add(new Wall(200, -215));
+                        walls.add(new Wall(200,380, "futureWall.png"));
+                        walls.add(new Wall(200, -215, "futureWall.png"));
                         portals.add(new Obstacle(450, 600, "portal.png"));
                         clouds.add(new EvilCloud(600, 100));
                         bonusQuokkas.add(new BonusQuokka(450, 20));
@@ -3009,7 +3012,7 @@ public class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(1100, 550);
                         break;
                     case 2:
-                        walls.add(new Wall(200, -50));
+                        walls.add(new Wall(200, -50, "futureWall.png"));
                         laserGuns.add(new LaserGun(350, 50));
                         clouds.add(new EvilCloud(600, 350));
                         bonusQuokkas.add(new BonusQuokka(700, 0));
