@@ -1273,6 +1273,7 @@ public class PlayState extends State implements InputProcessor{
                     quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
                 }
                 for (Obstacle planet : blackHoles) {
+                    planet.animationMove(dt);
                     if (Intersector.overlaps(planet.getObstacleCircle(), quokka.getQuokkaBounds())) {
                         circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
                         adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
@@ -1437,6 +1438,7 @@ public class PlayState extends State implements InputProcessor{
                 boolean touchingPortal = false;
                 boolean touchedPortal = false;
                 for(Obstacle portal : portals){
+                    portal.animationMove(dt);
                     if (Intersector.overlaps(portal.getObstacleCircle(), quokka.getQuokkaBounds())) {
                         touchingPortal = true;
                         if(!(quokka.isTouchingPortal() || touchedPortal)) {
@@ -3006,7 +3008,9 @@ public class PlayState extends State implements InputProcessor{
                     case 1:
                         walls.add(new Wall(-100,380, "futureWall.png"));
                         walls.add(new Wall(-100, -215, "futureWall.png"));
+                        System.out.println("here");
                         portals.add(new Obstacle(25, 50, "portal.png"));
+                        System.out.println("here?");
                         walls.add(new Wall(200,380, "futureWall.png"));
                         walls.add(new Wall(200, -215, "futureWall.png"));
                         portals.add(new Obstacle(450, 600, "portal.png"));

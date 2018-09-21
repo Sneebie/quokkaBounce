@@ -14,11 +14,19 @@ public class Animation {
     private int frameCount;
     private int frame;
     private int frameChange;
+    private boolean hawkAnimation;
 
     public Animation(String folderName, String fileName, int frameCount, float cycleTime){
         frames = new Array<Texture>();
+        if(folderName == "hawkIdle"){
+            hawkAnimation = true;
+        }else{
+            hawkAnimation = false;
+        }
         frameChange = 1;
+        System.out.println("so SAD");
         for(int i = 0; i < frameCount; i++){
+            System.out.println(i);
             frames.add(new Texture(folderName + "/" + fileName + Integer.toString(i) + ".png"));
         }
         this.frameCount = frameCount;
@@ -37,10 +45,15 @@ public class Animation {
             currentFrameTime = 0;
         }
         if(frame >= frameCount - 1){
-            if(frameChange!= -1) {
-                maxFrameTime = maxFrameTime / 3;
+            if(hawkAnimation) {
+                if (frameChange != -1) {
+                    maxFrameTime = maxFrameTime / 3;
+                }
+                frameChange = -1;
             }
-            frameChange = -1;
+            else{
+                frame = 0;
+            }
         }
         if(frame <= 0){
             if(frameChange!= 1) {

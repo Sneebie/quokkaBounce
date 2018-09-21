@@ -16,17 +16,51 @@ public class Obstacle {
     private Rectangle obstacleBounds;
     private Circle obstacleCircle;
     private Array<Vector2> moveSpots;
+    private Animation obstacleAnimation;
     private int moveTracker = 1;
     private int netDistance = 0;
     private int speed, lineback;
     private float totalDistance = 0;
+    private boolean hasObstacleAnimation = false;
 
     public Obstacle(float x, float y, String textureString){
-        obstacleTexture = new Texture(textureString);
+        System.out.println("here3");
+        if(textureString == "portal.png") {
+            hasObstacleAnimation = true;
+            System.out.println("here6");
+            obstacleTexture = new Texture(textureString);
+            System.out.println("here7");
+            obstacleAnimation = new Animation("portalFrames", "Portal_Final00", 100, 1.5f);
+            System.out.println("here lil guy");
+        }
+        else if(textureString == "blackHole.png"){
+            hasObstacleAnimation = true;
+            System.out.println("here6");
+            obstacleTexture = new Texture(textureString);
+            System.out.println("here7");
+            obstacleAnimation = new Animation("blackHoleFrames", "Blackhole_Final00", 100, 0.5f);
+            System.out.println("here lil guy");
+        }
+        else {
+            System.out.println("here4");
+            obstacleTexture = new Texture(textureString);
+        }
+        System.out.println("here5");
 
         posObstacle = new Vector2(x, y);
-
-        obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
+        if(textureString == "portal.png") {
+            obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
+            obstacleTexture.dispose();
+            System.out.println("here lil guy2");
+        }
+        else if(textureString == "blackHole.png"){
+            obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
+            obstacleTexture.dispose();
+            System.out.println("here lil guy2");
+        }
+        else{
+            obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
+        }
         if(textureString=="greenPlanet.png") {
             obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() * 0.45f);
         }
@@ -80,6 +114,10 @@ public class Obstacle {
         return lineback;
     }
 
+    public void animationMove(float dt){
+        System.out.println("here lil guy3");
+        obstacleAnimation.update(dt);
+    }
     public void move(float dt) {
         velObstacle.scl(dt);
         posObstacle.add(velObstacle.x, velObstacle.y);
@@ -154,7 +192,12 @@ public class Obstacle {
     }
 
     public Texture getTexture() {
-        return obstacleTexture;
+        if(!hasObstacleAnimation) {
+            return obstacleTexture;
+        }
+        else{
+            return obstacleAnimation.getFrame();
+        }
     }
 
     public boolean collides(Rectangle player) {
@@ -162,7 +205,14 @@ public class Obstacle {
     }
 
     public void dispose() {
-        obstacleTexture.dispose();
+        if(!this.hasObstacleAnimation) {
+            obstacleTexture.dispose();
+        }
+        else{
+            for(Texture frame : obstacleAnimation.getFrames()) {
+                frame.dispose();
+            }
+        }
     }
 
     public Rectangle getObstacleBounds() {
