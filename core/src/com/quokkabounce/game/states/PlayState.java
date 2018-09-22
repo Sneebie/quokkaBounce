@@ -3032,7 +3032,7 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(1275, 60));
                         clouds.add(new EvilCloud(1500, 30));
                         clouds.add(new EvilCloud(1800, 560));
-                        nebulae.add(new Obstacle(2100, 256, "greenPlanet.png"));
+                        nebulae.add(new Obstacle(2100, 256, "blackHole.png"));
                         happyCloud = new HappyCloud(2450, 308);
                         break;
                     case 10:

@@ -32,7 +32,7 @@ public class Drone {
         velDrone = new Vector2();
         droneTexture = new Texture("drone.png");
         droneRegion = new TextureRegion(droneTexture);
-        droneBounds = new Rectangle(posDrone.x, posDrone.y, droneTexture.getWidth(), droneTexture.getHeight());
+        droneBounds = new Rectangle(posDrone.x + 4, posDrone.y + 47, droneTexture.getWidth() - 5, 19);
         startMove = false;
         polygon = new Polygon(new float[]{0,0,droneBounds.width,0,droneBounds.width,droneBounds.height,0,droneBounds.height});
         polygon.setOrigin(droneBounds.width/2, droneBounds.height/2);
@@ -113,8 +113,8 @@ public class Drone {
         }
         velDrone.scl(DRONESPEED * dt);
         posDrone.add(velDrone);
-        droneBounds.setPosition(posDrone);
-        polygon.setPosition(posDrone.x, posDrone.y);
+        droneBounds.setPosition(posDrone.x + 4, posDrone.y + 35);
+        polygon.setPosition(posDrone.x + 4, posDrone.y + 35);
         polygon.setRotation(droneAngle);
     }
 
