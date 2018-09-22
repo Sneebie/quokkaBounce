@@ -299,7 +299,7 @@ public class PlayState extends State implements InputProcessor{
                         }
                         else{
                             if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
-                                if(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x)) {
+                                if(quokka.getVelocity().y >= 0) {
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
@@ -314,7 +314,7 @@ public class PlayState extends State implements InputProcessor{
 
                             }
                             else if(quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
-                                if(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x + quokka.getTexture().getWidth())) {
+                                if(quokka.getVelocity().y >= 0) {
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
@@ -364,7 +364,7 @@ public class PlayState extends State implements InputProcessor{
                         }
                         else{
                             if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
-                                if(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x)) {
+                                if(quokka.getVelocity().y >= 0) {
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
@@ -379,7 +379,7 @@ public class PlayState extends State implements InputProcessor{
 
                             }
                             else if(quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
-                                if(quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x + quokka.getTexture().getWidth())) {
+                                if(quokka.getVelocity().y >= 0) {
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
@@ -3032,7 +3032,7 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(1275, 60));
                         clouds.add(new EvilCloud(1500, 30));
                         clouds.add(new EvilCloud(1800, 560));
-                        nebulae.add(new Obstacle(2100, 256, "blackHole.png"));
+                        nebulae.add(new Obstacle(2100, 256, "greenPlanet.png"));
                         happyCloud = new HappyCloud(2450, 308);
                         break;
                     case 10:
