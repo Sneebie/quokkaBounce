@@ -308,9 +308,34 @@ public class PlayState extends State implements InputProcessor{
                     else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
                         System.out.println("square");
                         if(world!=5) {
-                            while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x)) || quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
-                                clickPos.set(clickPos.x, clickPos.y - 10, 0);
-                                clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                            if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
+                                if(quokka.getVelocity().y > 0) {
+                                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                                    }
+                                }
+                                else{
+                                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
+                                        clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                                        clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                                    }
+                                }
+
+                            }
+                            else if(quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))){
+                                if(quokka.getVelocity().y > 0) {
+                                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                                        clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                                        clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                                    }
+                                }
+                                else{
+                                    while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getTexture().getWidth(), lineY(quokka.getPosition().x + quokka.getTexture().getWidth()))) {
+                                        clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                                        clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                                    }
+                                }
                             }
                         }
                         else{
@@ -1287,7 +1312,6 @@ public class PlayState extends State implements InputProcessor{
                             intersectionPoint.set(0, 0);
                         }
                         intersectionPoint.add(quokka.getPosition().x, quokka.getPosition().y);
-
                         adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y - quokka.getQuokkaBounds().getHeight());
                         quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
                         planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
