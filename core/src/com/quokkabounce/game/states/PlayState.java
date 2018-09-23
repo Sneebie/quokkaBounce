@@ -2997,7 +2997,7 @@ public class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(3030, 400));
                         walls.add(new Wall(3280, -211, switches.get(1), 384, "asteroidBelt.png"));
                         walls.add(new Wall(3280, 384, "asteroidBelt.png"));
-                        portals.add(new Obstacle(3905, 510, "portal.png"));
+                        portals.add(new Obstacle(3955, 510, "portal.png"));
                         planets.add(new Obstacle(3930, 260, "greenPlanet.png"));
                         break;
                     case 7:
