@@ -2053,9 +2053,6 @@ public class PlayState extends State implements InputProcessor{
         for (Obstacle nebula : nebulae) {
             sb.draw(nebula.getTexture(), nebula.getPosObstacle().x, nebula.getPosObstacle().y);
         }
-        for (TallDino tallDino : tallDinos) {
-            sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
-        }
             sb.end();
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setProjectionMatrix(cam.combined);
@@ -2086,10 +2083,6 @@ public class PlayState extends State implements InputProcessor{
                     yesLine = !yesLine;
                 }
             }
-        for(TallDino tallDino : tallDinos){
-            shapeRenderer.polygon(tallDino.getTallDinoPolygon().getTransformedVertices());
-        }
-        shapeRenderer.rect(quokka.getQuokkaBounds().x, quokka.getQuokkaBounds().y, quokka.getQuokkaBounds().getWidth(), quokka.getQuokkaBounds().getHeight());
             if (vineDraw) {
                 if (clickPos2.y != -100) {
                     shapeRenderer.setColor(Color.BROWN);
@@ -2184,6 +2177,9 @@ public class PlayState extends State implements InputProcessor{
         /*for(Vine vine : vines){
             sb.draw(vine.getTexture(), vine.getPosVine().x, vine.getPosVine().y);
         }*/
+        for (TallDino tallDino : tallDinos) {
+            sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
+        }
             for (Hawk hawk : hawks) {
                 sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
             }
