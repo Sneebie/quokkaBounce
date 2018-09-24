@@ -728,8 +728,9 @@ public class PlayState extends State implements InputProcessor{
                     }
                 }
                 for (TallDino tallDino : tallDinos) {
-                    if (tallDino.collides(quokka.getQuokkaBounds())) {
+                    if (isConcaveCollision(tallDino.getTallDinoPolygon(), quokka.getQuokkaBounds())) {
                         gsm.set(new PlayState(gsm, world, level));
+                        paused = true;
                         break;
                     }
                     tallDino.move(dt);
@@ -2052,6 +2053,9 @@ public class PlayState extends State implements InputProcessor{
         for (Obstacle nebula : nebulae) {
             sb.draw(nebula.getTexture(), nebula.getPosObstacle().x, nebula.getPosObstacle().y);
         }
+        for (TallDino tallDino : tallDinos) {
+            sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
+        }
             sb.end();
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setProjectionMatrix(cam.combined);
@@ -2082,6 +2086,10 @@ public class PlayState extends State implements InputProcessor{
                     yesLine = !yesLine;
                 }
             }
+        for(TallDino tallDino : tallDinos){
+            shapeRenderer.polygon(tallDino.getTallDinoPolygon().getTransformedVertices());
+        }
+        shapeRenderer.rect(quokka.getQuokkaBounds().x, quokka.getQuokkaBounds().y, quokka.getQuokkaBounds().getWidth(), quokka.getQuokkaBounds().getHeight());
             if (vineDraw) {
                 if (clickPos2.y != -100) {
                     shapeRenderer.setColor(Color.BROWN);
@@ -2176,9 +2184,6 @@ public class PlayState extends State implements InputProcessor{
         /*for(Vine vine : vines){
             sb.draw(vine.getTexture(), vine.getPosVine().x, vine.getPosVine().y);
         }*/
-            for (TallDino tallDino : tallDinos) {
-                sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
-            }
             for (Hawk hawk : hawks) {
                 sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
             }
@@ -3517,6 +3522,20 @@ public class PlayState extends State implements InputProcessor{
         }
         return false;
     }
+
+
+    private boolean isConcaveCollision(Polygon p, Rectangle r) {
+        Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width,
+                r.height, 0, r.height });
+        rPoly.setPosition(r.x, r.y);
+        for(int i = 0; i < rPoly.getTransformedVertices().length; i+=2){
+            if(p.contains(rPoly.getTransformedVertices()[i],rPoly.getTransformedVertices()[i+1])){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean keyUp(int keycode) {
         return false;
