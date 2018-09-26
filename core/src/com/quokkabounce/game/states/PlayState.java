@@ -247,6 +247,9 @@ public class PlayState extends State implements InputProcessor{
             justHitTemp = false;
             if (lineCheck && !hitWall) {
                 if (justHit) {
+                    System.out.println(quokkaLineHit());
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
                     if(world == 5 && clickPos.x > quokka.getPosition().x && clickPos.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()&& clickPos2.x > quokka.getPosition().x && clickPos2.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()){
                         if(quokka.getVelocity().x < 0) {
                             while(clickPos.x > quokka.getPosition().x && clickPos.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()&& clickPos2.x > quokka.getPosition().x && clickPos2.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()) {
@@ -262,6 +265,69 @@ public class PlayState extends State implements InputProcessor{
                                 clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
                                 clickPos2d.set(clickPos.x, clickPos.y);
                                 clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
+                        }
+                    }
+                    if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2) && (doIntersect(quokka.getBottomLeft(), quokka.getUpperLeft(), clickPos2d, clickPos2d2) || doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2))){
+                        if(quokka.getVelocity().x < 0){
+                            while(quokkaLineHit()){
+                                System.out.println("here?!");
+                                clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
+                        }
+                        else{
+                            while(quokkaLineHit()){
+                                System.out.println("here2?!");
+                                clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                                clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                                clickPos2d.set(clickPos.x, clickPos.y);
+                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            }
+                        }
+                    }
+                    if(quokkaLineHit()){
+                        final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
+                        if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
+                            if(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2).x > quokka.getQuokkaBounds().getWidth() / 2){
+                                if(slope > 0) {
+                                    while (quokkaLineHit()) {
+                                        clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                                        clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                                        clickPos2d.set(clickPos.x, clickPos.y);
+                                        clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                    }
+                                }
+                                else if(slope < 0){
+                                    while (quokkaLineHit()) {
+                                        clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                        clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                        clickPos2d.set(clickPos.x, clickPos.y);
+                                        clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                    }
+                                }
+                            }
+                        }
+                        else if(doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)){
+                            if(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2).x > quokka.getQuokkaBounds().getWidth() / 2){
+                                if(slope < 0) {
+                                    while (quokkaLineHit()) {
+                                        clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                                        clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                                        clickPos2d.set(clickPos.x, clickPos.y);
+                                        clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                    }
+                                }
+                                else if(slope > 0){
+                                    while (quokkaLineHit()) {
+                                        clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                        clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                        clickPos2d.set(clickPos.x, clickPos.y);
+                                        clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                    }
+                                }
                             }
                         }
                     }
@@ -730,7 +796,6 @@ public class PlayState extends State implements InputProcessor{
                 for (TallDino tallDino : tallDinos) {
                     if (isConcaveCollision(tallDino.getTallDinoPolygon(), quokka.getQuokkaBounds())) {
                         gsm.set(new PlayState(gsm, world, level));
-                        paused = true;
                         break;
                     }
                     tallDino.move(dt);
@@ -1998,6 +2063,18 @@ public class PlayState extends State implements InputProcessor{
         }
         tempBack.set((float) x, (float) y);
         return tempBack;
+    }
+
+    private boolean quokkaLineHit(){
+        Polygon rPoly = new Polygon(new float[] { 0, 0, quokka.getQuokkaBounds().width, 0, quokka.getQuokkaBounds().width,
+                quokka.getQuokkaBounds().height, 0, quokka.getQuokkaBounds().height });
+        rPoly.setPosition(quokka.getPosition().x, quokka.getPosition().y);
+        clickPos2d.set(clickPos.x, clickPos.y);
+        clickPos2d2.set(clickPos2.x, clickPos2.y);
+        if(Intersector.intersectSegmentPolygon(clickPos2d,clickPos2d2, rPoly)){
+            return true;
+        }
+        return false;
     }
 
     private Vector2 pointBetween(Vector2 p1, Vector2 p2, float distanceBetween, boolean quokBack){
