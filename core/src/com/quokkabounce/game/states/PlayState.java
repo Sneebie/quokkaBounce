@@ -247,7 +247,6 @@ public class PlayState extends State implements InputProcessor{
             justHitTemp = false;
             if (lineCheck && !hitWall) {
                 if (justHit) {
-                    System.out.println(quokkaLineHit());
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                     if(world == 5 && clickPos.x > quokka.getPosition().x && clickPos.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()&& clickPos2.x > quokka.getPosition().x && clickPos2.x < quokka.getPosition().x + quokka.getQuokkaBounds().getWidth()){
@@ -396,7 +395,6 @@ public class PlayState extends State implements InputProcessor{
                         }
                     }
                     else if ((((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos2.x)) || (((quokka.getPosition().x + quokka.getTexture().getWidth()) < clickPos.x) && ((quokka.getPosition().x + quokka.getTexture().getWidth()) > clickPos2.x))) {
-                        System.out.println("square");
                         if(world!=5) {
                             if(quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))){
                                 if(quokka.getVelocity().y >= 0 || (quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5 > lineY(quokka.getPosition().x))) {
