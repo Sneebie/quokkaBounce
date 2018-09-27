@@ -1752,6 +1752,7 @@ public class PlayState extends State implements InputProcessor{
                 if (happyCloud.collides(quokka.getQuokkaBounds())) {
                     if(bonusQuokkas.size > 0) {
                         if (level == 10) {
+                            gsm.set(new MenuState(gsm, world, level+1, collectedQuokkas.get(0)));
                             gsm.set(new MenuState(gsm, world + 1, 1, collectedQuokkas.get(0)));
                         }
                         else {

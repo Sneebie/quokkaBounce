@@ -16,7 +16,7 @@ import com.quokkabounce.game.sprites.Button;
  */
 
 public class MenuState extends State implements InputProcessor{
-    private Texture levelSelectBackground;
+    private Texture levelSelectBackground, greyQuokka, bonusQuokka;
     private Array<Button> buttons;
     private Array<Texture> numbers;
     private Button backButton;
@@ -26,7 +26,9 @@ public class MenuState extends State implements InputProcessor{
 
     public MenuState(GameStateManager gsm, int world, int level, boolean collectedQuokka) {
         super(gsm, world, level);
-        collectedQuokkas = new boolean[11];
+        collectedQuokkas = new boolean[10];
+        bonusQuokka = new Texture("gotBonus.png");
+        greyQuokka = new Texture("greyBonus.png");
         Gdx.input.setInputProcessor(this);
         Preferences prefs = Gdx.app.getPreferences("saveData");
         permaWorld = prefs.getInteger("world", 1);
@@ -46,7 +48,7 @@ public class MenuState extends State implements InputProcessor{
             permaLevel = level;
         }
         boolean currentQuokka;
-        for(int i = 0; i < level; i++) {
+        for(int i = 0; i < permaLevel - 1; i++) {
             currentQuokka = prefs.getBoolean("collectedQuokka" + world + i, false);
             if((i == level - 2) && collectedQuokka){
                 collectedQuokkas[i] = true;
@@ -116,6 +118,7 @@ public class MenuState extends State implements InputProcessor{
             if(world!=1) {
                 sb.draw(numbers.get(i), button.getPosButton().x + button.getTexture().getWidth() / 2 - numbers.get(i).getWidth() / 2, button.getPosButton().y + button.getTexture().getHeight() / 2 - numbers.get(i).getHeight() / 2);
             }
+            sb.draw(collectedQuokkas[i] ? bonusQuokka : greyQuokka, button.getPosButton().x + button.getButtonBounds().getWidth() - bonusQuokka.getWidth(), button.getPosButton().y + button.getButtonBounds().getHeight() / 2 - bonusQuokka.getHeight());
         }
         sb.end();
     }
