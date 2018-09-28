@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BooleanArray;
 import com.quokkabounce.game.QuokkaBounce;
 import com.quokkabounce.game.sprites.Airplane;
+import com.quokkabounce.game.sprites.Animation;
 import com.quokkabounce.game.sprites.Arrow;
 import com.quokkabounce.game.sprites.BonusQuokka;
 import com.quokkabounce.game.sprites.Button;
@@ -37,7 +38,7 @@ import com.quokkabounce.game.sprites.Wall;
  * Created by Eric on 8/29/2017.
  */
 
-public class PlayState extends State implements InputProcessor{
+class PlayState extends State implements InputProcessor{
     private static final int HAWKSIGHT = 400;
     private static final int ARROWHEIGHT = 150;
     private static final float GOODGRAV = -500000000f;
@@ -61,7 +62,7 @@ public class PlayState extends State implements InputProcessor{
     private HappyCloud happyCloud;
     private float currentDT, iniPot, shortestDistance;
     private int layer, finalLayer, pointCounter;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, level1, camUpdate, justWall, justBouncedPlanet;
+    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, camUpdate, justWall;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -96,8 +97,9 @@ public class PlayState extends State implements InputProcessor{
     private Vector3 tempGrav;
     private String hitCorner;
     private Texture warningTexture;
+    private Animation portalAnimation;
 
-    public PlayState(GameStateManager gsm, int world, int level) {
+    PlayState(GameStateManager gsm, int world, int level) {
         super(gsm, world, level);
         levelBackground = new Texture("level2Background.png");
         clouds = new Array<EvilCloud>();
@@ -134,7 +136,6 @@ public class PlayState extends State implements InputProcessor{
         hitTop = new boolean[4];
         hitSide = new Vector2[2];
         layer = 0;
-        level1 = false;
         warningTexture = new Texture("warning.png");
         finalLayer = 0;
         if(planets.size == 0 && nebulae.size == 0 && blackHoles.size == 0) {
@@ -1327,7 +1328,6 @@ public class PlayState extends State implements InputProcessor{
                 }
                 justPlanetTemp = false;
                 quokka.getGravity().set(0, 0, 0);
-                boolean tempBouncedWall = false;
                 for (Obstacle planet : planets) {
                     if (Intersector.overlaps(planet.getObstacleCircle(), quokka.getQuokkaBounds())) {
                         circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
@@ -1687,7 +1687,7 @@ public class PlayState extends State implements InputProcessor{
                                 break;
                             }
                         } else if (brush.getMoveTracker() - pointCounter == 1) {
-                            if (lineBounce(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) ? (float) distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) : (float) (netDistance - brush.getTotalDistance())))) {
+                            if (lineBounce(brush.getMoveSpots().get(0), pointBetween(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1), (netDistance - brush.getTotalDistance()) > distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) ? (float) distance(brush.getMoveSpots().get(0), brush.getMoveSpots().get(brush.getMoveSpots().size - 1)) : (netDistance - brush.getTotalDistance())))) {
                                 justHitBrushTemp = true;
                                 break;
                             }
@@ -3610,10 +3610,7 @@ public class PlayState extends State implements InputProcessor{
         Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width,
                 r.height, 0, r.height });
         rPoly.setPosition(r.x, r.y);
-        if (Intersector.overlapConvexPolygons(rPoly, p)) {
-            return true;
-        }
-        return false;
+        return Intersector.overlapConvexPolygons(rPoly, p);
     }
 
 
