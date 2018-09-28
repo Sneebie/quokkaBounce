@@ -289,6 +289,27 @@ public class PlayState extends State implements InputProcessor{
                     }
                     if(quokkaLineHit()){
                         final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
+                        System.out.println(slope);
+                        if(Math.abs(slope) > 1){
+                            if(quokka.getBottomLeft2().x < quokka.getBottomLeft().x){
+                                while(quokkaLineHit()){
+                                    System.out.println("here4?!");
+                                    clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                    clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                            else{
+                                while(quokkaLineHit()){
+                                    System.out.println("here5?!");
+                                    clickPos.set(clickPos.x - 10, clickPos.y, 0);
+                                    clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                        }
                         if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
                             if(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2).x > quokka.getQuokkaBounds().getWidth() / 2){
                                 if(slope > 0) {
