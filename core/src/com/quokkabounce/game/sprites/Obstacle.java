@@ -22,20 +22,15 @@ public class Obstacle {
     private float totalDistance = 0;
 
     public Obstacle(float x, float y, String textureString){
-        System.out.println("here3");
         obstacleTexture = new Texture(textureString);
-        System.out.println("here5");
-
         posObstacle = new Vector2(x, y);
         if(textureString == "portal.png") {
             obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
             obstacleTexture.dispose();
-            System.out.println("here lil guy2");
         }
         else if(textureString == "blackHole.png"){
             obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
             //obstacleTexture.dispose();
-            System.out.println("here lil guy2");
         }
         else{
             obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());

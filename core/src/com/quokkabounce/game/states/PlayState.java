@@ -62,7 +62,7 @@ class PlayState extends State implements InputProcessor{
     private HappyCloud happyCloud;
     private float currentDT, iniPot, shortestDistance;
     private int layer, finalLayer, pointCounter;
-    private boolean shouldFall, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, camUpdate, justWall;
+    private boolean shouldFall, clickedWhileSpawning, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, respawning, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, camUpdate, justWall;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -101,6 +101,8 @@ class PlayState extends State implements InputProcessor{
 
     PlayState(GameStateManager gsm, int world, int level) {
         super(gsm, world, level);
+        System.out.println("starting");
+        respawning = true;
         levelBackground = new Texture("level2Background.png");
         clouds = new Array<EvilCloud>();
         walls = new Array<Wall>();
@@ -160,6 +162,7 @@ class PlayState extends State implements InputProcessor{
         hasEdgeCollided = false;
         camUpdate = false;
         vineCheck = true;
+        clickedWhileSpawning = true;
         justHitBrush = false;
         Gdx.input.setInputProcessor(this);
         if(world!= 3) {
@@ -220,6 +223,11 @@ class PlayState extends State implements InputProcessor{
         else{
             iniPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
         }
+        cam.position.x = quokka.getPosition().x + 80;
+        camUpdate = true;
+        backButton = new Button(new Texture("back.png"), cam.position.x - cam.viewportWidth / 2 + 15, cam.position.y + cam.viewportHeight / 2 - 65, 0);
+        pauseButton = new Button(new Texture("pause.png"), cam.position.x - cam.viewportWidth / 2 + 80, cam.position.y + cam.viewportHeight / 2 - 65, 0);
+        respawning = false;
     }
 
     @Override
@@ -278,38 +286,20 @@ class PlayState extends State implements InputProcessor{
                                     clickPos2d.set(clickPos.x, clickPos.y);
                                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                                 }
-                            } else {
-                                while (quokkaLineHit()) {
-                                    System.out.println("here2?!");
-                                    clickPos.set(clickPos.x - 10, clickPos.y, 0);
-                                    clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
-                                    clickPos2d.set(clickPos.x, clickPos.y);
-                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                                }
                             }
                         }
                     }
                     if(quokkaLineHit()){
                         final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
                         System.out.println(slope);
-                        if(world !=5) {
-                            if (Math.abs(slope) > 1) {
-                                if (quokka.getBottomLeft2().x < quokka.getBottomLeft().x) {
-                                    while (quokkaLineHit()) {
-                                        System.out.println("here4?!");
-                                        clickPos.set(clickPos.x + 10, clickPos.y, 0);
-                                        clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
-                                        clickPos2d.set(clickPos.x, clickPos.y);
-                                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                                    }
-                                } else {
-                                    while (quokkaLineHit()) {
-                                        System.out.println("here5?!");
-                                        clickPos.set(clickPos.x - 10, clickPos.y, 0);
-                                        clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
-                                        clickPos2d.set(clickPos.x, clickPos.y);
-                                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                                    }
+                        if(Math.abs(slope) > 1){
+                            if(quokka.getBottomLeft2().x < quokka.getBottomLeft().x){
+                                while(quokkaLineHit()){
+                                    System.out.println("here4?!");
+                                    clickPos.set(clickPos.x + 10, clickPos.y, 0);
+                                    clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
                                 }
                             }
                         }
@@ -783,6 +773,7 @@ class PlayState extends State implements InputProcessor{
             if(shouldMove) {
                 for (Hawk hawk : hawks) {
                     if (hawk.collides(quokka.getQuokkaBounds())) {
+                        respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
@@ -794,6 +785,7 @@ class PlayState extends State implements InputProcessor{
                 }
                 for(Drone drone : drones){
                     if(drone.isStartMove() && isCollision(drone.getPolygon(), quokka.getQuokkaBounds())){
+                        respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
@@ -806,6 +798,7 @@ class PlayState extends State implements InputProcessor{
                 }
                 for(JumpFish jumpFish : jumpFishes){
                     if(isCollision(jumpFish.getPolygon(), quokka.getQuokkaBounds())){
+                        respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                     }
                     if(jumpFish.getPosJumpFish().x > (cam.position.x - cam.viewportWidth * VIEWPORT_SCALER / 2)){
@@ -817,6 +810,7 @@ class PlayState extends State implements InputProcessor{
                 }
                 for(LaserGun laserGun : laserGuns){
                     if(isCollision(laserGun.getMyBeam().getPolygon(), quokka.getQuokkaBounds())){
+                        respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
@@ -827,6 +821,7 @@ class PlayState extends State implements InputProcessor{
                 }
                 for (TallDino tallDino : tallDinos) {
                     if (isConcaveCollision(tallDino.getTallDinoPolygon(), quokka.getQuokkaBounds())) {
+                        respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
@@ -834,6 +829,7 @@ class PlayState extends State implements InputProcessor{
                 }
                 for (Arrow arrow : arrows) {
                     if (arrow.collides(quokka.getQuokkaBounds())) {
+                        respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
@@ -1483,6 +1479,7 @@ class PlayState extends State implements InputProcessor{
                             if (!justPlanet) {
                                 if (justPlanetTemp) {
                                     //coachLandmark
+                                    respawning = true;
                                     gsm.set(new PlayState(gsm, world, level));
                                     break;
                                 }
@@ -1518,6 +1515,7 @@ class PlayState extends State implements InputProcessor{
                     if (meteor.isStartFall()) {
                         if (Intersector.overlaps(meteor.getMeteorCircle(), quokka.getQuokkaBounds())) {
                             if (meteors.contains(meteor, true)) {
+                                respawning = true;
                                 gsm.set(new PlayState(gsm, world, level));
                                 break;
                             }
@@ -1547,6 +1545,7 @@ class PlayState extends State implements InputProcessor{
                     if (airplane.isStartFall()) {
                         if (airplane.collides(quokka.getQuokkaBounds())) {
                             if (airplanes.contains(airplane, true)) {
+                                respawning = true;
                                 gsm.set(new PlayState(gsm, world, level));
                                 break;
                             }
@@ -1561,6 +1560,7 @@ class PlayState extends State implements InputProcessor{
                     if (airplane.isStartFall()) {
                         if (airplane.collides(quokka.getQuokkaBounds())) {
                             if (airplanes.contains(airplane, true)) {
+                                respawning = true;
                                 gsm.set(new PlayState(gsm, world, level));
                                 break;
                             }
@@ -1575,6 +1575,7 @@ class PlayState extends State implements InputProcessor{
                     if (airplane.isStartFall()) {
                         if (airplane.collides(quokka.getQuokkaBounds())) {
                             if (airplanes.contains(airplane, true)) {
+                                respawning = true;
                                 gsm.set(new PlayState(gsm, world, level));
                                 break;
                             }
@@ -1718,6 +1719,7 @@ class PlayState extends State implements InputProcessor{
                 }
                 for (EvilCloud cloud : clouds) {
                     if (cloud.collides(quokka.getQuokkaBounds())) {
+                        respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
@@ -1780,6 +1782,7 @@ class PlayState extends State implements InputProcessor{
 
             if (quokka.getPosition().y + quokka.getTexture().getHeight() <= cam.position.y - cam.viewportHeight / 2) {
                 if (moveWalls.size == 0) {
+                    respawning = true;
                     gsm.set(new PlayState(gsm, world, level));
                 }
             }
@@ -2433,8 +2436,6 @@ class PlayState extends State implements InputProcessor{
     }
 
     private void levelInit(int world, int level){
-        backButton = new Button(new Texture("back.png"), 0, 500, 0);
-        pauseButton = new Button(new Texture("pause.png"), 0, 300, 0);
         if(world == 1) {
             walls.add(new Wall(-1000, -220, "wall.png"));
             walls.add(new Wall(-1000, 375, "wall.png"));
@@ -3170,9 +3171,7 @@ class PlayState extends State implements InputProcessor{
                     case 1:
                         walls.add(new Wall(-100,380, "futureWall.png"));
                         walls.add(new Wall(-100, -215, "futureWall.png"));
-                        System.out.println("here");
                         portals.add(new Obstacle(25, 50, "portal.png"));
-                        System.out.println("here?");
                         walls.add(new Wall(200,380, "futureWall.png"));
                         walls.add(new Wall(200, -215, "futureWall.png"));
                         portals.add(new Obstacle(450, 600, "portal.png"));
@@ -3665,40 +3664,46 @@ class PlayState extends State implements InputProcessor{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        touchInput.set(screenX, screenY, 0);
-        cam.unproject(touchInput);
-        justPaused = false;
-        if(backButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
-            gsm.set(new MenuState(gsm, world, level, false));
-        }
-        else if(pauseButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
-            paused = !paused;
-            justPaused = true;
+        if(!respawning) {
+            System.out.println("grouchies");
+            touchInput.set(screenX, screenY, 0);
+            cam.unproject(touchInput);
+            justPaused = false;
+            if (backButton.getButtonBounds().contains(touchInput.x, touchInput.y)) {
+                gsm.set(new MenuState(gsm, world, level, false));
+            } else if (pauseButton.getButtonBounds().contains(touchInput.x, touchInput.y)) {
+                paused = !paused;
+                justPaused = true;
+            } else {
+                vineDraw = true;
+                vineCheck = true;
+                lineDraw = true;
+                shouldFall = true;
+                shouldMove = true;
+                hasCollided = false;
+                lineCheck = false;
+                paused = false;
+                clickPos2.set(screenX, -100, 0);
+                clickPos.set(screenX, screenY, 0);
+                clickPos.set(cam.unproject(clickPos));
+                if (lineDraw) {
+                    clickPosTemp.set(screenX, screenY, 0);
+                    clickPosTemp.set(cam.unproject(clickPosTemp));
+                }
+            }
+            clickedWhileSpawning = false;
         }
         else{
-            vineDraw = true;
-            vineCheck = true;
-            lineDraw = true;
-            shouldFall = true;
-            shouldMove = true;
-            hasCollided = false;
-            lineCheck = false;
-            paused = false;
-            clickPos2.set(screenX, -100, 0);
-            clickPos.set(screenX, screenY, 0);
-            clickPos.set(cam.unproject(clickPos));
-            if(lineDraw) {
-                clickPosTemp.set(screenX, screenY, 0);
-                clickPosTemp.set(cam.unproject(clickPosTemp));
-            }
+            clickedWhileSpawning = true;
         }
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if(!paused && !justPaused) {
+        if(!paused && !justPaused && !clickedWhileSpawning && !respawning) {
             if (lineDraw) {
+                System.out.println(clickPos);
                 clickPos2.set(screenX, screenY, 0);
                 clickPos2.set(cam.unproject(clickPos2));
                 if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {

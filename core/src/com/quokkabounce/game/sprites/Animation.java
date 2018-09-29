@@ -24,9 +24,7 @@ public class Animation {
             hawkAnimation = false;
         }
         frameChange = 1;
-        System.out.println("so SAD");
         for(int i = 0; i < frameCount; i++){
-            System.out.println(i);
             frames.add(new Texture(folderName + "/" + fileName + Integer.toString(i) + ".png"));
         }
         this.frameCount = frameCount;
