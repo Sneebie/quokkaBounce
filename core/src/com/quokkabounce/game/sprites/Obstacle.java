@@ -34,7 +34,7 @@ public class Obstacle {
         }
         else if(textureString == "blackHole.png"){
             obstacleBounds = new Rectangle(posObstacle.x, posObstacle.y, obstacleTexture.getWidth(), obstacleTexture.getHeight());
-            obstacleTexture.dispose();
+            //obstacleTexture.dispose();
             System.out.println("here lil guy2");
         }
         else{
