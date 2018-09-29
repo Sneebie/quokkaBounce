@@ -97,7 +97,7 @@ class PlayState extends State implements InputProcessor{
     private Vector3 tempGrav;
     private String hitCorner;
     private Texture warningTexture;
-    private Animation portalAnimation;
+    private Animation portalAnimation, blackHoleAnimation;
 
     PlayState(GameStateManager gsm, int world, int level) {
         super(gsm, world, level);
@@ -1406,82 +1406,84 @@ class PlayState extends State implements InputProcessor{
                     }
                     quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
                 }
-                for (Obstacle planet : blackHoles) {
-                    planet.animationMove(dt);
-                    if (Intersector.overlaps(planet.getObstacleCircle(), quokka.getQuokkaBounds())) {
-                        circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
-                        adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
-                        quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
-                        planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
-                        if (0 < planetProj.x && planetProj.x < quokka.getQuokkaBounds().getWidth()) {
-                            intersectionPoint.set(planetProj.x, planetProj.y);
-                        } else if (Math.abs(planetProj.x - quokka.getQuokkaBounds().getWidth()) < Math.abs(planetProj.x)) {
-                            intersectionPoint.set(quokka.getQuokkaBounds().getWidth(), 0);
-                        } else {
-                            intersectionPoint.set(0, 0);
-                        }
-                        intersectionPoint.add(quokka.getPosition().x, quokka.getPosition().y);
-                        adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y - quokka.getQuokkaBounds().getHeight());
-                        quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
-                        planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
-                        if (0 < planetProj.x && planetProj.x < quokka.getQuokkaBounds().getWidth()) {
-                            intersectionPointTemp.set(planetProj.x, planetProj.y);
-                        } else if (Math.abs(planetProj.x - quokka.getQuokkaBounds().getWidth()) < Math.abs(planetProj.x)) {
-                            intersectionPointTemp.set(quokka.getQuokkaBounds().getWidth(), 0);
-                        } else {
-                            intersectionPointTemp.set(0, 0);
-                        }
-                        intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
-                        if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
-                            intersectionPoint.set(intersectionPointTemp);
-                        }
+                if(blackHoles.size > 0) {
+                    for (Obstacle planet : blackHoles) {
+                        if (Intersector.overlaps(planet.getObstacleCircle(), quokka.getQuokkaBounds())) {
+                            circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
+                            adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
+                            quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
+                            planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
+                            if (0 < planetProj.x && planetProj.x < quokka.getQuokkaBounds().getWidth()) {
+                                intersectionPoint.set(planetProj.x, planetProj.y);
+                            } else if (Math.abs(planetProj.x - quokka.getQuokkaBounds().getWidth()) < Math.abs(planetProj.x)) {
+                                intersectionPoint.set(quokka.getQuokkaBounds().getWidth(), 0);
+                            } else {
+                                intersectionPoint.set(0, 0);
+                            }
+                            intersectionPoint.add(quokka.getPosition().x, quokka.getPosition().y);
+                            adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y - quokka.getQuokkaBounds().getHeight());
+                            quokkaSide.set(quokka.getQuokkaBounds().getWidth(), 0);
+                            planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
+                            if (0 < planetProj.x && planetProj.x < quokka.getQuokkaBounds().getWidth()) {
+                                intersectionPointTemp.set(planetProj.x, planetProj.y);
+                            } else if (Math.abs(planetProj.x - quokka.getQuokkaBounds().getWidth()) < Math.abs(planetProj.x)) {
+                                intersectionPointTemp.set(quokka.getQuokkaBounds().getWidth(), 0);
+                            } else {
+                                intersectionPointTemp.set(0, 0);
+                            }
+                            intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight());
+                            if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
+                                intersectionPoint.set(intersectionPointTemp);
+                            }
 
-                        adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
-                        quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
-                        planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
-                        if (0 < planetProj.y && planetProj.y < quokka.getQuokkaBounds().getHeight()) {
-                            intersectionPointTemp.set(planetProj.x, planetProj.y);
-                        } else if (Math.abs(planetProj.y - quokka.getQuokkaBounds().getHeight()) < Math.abs(planetProj.y)) {
-                            intersectionPointTemp.set(0, quokka.getQuokkaBounds().getHeight());
-                        } else {
-                            intersectionPointTemp.set(0, 0);
-                        }
-                        intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y);
-                        if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
-                            intersectionPoint.set(intersectionPointTemp);
-                        }
+                            adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
+                            quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
+                            planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
+                            if (0 < planetProj.y && planetProj.y < quokka.getQuokkaBounds().getHeight()) {
+                                intersectionPointTemp.set(planetProj.x, planetProj.y);
+                            } else if (Math.abs(planetProj.y - quokka.getQuokkaBounds().getHeight()) < Math.abs(planetProj.y)) {
+                                intersectionPointTemp.set(0, quokka.getQuokkaBounds().getHeight());
+                            } else {
+                                intersectionPointTemp.set(0, 0);
+                            }
+                            intersectionPointTemp.add(quokka.getPosition().x, quokka.getPosition().y);
+                            if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
+                                intersectionPoint.set(intersectionPointTemp);
+                            }
 
-                        adjustedCenter.set(circleCenter.x - quokka.getPosition().x - quokka.getQuokkaBounds().getWidth(), circleCenter.y - quokka.getPosition().y);
-                        quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
-                        planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
-                        if (0 < planetProj.y && planetProj.y < quokka.getQuokkaBounds().getHeight()) {
-                            intersectionPointTemp.set(planetProj.x, planetProj.y);
-                        } else if (Math.abs(planetProj.y - quokka.getQuokkaBounds().getHeight()) < Math.abs(planetProj.y)) {
-                            intersectionPointTemp.set(0, quokka.getQuokkaBounds().getHeight());
-                        } else {
-                            intersectionPointTemp.set(0, 0);
-                        }
-                        intersectionPointTemp.add(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
-                        if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
-                            intersectionPoint.set(intersectionPointTemp);
-                        }
-                        if (Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2)) < planet.getObstacleBounds().getWidth() / 2) {
-                            justPlanetTemp = true;
-                        }
-                        if (!justPlanet) {
-                            if (justPlanetTemp) {
-                                //coachLandmark
-                                gsm.set(new PlayState(gsm, world, level));
-                                break;
+                            adjustedCenter.set(circleCenter.x - quokka.getPosition().x - quokka.getQuokkaBounds().getWidth(), circleCenter.y - quokka.getPosition().y);
+                            quokkaSide.set(0, quokka.getQuokkaBounds().getHeight());
+                            planetProj.set(quokkaSide.scl(adjustedCenter.dot(quokkaSide) / quokkaSide.dot(quokkaSide)));
+                            if (0 < planetProj.y && planetProj.y < quokka.getQuokkaBounds().getHeight()) {
+                                intersectionPointTemp.set(planetProj.x, planetProj.y);
+                            } else if (Math.abs(planetProj.y - quokka.getQuokkaBounds().getHeight()) < Math.abs(planetProj.y)) {
+                                intersectionPointTemp.set(0, quokka.getQuokkaBounds().getHeight());
+                            } else {
+                                intersectionPointTemp.set(0, 0);
+                            }
+                            intersectionPointTemp.add(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y);
+                            if (Math.sqrt(Math.pow(intersectionPointTemp.y - circleCenter.y, 2) + Math.pow(intersectionPointTemp.x - circleCenter.x, 2)) < Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2))) {
+                                intersectionPoint.set(intersectionPointTemp);
+                            }
+                            if (Math.sqrt(Math.pow(intersectionPoint.y - circleCenter.y, 2) + Math.pow(intersectionPoint.x - circleCenter.x, 2)) < planet.getObstacleBounds().getWidth() / 2) {
+                                justPlanetTemp = true;
+                            }
+                            if (!justPlanet) {
+                                if (justPlanetTemp) {
+                                    //coachLandmark
+                                    gsm.set(new PlayState(gsm, world, level));
+                                    break;
+                                }
                             }
                         }
+                        planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2, 0);
+                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                        if (planetMagnitude != 0) {
+                            planetDistance.scl((float) (GOODGRAV / Math.pow(planetMagnitude, GRAVPOW)));
+                        }
+                        quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
                     }
-                    planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2, 0);
-                    double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-                    if (planetMagnitude != 0) {
-                        planetDistance.scl((float) (GOODGRAV / Math.pow(planetMagnitude, GRAVPOW)));
-                    }
-                    quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
+                    blackHoleAnimation.update(dt);
                 }
                 for (Obstacle nebula : nebulae) {
                     planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - nebula.getPosObstacle().x - nebula.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - nebula.getPosObstacle().y - nebula.getTexture().getHeight() / 2, 0);
@@ -1568,83 +1570,85 @@ class PlayState extends State implements InputProcessor{
                         airplane.move(dt);
                     }
                 }
-                boolean touchingPortal = false;
-                boolean touchedPortal = false;
-                for(Obstacle portal : portals){
-                    portal.animationMove(dt);
-                    if (Intersector.overlaps(portal.getObstacleCircle(), quokka.getQuokkaBounds())) {
-                        touchingPortal = true;
-                        if(!(quokka.isTouchingPortal() || touchedPortal)) {
-                            touchedPortal = true;
-                            if (portals.indexOf(portal, true) % 2 == 0) {
-                                quokka.setPosition(portals.get(portals.indexOf(portal, true) + 1).getPosObstacle().x + quokka.getPosition().x - portal.getPosObstacle().x, portals.get(portals.indexOf(portal, true) + 1).getPosObstacle().y + quokka.getPosition().y - portal.getPosObstacle().y);
-                                velocityTemp2.set(quokka.getVelocity().x / quokka.getVelocity().len(), quokka.getVelocity().y / quokka.getVelocity().len(), 0);
-                                float currentPot = 0;
-                                if (planets.size > 0 || nebulae.size > 0 || blackHoles.size > 0) {
-                                    tempGrav.set(0, 0, 0);
-                                    for (Obstacle planet : planets) {
-                                        planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
-                                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-                                        currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                if(portals.size > 0) {
+                    boolean touchingPortal = false;
+                    boolean touchedPortal = false;
+                    for (Obstacle portal : portals) {
+                        if (Intersector.overlaps(portal.getObstacleCircle(), quokka.getQuokkaBounds())) {
+                            touchingPortal = true;
+                            if (!(quokka.isTouchingPortal() || touchedPortal)) {
+                                touchedPortal = true;
+                                if (portals.indexOf(portal, true) % 2 == 0) {
+                                    quokka.setPosition(portals.get(portals.indexOf(portal, true) + 1).getPosObstacle().x + quokka.getPosition().x - portal.getPosObstacle().x, portals.get(portals.indexOf(portal, true) + 1).getPosObstacle().y + quokka.getPosition().y - portal.getPosObstacle().y);
+                                    velocityTemp2.set(quokka.getVelocity().x / quokka.getVelocity().len(), quokka.getVelocity().y / quokka.getVelocity().len(), 0);
+                                    float currentPot = 0;
+                                    if (planets.size > 0 || nebulae.size > 0 || blackHoles.size > 0) {
+                                        tempGrav.set(0, 0, 0);
+                                        for (Obstacle planet : planets) {
+                                            planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
+                                            double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                                            currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                        }
+                                        for (Obstacle nebula : nebulae) {
+                                            planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - nebula.getPosObstacle().x - nebula.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - nebula.getPosObstacle().y - nebula.getTexture().getHeight() / 2), 0);
+                                            double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                                            currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                        }
+                                        for (Obstacle planet : blackHoles) {
+                                            planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
+                                            double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                                            currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                        }
+                                    } else {
+                                        currentPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
                                     }
-                                    for (Obstacle nebula : nebulae) {
-                                        planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - nebula.getPosObstacle().x - nebula.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - nebula.getPosObstacle().y - nebula.getTexture().getHeight() / 2), 0);
-                                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-                                        currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
-                                    }
-                                    for (Obstacle planet : blackHoles) {
-                                        planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
-                                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-                                        currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
-                                    }
+                                    //coachLandmark
+                                    velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0 * (iniPot - currentPot))));
+                                    velocityTemp2.scl((float) (1.0 / Math.sqrt(currentDT)));
+                                    quokka.getVelocity().set(velocityTemp2);
                                 } else {
-                                    currentPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
-                                }
-                                //coachLandmark
-                                velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0 * (iniPot - currentPot))));
-                                velocityTemp2.scl((float) (1.0 / Math.sqrt(currentDT)));
-                                quokka.getVelocity().set(velocityTemp2);
-                            } else {
-                                quokka.setPosition(portals.get(portals.indexOf(portal, true) - 1).getPosObstacle());
-                                velocityTemp2.set(quokka.getVelocity().x / quokka.getVelocity().len(), quokka.getVelocity().y / quokka.getVelocity().len(), 0);
-                                float currentPot = 0;
-                                if (planets.size > 0 || nebulae.size > 0 || blackHoles.size > 0) {
-                                    tempGrav.set(0, 0, 0);
-                                    for (Obstacle planet : planets) {
-                                        planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
-                                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-                                        currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                    quokka.setPosition(portals.get(portals.indexOf(portal, true) - 1).getPosObstacle());
+                                    velocityTemp2.set(quokka.getVelocity().x / quokka.getVelocity().len(), quokka.getVelocity().y / quokka.getVelocity().len(), 0);
+                                    float currentPot = 0;
+                                    if (planets.size > 0 || nebulae.size > 0 || blackHoles.size > 0) {
+                                        tempGrav.set(0, 0, 0);
+                                        for (Obstacle planet : planets) {
+                                            planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
+                                            double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                                            currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                        }
+                                        for (Obstacle nebula : nebulae) {
+                                            planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - nebula.getPosObstacle().x - nebula.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - nebula.getPosObstacle().y - nebula.getTexture().getHeight() / 2), 0);
+                                            double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                                            currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                        }
+                                        for (Obstacle planet : blackHoles) {
+                                            planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
+                                            double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                                            currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+                                        }
+                                    } else {
+                                        currentPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
                                     }
-                                    for (Obstacle nebula : nebulae) {
-                                        planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - nebula.getPosObstacle().x - nebula.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - nebula.getPosObstacle().y - nebula.getTexture().getHeight() / 2), 0);
-                                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-                                        currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
-                                    }
-                                    for (Obstacle planet : blackHoles) {
-                                        planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
-                                        double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
-                                        currentPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
-                                    }
-                                } else {
-                                    currentPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
+                                    //coachLandmark
+                                    velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0 * (iniPot - currentPot))));
+                                    velocityTemp2.scl((float) (1.0 / Math.sqrt(currentDT)));
+                                    quokka.getVelocity().set(velocityTemp2);
                                 }
-                                //coachLandmark
-                                velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0 * (iniPot - currentPot))));
-                                velocityTemp2.scl((float) (1.0 / Math.sqrt(currentDT)));
-                                quokka.getVelocity().set(velocityTemp2);
-                            }
-                            if(world!=3) {
-                                cam.position.x = quokka.getPosition().x + 80;
-                                if (lineDraw) {
-                                    clickPosTemp.set(clickPosTemp.x + quokka.getBottomLeft2().x - quokka.getBottomLeft().x, clickPosTemp.y, 0);
+                                if (world != 3) {
+                                    cam.position.x = quokka.getPosition().x + 80;
+                                    if (lineDraw) {
+                                        clickPosTemp.set(clickPosTemp.x + quokka.getBottomLeft2().x - quokka.getBottomLeft().x, clickPosTemp.y, 0);
+                                    }
+                                    camUpdate = true;
+                                    updateBackgroundPortal();
                                 }
-                                camUpdate = true;
-                                updateBackgroundPortal();
                             }
                         }
                     }
+                    quokka.setTouchingPortal(touchingPortal);
+                    portalAnimation.update(dt);
                 }
-                quokka.setTouchingPortal(touchingPortal);
                 for(Obstacle brush : brushes){
                     brush.move(dt);
                     pointCounter = 0;
@@ -2257,7 +2261,7 @@ class PlayState extends State implements InputProcessor{
                 }
             }
             for (Obstacle portal : portals) {
-                sb.draw(portal.getTexture(), portal.getPosObstacle().x, portal.getPosObstacle().y);
+                sb.draw(portalAnimation.getFrame(), portal.getPosObstacle().x, portal.getPosObstacle().y);
             }
             for (MoveWall moveWall : moveWalls) {
                 sb.draw(moveWall.getTexture(), moveWall.getPosWall().x, moveWall.getPosWall().y);
@@ -2269,7 +2273,7 @@ class PlayState extends State implements InputProcessor{
                 sb.draw(planet.getTexture(), planet.getPosObstacle().x, planet.getPosObstacle().y);
             }
             for (Obstacle blackHole : blackHoles) {
-                sb.draw(blackHole.getTexture(), blackHole.getPosObstacle().x, blackHole.getPosObstacle().y);
+                sb.draw(blackHoleAnimation.getFrame(), blackHole.getPosObstacle().x, blackHole.getPosObstacle().y);
             }
         /*for(Vine vine : vines){
             sb.draw(vine.getTexture(), vine.getPosVine().x, vine.getPosVine().y);
@@ -3462,11 +3466,17 @@ class PlayState extends State implements InputProcessor{
                 walls.add(new Wall(cam.viewportWidth- 10, i, "wall.png"));
             }
         }
-        if(world == 5){
+        else if(world == 5){
             for(int i = -877; i < happyCloud.getPosCloud().x + 2000; i+=595){
                 walls.add(new Wall(i, -100, "horizontAsteroidBelt.png"));
                 walls.add(new Wall(i, cam.viewportHeight - 10, "horizontAsteroidBelt.png"));
             }
+        }
+        if(portals.size > 0){
+            portalAnimation = new Animation("portalFrames", "Portal_Final00", 100, 1.5f);
+        }
+        if(blackHoles.size > 0){
+            blackHoleAnimation = new Animation("blackHoleFrames", "Blackhole_Final00", 100, 0.5f);
         }
         collectedQuokkas.setSize(bonusQuokkas.size);
     }
