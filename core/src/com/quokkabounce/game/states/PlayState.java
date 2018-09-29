@@ -3461,10 +3461,15 @@ class PlayState extends State implements InputProcessor{
                 break;*/
         }
         if(world == 3){
-            for(int i = -220; i < happyCloud.getPosCloud().y; i+=595){
-                walls.add(new Wall(-30, i, "wall.png"));
-                walls.add(new Wall(cam.viewportWidth- 10, i, "wall.png"));
+            int i;
+            for(i = -220; i < happyCloud.getPosCloud().y; i+=595){
+                walls.add(new Wall(-30, i));
+                walls.add(new Wall(cam.viewportWidth- 10, i));
+                System.out.println(i);
             }
+            System.out.println("i" + i);
+            walls.add(new Wall(93, i - 123, "horizontWall.png"));
+            walls.add(new Wall(688, i - 123, "horizontWall.png"));
         }
         else if(world == 5){
             for(int i = -877; i < happyCloud.getPosCloud().x + 2000; i+=595){
