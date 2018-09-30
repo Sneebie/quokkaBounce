@@ -3706,7 +3706,23 @@ class PlayState extends State implements InputProcessor{
                 
                 clickPos2.set(screenX, screenY, 0);
                 clickPos2.set(cam.unproject(clickPos2));
-                System.out.println(quokka.getVelocity().y);
+                final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
+                if(quokka.getVelocity().y > 0 && quokka.getVelocity().x < 0){
+                    if(slope > 0) {
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
+                            System.out.println("oingO!");
+                            clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                        }
+                    }
+                    else{
+                        while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
+                            System.out.println("oingO!");
+                            clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                        }
+                    }
+                }
                 if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
                     if(quokka.getVelocity().y <= 0) {
                         while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
@@ -3743,7 +3759,6 @@ class PlayState extends State implements InputProcessor{
                             }
                             quokka.getVelocity().scl(currentDT);
                             quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
-                            final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
                             if(quokka.getVelocity().x > 0) {
                                 if(slope < 0) {
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
