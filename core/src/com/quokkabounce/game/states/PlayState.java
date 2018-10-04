@@ -101,7 +101,6 @@ class PlayState extends State implements InputProcessor{
 
     PlayState(GameStateManager gsm, int world, int level) {
         super(gsm, world, level);
-        
         respawning = true;
         levelBackground = new Texture("level2Background.png");
         clouds = new Array<EvilCloud>();
@@ -227,7 +226,6 @@ class PlayState extends State implements InputProcessor{
         camUpdate = true;
         backButton = new Button(new Texture("back.png"), cam.position.x - cam.viewportWidth / 2 + 15, cam.position.y + cam.viewportHeight / 2 - 65, 0);
         pauseButton = new Button(new Texture("pause.png"), cam.position.x - cam.viewportWidth / 2 + 80, cam.position.y + cam.viewportHeight / 2 - 65, 0);
-        respawning = false;
     }
 
     @Override
@@ -1809,6 +1807,7 @@ class PlayState extends State implements InputProcessor{
             }
             cam.update();
         }
+        respawning = false;
     }
     private void planetFixer(){
         float currentPot = 0f;
