@@ -3709,14 +3709,12 @@ class PlayState extends State implements InputProcessor{
                 if(quokka.getVelocity().y > 0 && quokka.getVelocity().x < 0){
                     if(slope > 0) {
                         while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                            System.out.println("oingO!");
                             clickPos.set(clickPos.x, clickPos.y + 10, 0);
                             clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
                         }
                     }
                     else{
                         while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                            System.out.println("oingO!");
                             clickPos.set(clickPos.x, clickPos.y - 10, 0);
                             clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
                         }
@@ -3761,14 +3759,12 @@ class PlayState extends State implements InputProcessor{
                             if(quokka.getVelocity().x > 0) {
                                 if(slope < 0) {
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                                        System.out.println("oingO!");
                                         clickPos.set(clickPos.x, clickPos.y + 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
                                     }
                                 }
                                 else{
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                                        System.out.println("oingO!");
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
                                     }
@@ -3777,14 +3773,12 @@ class PlayState extends State implements InputProcessor{
                             else{
                                 if(slope > 0) {
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                                        System.out.println("oingO!");
                                         clickPos.set(clickPos.x, clickPos.y + 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
                                     }
                                 }
                                 else{
                                     while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                                        System.out.println("oingO!");
                                         clickPos.set(clickPos.x, clickPos.y - 10, 0);
                                         clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
                                     }
