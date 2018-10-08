@@ -307,7 +307,6 @@ class PlayState extends State implements InputProcessor{
                             if(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2).x > quokka.getQuokkaBounds().getWidth() / 2){
                                 if(slope > 0) {
                                     while (quokkaLineHit()) {
-                                        System.out.println("doingo");
                                         clickPos.set(clickPos.x - 10, clickPos.y, 0);
                                         clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
                                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -316,7 +315,6 @@ class PlayState extends State implements InputProcessor{
                                 }
                                 else if(slope < 0){
                                     while (quokkaLineHit()) {
-                                        System.out.println("doingo");
                                         clickPos.set(clickPos.x + 10, clickPos.y, 0);
                                         clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
                                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -329,7 +327,6 @@ class PlayState extends State implements InputProcessor{
                             if(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2).x > quokka.getQuokkaBounds().getWidth() / 2){
                                 if(slope < 0) {
                                     while (quokkaLineHit()) {
-                                        System.out.println("doingo");
                                         clickPos.set(clickPos.x - 10, clickPos.y, 0);
                                         clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
                                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -338,7 +335,6 @@ class PlayState extends State implements InputProcessor{
                                 }
                                 else if(slope > 0){
                                     while (quokkaLineHit()) {
-                                        System.out.println("doingo");
                                         clickPos.set(clickPos.x + 10, clickPos.y, 0);
                                         clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
                                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -715,7 +711,6 @@ class PlayState extends State implements InputProcessor{
                         boolean shouldBounce = true;
                         for (Obstacle nullZone : nullZones) {
                             if(!justTouchUp) {
-                                System.out.println("here");
                                 if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
                                     shouldBounce = false;
                                 }
@@ -3739,6 +3734,20 @@ class PlayState extends State implements InputProcessor{
                 clickPosNo2.set(clickPos2.x, clickPos2.y);
                 justTouchUp = true;
                 final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
+                if(quokkaLineHit() && Math.abs(slope) < 1){
+                    if(quokka.getVelocity().y > 0){
+                        while(quokkaLineHit()){
+                            clickPos.set(clickPos.x, clickPos.y + 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
+                        }
+                    }
+                    else{
+                        while(quokkaLineHit()){
+                            clickPos.set(clickPos.x, clickPos.y - 10, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
+                        };
+                    }
+                }
                 if(quokka.getVelocity().y > 0 && quokka.getVelocity().x < 0){
                     if(slope > 0) {
                         while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
