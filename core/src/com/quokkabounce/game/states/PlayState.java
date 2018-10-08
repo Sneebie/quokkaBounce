@@ -56,13 +56,13 @@ class PlayState extends State implements InputProcessor{
     private Quokka quokka;
     private Button backButton, pauseButton;
     private Texture levelBackground;
-    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet, tempWall, tempBack, temp2;
+    private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet, tempWall, tempBack, temp2, clickPosNo, clickPosNo2;
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
     private float currentDT, iniPot, shortestDistance;
     private int layer, finalLayer, pointCounter;
-    private boolean shouldFall, clickedWhileSpawning, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, respawning, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, camUpdate, justWall;
+    private boolean shouldFall, clickedWhileSpawning, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, respawning, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, camUpdate, justWall, justTouchUp;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -183,6 +183,8 @@ class PlayState extends State implements InputProcessor{
         planetProj = new Vector2();
         tempBack = new Vector2();
         gradientVector = new Vector3();
+        clickPosNo = new Vector2();
+        clickPosNo2 = new Vector2();
         touchInput = new Vector3();
         tempGrav = new Vector3();
         xdiff = new Vector2();
@@ -305,6 +307,7 @@ class PlayState extends State implements InputProcessor{
                             if(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2).x > quokka.getQuokkaBounds().getWidth() / 2){
                                 if(slope > 0) {
                                     while (quokkaLineHit()) {
+                                        System.out.println("doingo");
                                         clickPos.set(clickPos.x - 10, clickPos.y, 0);
                                         clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
                                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -313,6 +316,7 @@ class PlayState extends State implements InputProcessor{
                                 }
                                 else if(slope < 0){
                                     while (quokkaLineHit()) {
+                                        System.out.println("doingo");
                                         clickPos.set(clickPos.x + 10, clickPos.y, 0);
                                         clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
                                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -325,6 +329,7 @@ class PlayState extends State implements InputProcessor{
                             if(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2).x > quokka.getQuokkaBounds().getWidth() / 2){
                                 if(slope < 0) {
                                     while (quokkaLineHit()) {
+                                        System.out.println("doingo");
                                         clickPos.set(clickPos.x - 10, clickPos.y, 0);
                                         clickPos2.set(clickPos2.x - 10, clickPos2.y, 0);
                                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -333,6 +338,7 @@ class PlayState extends State implements InputProcessor{
                                 }
                                 else if(slope > 0){
                                     while (quokkaLineHit()) {
+                                        System.out.println("doingo");
                                         clickPos.set(clickPos.x + 10, clickPos.y, 0);
                                         clickPos2.set(clickPos2.x + 10, clickPos2.y, 0);
                                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -708,10 +714,17 @@ class PlayState extends State implements InputProcessor{
                     if(doIntersect(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2)){
                         boolean shouldBounce = true;
                         for (Obstacle nullZone : nullZones) {
-                            if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2))) {
+                            if(!justTouchUp) {
+                                System.out.println("here");
+                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                                    shouldBounce = false;
+                                }
+                            }
+                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPosNo, clickPosNo2))){
                                 shouldBounce = false;
                             }
                         }
+                        justTouchUp = false;
                         if(shouldBounce && !doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)) {
                             hasCollided = true;
                             hasEdgeCollided = true;
@@ -723,10 +736,16 @@ class PlayState extends State implements InputProcessor{
                     else if(doIntersect(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2)){
                         boolean shouldBounce = true;
                         for (Obstacle nullZone : nullZones) {
-                            if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2))) {
+                            if(!justTouchUp) {
+                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                                    shouldBounce = false;
+                                }
+                            }
+                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPosNo, clickPosNo2))){
                                 shouldBounce = false;
                             }
                         }
+                        justTouchUp = false;
                         if(shouldBounce && !doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)) {
                             hasCollided = true;
                             hasEdgeCollided = true;
@@ -738,10 +757,16 @@ class PlayState extends State implements InputProcessor{
                     else if(doIntersect(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2)){
                         boolean shouldBounce = true;
                         for (Obstacle nullZone : nullZones) {
-                            if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2))) {
+                            if(!justTouchUp) {
+                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                                    shouldBounce = false;
+                                }
+                            }
+                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPosNo, clickPosNo2))){
                                 shouldBounce = false;
                             }
                         }
+                        justTouchUp = false;
                         if(shouldBounce) {
                             hasCollided = true;
                             hasEdgeCollided = true;
@@ -753,10 +778,16 @@ class PlayState extends State implements InputProcessor{
                     else if(doIntersect(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)){
                         boolean shouldBounce = true;
                         for (Obstacle nullZone : nullZones) {
-                            if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                            if(!justTouchUp) {
+                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                                    shouldBounce = false;
+                                }
+                            }
+                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPosNo, clickPosNo2))){
                                 shouldBounce = false;
                             }
                         }
+                        justTouchUp = false;
                         if(shouldBounce) {
                             hasCollided = true;
                             hasEdgeCollided = true;
@@ -2621,7 +2652,7 @@ class PlayState extends State implements InputProcessor{
                         switches.add(new Obstacle(650, 120, "wallSwitch.png"));
                         bonusQuokkas.add(new BonusQuokka(750, -30));
                         walls.add(new Wall(450, -445, switches, -215, "stump.png"));
-                        meteors.add(new Meteor(650, 780, 0, 0));
+                        meteors.add(new Meteor(680, 780, 0, 0));
                         walls.add(new Wall(900, -80, "stump.png"));
                         happyCloud = new HappyCloud(1200, 50);
                         break;
@@ -3702,9 +3733,11 @@ class PlayState extends State implements InputProcessor{
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if(!paused && !justPaused && !clickedWhileSpawning && !respawning) {
             if (lineDraw) {
-                
                 clickPos2.set(screenX, screenY, 0);
                 clickPos2.set(cam.unproject(clickPos2));
+                clickPosNo.set(clickPos.x, clickPos.y);
+                clickPosNo2.set(clickPos2.x, clickPos2.y);
+                justTouchUp = true;
                 final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
                 if(quokka.getVelocity().y > 0 && quokka.getVelocity().x < 0){
                     if(slope > 0) {
