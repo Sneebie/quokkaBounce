@@ -2636,10 +2636,10 @@ class PlayState extends State implements InputProcessor{
                     case 1:
                         levelBackground = new Texture("dino1Back.png");
                         walls.add(new Wall(500, 450, "stump.png"));
-                        meteors.add(new Meteor(675, 780, 0, 0));
-                        clouds.add(new EvilCloud(900, 50));
-                        bonusQuokkas.add(new BonusQuokka(1200, 50));
-                        happyCloud = new HappyCloud(1550, 50);
+                        meteors.add(new Meteor(730, 780, 0, 0));
+                        clouds.add(new EvilCloud(955, 50));
+                        bonusQuokkas.add(new BonusQuokka(1255, 50));
+                        happyCloud = new HappyCloud(1605, 50);
                         break;
                     case 2:
                         levelBackground = new Texture("dino2Back.png");
@@ -3084,7 +3084,7 @@ class PlayState extends State implements InputProcessor{
                         happyCloud = new HappyCloud(50, 50);
                         break;*/
                     case 3:
-                        nebulae.add(new Obstacle(250, 300, "blackHole.png"));
+                        nebulae.add(new Obstacle(250, 300, "nebula.png"));
                         bonusQuokkas.add(new BonusQuokka(750, 550));
                         blackHoles.add(new Obstacle(800, 300, "blackHole.png"));
                         planets.add(new Obstacle(1650, 30, "greenPlanet.png"));
@@ -3094,28 +3094,28 @@ class PlayState extends State implements InputProcessor{
                     case 4:
                         blackHoles.add(new Obstacle(300, 500, "blackHole.png"));
                         blackHoles.add(new Obstacle(725, 30, "blackHole.png"));
-                        nebulae.add(new Obstacle(1150, 320, "blackHole.png"));
+                        nebulae.add(new Obstacle(1150, 320, "nebula.png"));
                         planets.add(new Obstacle(2000, 300, "greenPlanet.png"));
                         planets.add(new Obstacle(2575, 300, "greenPlanet.png"));
                         bonusQuokkas.add(new BonusQuokka(2300, 500));
-                        nebulae.add(new Obstacle(2875, 50, "blackHole.png"));
+                        nebulae.add(new Obstacle(2875, 50, "nebula.png"));
                         happyCloud = new HappyCloud(3275, 50);
-                        nebulae.add(new Obstacle(3525, 50, "blackHole.png"));
-                        nebulae.add(new Obstacle(3525, 50, "blackHole.png"));
+                        nebulae.add(new Obstacle(3525, 50, "nebula.png"));
+                        nebulae.add(new Obstacle(3525, 50, "nebula.png"));
                         break;
                     case 5:
-                        nebulae.add(new Obstacle(250, 300, "blackHole.png"));
+                        nebulae.add(new Obstacle(250, 300, "nebula.png"));
                         switches.add(new Obstacle(900, 500, "asteroidSwitch.png"));
-                        nebulae.add(new Obstacle(850, 125, "blackHole.png"));
+                        nebulae.add(new Obstacle(850, 125, "nebula.png"));
                         walls.add(new Wall(1200, -195, switches.get(0), 400, "asteroidBelt.png"));
                         walls.add(new Wall(1200, 400, "asteroidBelt.png"));
-                        nebulae.add(new Obstacle(1600, 280, "blackHole.png"));
+                        nebulae.add(new Obstacle(1600, 280, "nebula.png"));
                         bonusQuokkas.add(new BonusQuokka(2050, 500));
                         blackHoles.add(new Obstacle(2200, 450, "blackHole.png"));
-                        nebulae.add(new Obstacle(2200, 50, "blackHole.png"));
+                        nebulae.add(new Obstacle(2200, 50, "nebula.png"));
                         planets.add(new Obstacle(2800, 50, "greenPlanet.png"));
                         walls.add(new Wall(3100, -300, "asteroidBelt.png"));
-                        nebulae.add(new Obstacle(3000, 300, "blackHole.png"));
+                        nebulae.add(new Obstacle(3000, 300, "nebula.png"));
                         happyCloud = new HappyCloud(3250, 50);
                         blackHoles.add(new Obstacle(3600, 500, "blackHole.png"));
                         blackHoles.add(new Obstacle(3600, 50, "blackHole.png"));
@@ -3133,7 +3133,7 @@ class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(2400, -211, "asteroidBelt.png"));
                         blackHoles.add(new Obstacle(2600, 350, "blackHole.png"));
                         happyCloud = new HappyCloud(2630, 25);
-                        nebulae.add(new Obstacle(2980, 5, "blackHole.png"));
+                        nebulae.add(new Obstacle(2980, 5, "nebula.png"));
                         bonusQuokkas.add(new BonusQuokka(3030, 400));
                         walls.add(new Wall(3280, -211, switches.get(1), 384, "asteroidBelt.png"));
                         walls.add(new Wall(3280, 384, "asteroidBelt.png"));
@@ -3147,18 +3147,18 @@ class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(1300, 55));
                         planets.add(new Obstacle(1550, 350, "greenPlanet.png"));
                         planets.add(new Obstacle(2150, 500, "greenPlanet.png"));
-                        nebulae.add(new Obstacle(2750, 150, "blackHole.png"));
+                        nebulae.add(new Obstacle(2750, 150, "nebula.png"));
                         happyCloud = new HappyCloud(3100, 350);
                         planets.add(new Obstacle(3400, 500, "greenPlanet.png"));
                         planets.add(new Obstacle(3400, 30, "greenPlanet.png"));
                         break;
                     case 8:
-                        nebulae.add(new Obstacle(350, 500, "blackHole.png"));
+                        nebulae.add(new Obstacle(350, 500, "nebula.png"));
                         planets.add(new Obstacle(800, 300, "greenPlanet.png"));
                         laserGuns.add(new LaserGun(820, 540));
                         blackHoles.add(new Obstacle(1320, 500, "blackHole.png"));
-                        nebulae.add(new Obstacle(1920, 250, "blackHole.png"));
-                        nebulae.add(new Obstacle(1320, 30, "blackHole.png"));
+                        nebulae.add(new Obstacle(1920, 250, "nebula.png"));
+                        nebulae.add(new Obstacle(1320, 30, "nebula.png"));
                         bonusQuokkas.add(new BonusQuokka(1690, 560));
                         happyCloud = new HappyCloud(2220, 300);
                         planets.add(new Obstacle(2490, 500, "greenPlanet.png"));
@@ -3172,21 +3172,21 @@ class PlayState extends State implements InputProcessor{
                         bonusQuokkas.add(new BonusQuokka(1275, 60));
                         clouds.add(new EvilCloud(1500, 30));
                         clouds.add(new EvilCloud(1800, 560));
-                        nebulae.add(new Obstacle(2100, 256, "blackHole.png"));
+                        nebulae.add(new Obstacle(2100, 256, "nebula.png"));
                         happyCloud = new HappyCloud(2450, 308);
                         break;
                     case 10:
-                        nebulae.add(new Obstacle(300, 350, "blackHole.png"));
+                        nebulae.add(new Obstacle(300, 350, "nebula.png"));
                         clouds.add(new EvilCloud(550, 50));
                         blackHoles.add(new Obstacle(800, 500, "blackHole.png"));
                         planets.add(new Obstacle(1100, 20, "greenPlanet.png"));
                         blackHoles.add(new Obstacle(1400, 500, "blackHole.png"));
-                        nebulae.add(new Obstacle(1750, 300, "blackHole.png"));
+                        nebulae.add(new Obstacle(1750, 300, "nebula.png"));
                         happyCloud = new HappyCloud(2300, 350);
                         bonusQuokkas.add(new BonusQuokka(950, 70));
                         planets.add(new Obstacle(2700, 500, "greenPlanet.png"));
                         planets.add(new Obstacle(2700, 30, "greenPlanet.png"));
-                        nebulae.add(new Obstacle(2950, 300, "blackHole.png"));
+                        nebulae.add(new Obstacle(2950, 300, "nebula.png"));
                         break;
                 }
                 break;
