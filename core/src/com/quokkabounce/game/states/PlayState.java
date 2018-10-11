@@ -711,11 +711,11 @@ class PlayState extends State implements InputProcessor{
                         boolean shouldBounce = true;
                         for (Obstacle nullZone : nullZones) {
                             if(!justTouchUp) {
-                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2))) {
                                     shouldBounce = false;
                                 }
                             }
-                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPosNo, clickPosNo2))){
+                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPosNo, clickPosNo2))){
                                 shouldBounce = false;
                             }
                         }
@@ -732,11 +732,11 @@ class PlayState extends State implements InputProcessor{
                         boolean shouldBounce = true;
                         for (Obstacle nullZone : nullZones) {
                             if(!justTouchUp) {
-                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2))) {
                                     shouldBounce = false;
                                 }
                             }
-                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPosNo, clickPosNo2))){
+                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPosNo, clickPosNo2))){
                                 shouldBounce = false;
                             }
                         }
@@ -753,11 +753,11 @@ class PlayState extends State implements InputProcessor{
                         boolean shouldBounce = true;
                         for (Obstacle nullZone : nullZones) {
                             if(!justTouchUp) {
-                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2))) {
+                                if (nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2))) {
                                     shouldBounce = false;
                                 }
                             }
-                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPosNo, clickPosNo2))){
+                            else if(nullZone.getObstacleBounds().contains(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPosNo, clickPosNo2))){
                                 shouldBounce = false;
                             }
                         }
@@ -2521,8 +2521,8 @@ class PlayState extends State implements InputProcessor{
                         walls.add(new Wall(350, -80, "wall.png"));
                         walls.add(new Wall(850, -230, "wall.png"));
                         clouds.add(new EvilCloud(1200, 460));
-                        bonusQuokkas.add(new BonusQuokka(1200, 10));
-                        happyCloud = new HappyCloud(500, 50);
+                        bonusQuokkas.add(new BonusQuokka(650, 50));
+                        happyCloud = new HappyCloud(1200, 10);
                         break;
                     case 5:
                         levelBackground = new Texture("level1Background.png");
