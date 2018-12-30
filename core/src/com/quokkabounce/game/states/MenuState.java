@@ -63,8 +63,15 @@ public class MenuState extends State implements InputProcessor{
         buttons = new Array<Button>();
         numbers = new Array<Texture>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
-        for(int i = 1; i<=10; i++){
-            numbers.add(new Texture("numbers/number" + i + ".png"));
+        if(world!=6) {
+            for (int i = 1; i <= 10; i++) {
+                numbers.add(new Texture("numbers/number" + i + ".png"));
+            }
+        }
+        else{
+            for (int i = 1; i <= 10; i++) {
+                numbers.add(new Texture("numbers/number" + i + "White.png"));
+            }
         }
         buttons.add(new Button(new Texture("levelButton" + world + ".png"), 65, 50, 1));
         if(permaLevel >= 2){
@@ -115,9 +122,7 @@ public class MenuState extends State implements InputProcessor{
         for (int i = 0; i < (permaLevel > 10 ? permaLevel - 1 : permaLevel); i++){
             Button button = buttons.get(i);
             sb.draw(button.getTexture(), button.getPosButton().x, button.getPosButton().y);
-            if(world!=1) {
-                sb.draw(numbers.get(i), button.getPosButton().x + button.getTexture().getWidth() / 2 - numbers.get(i).getWidth() / 2, button.getPosButton().y + button.getTexture().getHeight() / 2 - numbers.get(i).getHeight() / 2);
-            }
+            sb.draw(numbers.get(i), button.getPosButton().x + button.getTexture().getWidth() / 2 - numbers.get(i).getWidth() / 2, button.getPosButton().y + button.getTexture().getHeight() / 2 - numbers.get(i).getHeight() / 2);
             sb.draw(collectedQuokkas[i] ? bonusQuokka : greyQuokka, button.getPosButton().x + button.getButtonBounds().getWidth() - bonusQuokka.getWidth(), button.getPosButton().y + button.getButtonBounds().getHeight() / 2 - bonusQuokka.getHeight());
         }
         sb.end();
