@@ -38,7 +38,18 @@ public class WorldState extends State implements InputProcessor {
         numbers = new Array<Texture>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         for(int i = 1; i<=10; i++){
-            numbers.add(new Texture("numbers/number" + i + ".png"));
+            if(i == 1){
+                numbers.add(new Texture("numbers/number" + i + "Brown.png"));
+            }
+            else if(i == 6){
+                numbers.add(new Texture("numbers/number" + i + "White.png"));
+            }
+            else if(i==4){
+                numbers.add(new Texture("numbers/number" + i + "Small.png"));
+            }
+            else {
+                numbers.add(new Texture("numbers/number" + i + ".png"));
+            }
         }
         buttons.add(new Button(new Texture("levelButton1.png"), 200, 50, 1));
         if(permaWorld >= 2){
