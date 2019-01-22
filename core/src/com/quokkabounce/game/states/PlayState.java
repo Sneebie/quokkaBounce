@@ -38,8 +38,8 @@ import com.quokkabounce.game.sprites.Wall;
  * Created by Eric on 8/29/2017.
  */
 
-class PlayState extends State implements InputProcessor{
-    private static final int HAWKSIGHT = 400;
+class PlayState extends State implements InputProcessor{ //This is the largest part of the program, containing the main gameplay loop, the level creation, and input handling. outside of this, I created the classes for obstacles like the Arrow, Stoplight, and Wall classes, and the Quokka, as well as the menus, world selection, etc.
+    private static final int HAWKSIGHT = 400; //constant declarations
     private static final int ARROWHEIGHT = 150;
     private static final float GOODGRAV = -500000000f;
     private static final float DEPTHSCALER = 0.0001f;
@@ -53,7 +53,7 @@ class PlayState extends State implements InputProcessor{
     private static final float TIMEMINIMUM = 0.0011f;
     private static final float LINEWIDTH = 2.5f;
 
-    private Quokka quokka;
+    private Quokka quokka; //initializes variables and arrays
     private Button backButton, pauseButton;
     private Texture levelBackground;
     private Vector2 levelBackgroundPos1, levelBackgroundPos2, levelBackgroundPos3, levelBackgroundPos4, intersectionPoint, intersectionPointTemp, circleCenter, quokkaSide, adjustedCenter, planetProj, clickPos2d, clickPos2d2, xdiff, ydiff, tempDet, tempWall, tempBack, temp2, clickPosNo, clickPosNo2;
@@ -99,7 +99,7 @@ class PlayState extends State implements InputProcessor{
     private Texture warningTexture;
     private Animation portalAnimation, blackHoleAnimation;
 
-    PlayState(GameStateManager gsm, int world, int level) {
+    PlayState(GameStateManager gsm, int world, int level) { //more initialization, sets up the camera, creates the level, etc.
         super(gsm, world, level);
         respawning = true;
         levelBackground = new Texture("level2Background.png");
@@ -233,28 +233,27 @@ class PlayState extends State implements InputProcessor{
     @Override
     public void pause(){
         paused = true;
-    }
+    } //pauses the game, called when pause button is clicked
 
     @Override
-    public void update(float dt) {
-        //
+    public void update(float dt) { //this is the main loop that moves everything, updates the physics, and checks collisions
         if((!paused) && dt < TIMELIMIT && dt > TIMEMINIMUM) {
             smallBounce = false;
-            if (layerVines.size > 0) {
+            if (layerVines.size > 0) { //switches between layers of the jungle when hitting a vine, not part of the video
                 levelBackground = (layerTextures.get(layer));
                 vines.clear();
                 vines.addAll(layerVines.get(layer));
             }
             currentDT = dt;
-            updateBackground();
-            if (moveWalls.size != 0) {
+            updateBackground(); //scrolls the screen to be in the correct position relative to the quokka
+            if (moveWalls.size != 0) { //this allows the screen to scroll in both x and y dimensions in underwater levels, not shown in my video
                 cam.position.y = quokka.getPosition().y;
                 if(lineDraw) {
                     clickPosTemp.set(clickPosTemp.x, clickPosTemp.y + quokka.getBottomLeft2().y - quokka.getBottomLeft().y, 0);
                 }
             }
             justHitTemp = false;
-            if (lineCheck && !hitWall) {
+            if (lineCheck && !hitWall) { //this checks quokka collision with the line and both bounces it and shifts the line appropriately if it ends up inside the quokka
                 if (justHit) {
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
@@ -576,7 +575,7 @@ class PlayState extends State implements InputProcessor{
                     }
                 }
                 outZone = false;
-                if(!justHit && !hasEdgeCollided) {
+                if(!justHit && !hasEdgeCollided) { //this makes sure the line is outside of the null zones, seen on art world 4 as the black rectangles, before the quokka is actually bounced
                     if (((quokka.getPosition().x > clickPos.x) && (quokka.getPosition().x < clickPos2.x)) || ((quokka.getPosition().x < clickPos.x) && (quokka.getPosition().x > clickPos2.x))) {
                         if (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
                             outZone = true;
@@ -795,7 +794,7 @@ class PlayState extends State implements InputProcessor{
                 justHit = justHitTemp;
             }
             if(shouldMove) {
-                for (Hawk hawk : hawks) {
+                for (Hawk hawk : hawks) { //checks hawk collision, and if there is none sees if the hawk spots the quokka, causing it to dive, or otherwise moves it in circles more (hawk not shown in demo video)
                     if (hawk.collides(quokka.getQuokkaBounds())) {
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
@@ -807,7 +806,7 @@ class PlayState extends State implements InputProcessor{
                         hawk.move(false, dt, quokka.getPosition());
                     }
                 }
-                for(Drone drone : drones){
+                for(Drone drone : drones){ //Starts drone movement once close enough, moves the drone, and checks collision
                     if(drone.isStartMove() && isCollision(drone.getPolygon(), quokka.getQuokkaBounds())){
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
@@ -820,7 +819,7 @@ class PlayState extends State implements InputProcessor{
                         drone.move(dt, quokka.getPosition());
                     }
                 }
-                for(JumpFish jumpFish : jumpFishes){
+                for(JumpFish jumpFish : jumpFishes){//moves fish, causes them to jump if close enough to quokka, and checks collision (not in demo video)
                     if(isCollision(jumpFish.getPolygon(), quokka.getQuokkaBounds())){
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
@@ -832,18 +831,18 @@ class PlayState extends State implements InputProcessor{
                         jumpFish.move(dt, quokka.getPosition());
                     }
                 }
-                for(LaserGun laserGun : laserGuns){
+                for(LaserGun laserGun : laserGuns){ //rotates laser gun towards the quokka, checks if the laser beam hits the quokka, and shoots another beam if the previous one has gone off screen
                     if(isCollision(laserGun.getMyBeam().getPolygon(), quokka.getQuokkaBounds())){
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
-                    laserGun.shoot(dt, quokka.getPosition());
+                    laserGun.shoot(dt, quokka.getPosition()); //this is called shoot but it actually controls all of the laser gun's movement in addition to firing the beam
                     if(laserGun.getMyBeam().getPosBeam().y > cam.viewportHeight || laserGun.getMyBeam().getPosBeam().y + laserGun.getMyBeam().getBeamBounds().getHeight() < 0 || laserGun.getMyBeam().getPosBeam().x + laserGun.getMyBeam().getBeamBounds().getWidth() < (cam.position.x - cam.viewportWidth / 2) || laserGun.getMyBeam().getPosBeam().x > (cam.position.x + cam.viewportWidth / 2)){
                         laserGun.resetShot();
                     }
                 }
-                for (TallDino tallDino : tallDinos) {
+                for (TallDino tallDino : tallDinos) { //checks dinosaur collision with quokka, moves and flips dinosaur when necessary
                     if (isConcaveCollision(tallDino.getTallDinoPolygon(), quokka.getQuokkaBounds())) {
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
@@ -851,7 +850,7 @@ class PlayState extends State implements InputProcessor{
                     }
                     tallDino.move(dt);
                 }
-                for (Arrow arrow : arrows) {
+                for (Arrow arrow : arrows) { //shoots the arrows once the quokka is close enough, checks collision with the quokka
                     if (arrow.collides(quokka.getQuokkaBounds())) {
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
@@ -866,8 +865,8 @@ class PlayState extends State implements InputProcessor{
                 firstSide = true;
                 hitWall = false;
                 boolean tempJustWall = false;
-                for (Wall wall : walls) {
-                    if (wall.hasSwitch()) {
+                for (Wall wall : walls) { //checks wall collision, movement, and bouncing
+                    if (wall.hasSwitch()) {//flags to move the wall and removes the switch from appearing if the quokka hits the switch linked to the wall
                         for (Obstacle wallSwitch : wall.getWallSwitches()) {
                             if (wallSwitch.collides(quokka.getQuokkaBounds())) {
                                 for (int i = 0; i < walls.size; i++) {
@@ -882,7 +881,7 @@ class PlayState extends State implements InputProcessor{
                             }
                         }
                     }
-                    if(wall.getDir() == 1) {
+                    if(wall.getDir() == 1) { //moves walls in the correct direction after the switch is hit
                         if (wall.isMoveWall() && (Math.abs(wall.getWallMove() - wall.getPosWall().y) > 0)) {
                             wall.setPosWall(wall.getPosWall().x, wall.getPosWall().y + (wall.getWallMove() - wall.getPosWall().y) / WALLSPEED);
                             wall.setWallBounds(wall.getPosWall().x, wall.getPosWall().y, wall.getTexture().getWidth(), wall.getTexture().getHeight());
@@ -902,7 +901,7 @@ class PlayState extends State implements InputProcessor{
                     hitLeft[1] = false;
                     hitRight[0] = false;
                     hitRight[1] = false;
-                    if (wall.collides(quokka.getQuokkaBounds())) {
+                    if (wall.collides(quokka.getQuokkaBounds())) { //checks wall collision and which side of the quokka collided
                         if (!justWall) {
                             tempJustWall = true;
                             Vector3 tempVelocity = new Vector3();
@@ -1079,7 +1078,7 @@ class PlayState extends State implements InputProcessor{
                                 }
                             }
                         }
-                        else{
+                        else{ //if the quokka just hit the wall, removes it from the wall to prevent glitching into it and being stuck
                             float minDistance = Math.abs(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() - wall.getPosWall().x);
                             int minArea = 0;
                             if(Math.abs(quokka.getPosition().y - wall.getPosWall().y - wall.getWallBounds().getHeight()) < minDistance){
@@ -1119,9 +1118,9 @@ class PlayState extends State implements InputProcessor{
                             }
                         }
                     }
-                }// wall loop
+                }
                 justWall = tempJustWall;
-                if (walls.size > 0 && hitWall) {
+                if (walls.size > 0 && hitWall) { //repositions the quokka appropriately based on what part of the wall it hit
                     if (hitCorner.equals("topLeft")) {
                         tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), hitSide[0], hitSide[1]));
                         quokka.setPosition(quokka.getPosition().x, tempWall.y - quokka.getQuokkaBounds().getHeight());
@@ -1137,7 +1136,7 @@ class PlayState extends State implements InputProcessor{
                     }
                     quokka.setVelocity(resultVector(quokka.getVelocity(), hitSide[0], hitSide[1]));
                 }
-                for (MoveWall moveWall : moveWalls) {
+                for (MoveWall moveWall : moveWalls) {//this behaves the same as the wall function, but also moves them appropriately for constantly moving walls unrelated that aren't bound to switches
                     if (moveWall.collides(quokka.getQuokkaBounds())) {
                         if (!touchingWall) {
                             touchingWall = true;
@@ -1360,7 +1359,7 @@ class PlayState extends State implements InputProcessor{
                 }
                 justPlanetTemp = false;
                 quokka.getGravity().set(0, 0, 0);
-                for (Obstacle planet : planets) {
+                for (Obstacle planet : planets) { //checks collisions and bounces the quokka off of planets, as well as factoring in their gravity to pulling the quokka
                     if (Intersector.overlaps(planet.getObstacleCircle(), quokka.getQuokkaBounds())) {
                         circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
                         adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
@@ -1439,7 +1438,7 @@ class PlayState extends State implements InputProcessor{
                     quokka.getGravity().add(planetDistance.x, planetDistance.y, 0);
                 }
                 if(blackHoles.size > 0) {
-                    for (Obstacle planet : blackHoles) {
+                    for (Obstacle planet : blackHoles) { //checks black hole collision, killing the quokka if they hit, as well as adding gravity to pull the quokka appropriately
                         if (Intersector.overlaps(planet.getObstacleCircle(), quokka.getQuokkaBounds())) {
                             circleCenter.set(planet.getPosObstacle().x + planet.getObstacleBounds().getWidth() / 2, planet.getPosObstacle().y + planet.getObstacleBounds().getHeight() / 2);
                             adjustedCenter.set(circleCenter.x - quokka.getPosition().x, circleCenter.y - quokka.getPosition().y);
@@ -1518,7 +1517,7 @@ class PlayState extends State implements InputProcessor{
                     }
                     //blackHoleAnimation.update(dt);
                 }
-                for (Obstacle nebula : nebulae) {
+                for (Obstacle nebula : nebulae) { //adds nebula pull to attract the quokka appropriately, collision doesn't impact anything
                     planetDistance.set(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - nebula.getPosObstacle().x - nebula.getTexture().getWidth() / 2, quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - nebula.getPosObstacle().y - nebula.getTexture().getHeight() / 2, 0);
                     double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
                     if (planetMagnitude != 0) {
@@ -1530,7 +1529,7 @@ class PlayState extends State implements InputProcessor{
                 if (planets.size == 0 && nebulae.size == 0 && blackHoles.size == 0) {
                     quokka.getGravity().set(0, -13, 0);
                 }
-                for (Meteor meteor : meteors) {
+                for (Meteor meteor : meteors) {//drops meteors once the quokka is close enough, destroys them if they hit a line, and kills the quokka if they collide
                     if(camUpdate) {
                         if (meteor.getPosMeteor().x < cam.position.x + cam.viewportWidth / 7) {
                             meteor.setStartFall(true);
@@ -1562,7 +1561,7 @@ class PlayState extends State implements InputProcessor{
                         }
                     }
                 }
-                for (Airplane airplane : airplanes) {
+                for (Airplane airplane : airplanes) { //moves airplanes once close enough, kills the quokka if they collide (not part of demo)
                     if (airplane.getPosAirplane().x < (cam.position.x - cam.viewportWidth / 2)) {
                         airplane.setStartFall(true);
                     }
@@ -1577,7 +1576,7 @@ class PlayState extends State implements InputProcessor{
                         airplane.move(dt);
                     }
                 }
-                for (Airplane airplane : tropicBirds) {
+                for (Airplane airplane : tropicBirds) {//same as airplane but used in a different world
                     if (airplane.getPosAirplane().x < (cam.position.x - cam.viewportWidth / 2)) {
                         airplane.setStartFall(true);
                     }
@@ -1592,7 +1591,7 @@ class PlayState extends State implements InputProcessor{
                         airplane.move(dt);
                     }
                 }
-                for (Airplane airplane : tropicFish) {
+                for (Airplane airplane : tropicFish) {//also the same as airplane but doing this makes it much easier to keep track of things
                     if (airplane.getPosAirplane().x < (cam.position.x - cam.viewportWidth / 2)) {
                         airplane.setStartFall(true);
                     }
@@ -1607,7 +1606,7 @@ class PlayState extends State implements InputProcessor{
                         airplane.move(dt);
                     }
                 }
-                if(portals.size > 0) {
+                if(portals.size > 0) {//updates the portal animation, checks quokka collisions with portals, and moves the quokka to the paired portal if it's hitting one, as well as scaling velocity based on the new position in order to preserve conservation of energy and prevent the quokka from gaining infinite height/speed
                     boolean touchingPortal = false;
                     boolean touchedPortal = false;
                     for (Obstacle portal : portals) {
@@ -1686,7 +1685,7 @@ class PlayState extends State implements InputProcessor{
                     quokka.setTouchingPortal(touchingPortal);
                     portalAnimation.update(dt);
                 }
-                for(Obstacle brush : brushes){
+                for(Obstacle brush : brushes){//moves the brushes and draws the lines behind them, checks quokka collision with lines and bounces it appropriately
                     brush.move(dt);
                     pointCounter = 0;
                     float netDistance = 0;
@@ -1741,14 +1740,14 @@ class PlayState extends State implements InputProcessor{
                         justHitBrush = justHitBrushTemp;
                         pointCounter = 0;
                 }
-                for (EvilCloud cloud : clouds) {
+                for (EvilCloud cloud : clouds) {//kills the quokka and resets the level if the quokka hits an evil cloud
                     if (cloud.collides(quokka.getQuokkaBounds())) {
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
                     }
                 }
-                for (BonusQuokka bonusQuokka : bonusQuokkas) {
+                for (BonusQuokka bonusQuokka : bonusQuokkas) {//collects the bonus quokka for the level if hit by the quokka. it's currently an array in case of future additional bonus quokkas per level
                     if (bonusQuokka.collides(quokka.getQuokkaBounds())) {
                         if (!collectedQuokkas.get(bonusQuokkas.indexOf(bonusQuokka, false))) {
                             collectedQuokkas.set(bonusQuokkas.indexOf(bonusQuokka, false), true);
@@ -1757,7 +1756,7 @@ class PlayState extends State implements InputProcessor{
                     }
                 }
             }
-            if (world == 3 && shouldFall) {
+            if (world == 3 && shouldFall) {//moves camera upwards in tower levels while locking it horizontally
                 towerVel.scl(dt);
                 cam.position.y += towerVel.y;
                 iniPot += -1 * quokka.getGravity().y * towerVel.y;
@@ -1772,13 +1771,13 @@ class PlayState extends State implements InputProcessor{
                 }
                 camUpdate = true;
             }
-            backButton.getPosButton().x = cam.position.x - cam.viewportWidth / 2 + 15;
+            backButton.getPosButton().x = cam.position.x - cam.viewportWidth / 2 + 15; //positions buttons consistently in the correct part of the screen
             pauseButton.getPosButton().x = cam.position.x - cam.viewportWidth / 2 + 80;
             backButton.getPosButton().y = cam.position.y + cam.viewportHeight / 2 - 65;
             pauseButton.getPosButton().y = cam.position.y + cam.viewportHeight / 2 - 65;
             backButton.getButtonBounds().set(backButton.getPosButton().x, backButton.getPosButton().y, backButton.getButtonBounds().getWidth(), backButton.getButtonBounds().getHeight());
             pauseButton.getButtonBounds().set(pauseButton.getPosButton().x, pauseButton.getPosButton().y, pauseButton.getButtonBounds().getWidth(), pauseButton.getButtonBounds().getHeight());
-            if (shouldFall && !smallBounce) {
+            if (shouldFall && !smallBounce) { //pushes the quokka downwards if it hits a wind gust (not in demo)
                 boolean inGust = false;
                 for(Obstacle windGust : windGusts){
                     if(windGust.collides(quokka.getQuokkaBounds())){
@@ -1787,7 +1786,7 @@ class PlayState extends State implements InputProcessor{
                 }
                 quokka.update(dt, inGust);
             } //gohere
-            if(vineCheck) {
+            if(vineCheck) {//moves the quokka to the new layer of the jungle and updates its position if it hits a vine
                 for (Vine vine : vines) {
                     if (vine.collides(quokka.getQuokkaBounds())) {
                         vineDraw = false;
@@ -1810,7 +1809,7 @@ class PlayState extends State implements InputProcessor{
                     gsm.set(new PlayState(gsm, world, level));
                 }
             }
-            if (layer == finalLayer) {
+            if (layer == finalLayer) { //moves the game back to the menu if the quokka hits the rainbow cloud, increases level by 1 until level 10, then increases the world and sets level back to 1
                 if (happyCloud.collides(quokka.getQuokkaBounds())) {
                     if(bonusQuokkas.size > 0) {
                         if (level == 10) {
@@ -1834,8 +1833,8 @@ class PlayState extends State implements InputProcessor{
             cam.update();
         }
         respawning = false;
-    }
-    private void planetFixer(){
+    }//end of the update method
+    private void planetFixer(){ //scales velocity correctly based on the current position of the quokka relative to astronomical objects, preserving total energy
         float currentPot = 0f;
         velocityTemp2.set(velocityTemp2.x /velocityTemp2.len(), velocityTemp2.y/velocityTemp2.len(), 0);
         tempGrav.set(0, 0, 0);
@@ -1862,7 +1861,7 @@ class PlayState extends State implements InputProcessor{
         velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0*(iniPot - currentPot))));
         velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
     }
-    private float lineY(float x){
+    private float lineY(float x){ //finds the y value of the drawn line at a given x coordinate
         if(clickPos2.x > clickPos.x) {
             final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
             return (slope * (x - clickPos.x) + clickPos.y);
@@ -1873,7 +1872,7 @@ class PlayState extends State implements InputProcessor{
         }
     }
 
-    private float lineY(float x, Vector2 p1, Vector2 p2){
+    private float lineY(float x, Vector2 p1, Vector2 p2){ //finds the y value of any line at a given x coordinate (I'll combine these into 1 function after the application I didn't know about default values back when I made this)
         if(p2.x > p1.x) {
             final float slope = (p2.y - p1.y) / (p2.x - p1.x);
             return (slope * (x - p1.x) + p1.y);
@@ -1884,7 +1883,7 @@ class PlayState extends State implements InputProcessor{
         }
     }
 
-    private boolean lineBounce(Vector2 p1, Vector2 p2){
+    private boolean lineBounce(Vector2 p1, Vector2 p2){ //bounces the quokka in the correct direction and repositions it appropriately if it hits a line
         if(!justHitBrush) {
             boolean hitCorner = false;
             boolean bounce1 = false;
@@ -2055,7 +2054,7 @@ class PlayState extends State implements InputProcessor{
         }
     }
 
-    private Vector2 perpPoint(Vector2 p1, Vector2 p2){
+    private Vector2 perpPoint(Vector2 p1, Vector2 p2){ //finds a point that, when used in conjunction with point p2, will make a perpendicular line to the line created by using p1 and p2 as the endpoints
         if(p1.y == p2.y) {
             temp2.set(p1.x, p1.y + 100);
         }
@@ -2067,7 +2066,7 @@ class PlayState extends State implements InputProcessor{
         }
         return temp2;
     }
-    private boolean onSegment(Vector2 p, Vector2 q, Vector2 r)
+    private boolean onSegment(Vector2 p, Vector2 q, Vector2 r) //functions onSegment, orientation, and doIntersect were things I found online which I use to check some collisions by seeing if the sides of the quokka overlap various obstacles' sides or lines
     {
         return (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y));
     }
@@ -2108,7 +2107,7 @@ class PlayState extends State implements InputProcessor{
         return (o4 == 0 && onSegment(p2, q1, q2));
     }
 
-    private Vector2 pointBetween(Vector2 p1, Vector2 p2, float distanceBetween){
+    private Vector2 pointBetween(Vector2 p1, Vector2 p2, float distanceBetween){ //finds a point located on the line between p1 and p2 at a given distance from p2
         final double x;
         final double y;
         if(p1.x != p2.x) {
@@ -2129,7 +2128,7 @@ class PlayState extends State implements InputProcessor{
         return tempBack;
     }
 
-    private boolean quokkaLineHit(){
+    private boolean quokkaLineHit(){//checks if the quokka collides with the drawn line
         Polygon rPoly = new Polygon(new float[] { 0, 0, quokka.getQuokkaBounds().width, 0, quokka.getQuokkaBounds().width,
                 quokka.getQuokkaBounds().height, 0, quokka.getQuokkaBounds().height });
         rPoly.setPosition(quokka.getPosition().x, quokka.getPosition().y);
@@ -2141,7 +2140,7 @@ class PlayState extends State implements InputProcessor{
         return false;
     }
 
-    private Vector2 pointBetween(Vector2 p1, Vector2 p2, float distanceBetween, boolean quokBack){
+    private Vector2 pointBetween(Vector2 p1, Vector2 p2, float distanceBetween, boolean quokBack){//finds a point between p1 and p2 located at a given distance from p1. the quokBack boolean is just used as a way to have different functions based on whether the distance should be from p1 or p2 while not having to type an additional parameter in the majority of use cases due to the other pointBetween function
         final double x;
         final double y;
         if(p1.x != p2.x) {
@@ -2162,7 +2161,7 @@ class PlayState extends State implements InputProcessor{
         return tempBack;
     }
 
-    private Vector2 intersectionPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2){
+    private Vector2 intersectionPoint(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2){ //fines the point where the line between the points a1 and a2 and the line between the points b1 and b2 intersect
         xdiff.set(a1.x - a2.x, b1.x - b2.x);
         ydiff.set(a1.y - a2.y, b1.y - b2.y);
         float div = det(xdiff, ydiff);
@@ -2172,16 +2171,16 @@ class PlayState extends State implements InputProcessor{
         tempDet.set(x,y);
         return tempDet;
     }
-    private double distance(Vector2 point1, Vector2 point2){
+    private double distance(Vector2 point1, Vector2 point2){ //returns the distance between two points
         return Math.sqrt(Math.pow(point2.y-point1.y, 2) + Math.pow(point2.x-point1.x, 2));
     }
 
-    private float det(Vector2 a1, Vector2 a2){
+    private float det(Vector2 a1, Vector2 a2){//finds the determinant of a 2x2 matrix made of vectors a1 and a2
         return a1.x * a2.y - a1.y * a2.x;
     }
 
     @Override
-    public void render(SpriteBatch sb) {
+    public void render(SpriteBatch sb) {//renders all of the art assets including the backgrounds, the obstacles, the quokka, the lines, etc.
             sb.setProjectionMatrix(cam.combined);
             sb.begin();
             if (moveWalls.size != 0) {
@@ -2377,7 +2376,7 @@ class PlayState extends State implements InputProcessor{
     }
 
     @Override
-    public void dispose() {
+    public void dispose() {//disposes of art assets after completing each level to reduce memory usage
         levelBackground.dispose();
         quokka.dispose();
         warningTexture.dispose();
@@ -2460,7 +2459,7 @@ class PlayState extends State implements InputProcessor{
         shapeRenderer.dispose();
     }
 
-    private void levelInit(int world, int level){
+    private void levelInit(int world, int level){//initializes the level in the given world, sets the background and adds all of the correct obstacles to their obstacle array at the proper coordinates
         if(world == 1) {
             walls.add(new Wall(-1000, -220, "wall.png"));
             walls.add(new Wall(-1000, 375, "wall.png"));
@@ -2778,9 +2777,9 @@ class PlayState extends State implements InputProcessor{
                         arrows.add(new Arrow(0, 300));
                         walls.add(new Wall(0, 1300, "horizontWall.png"));
                         walls.add(new Wall(850, 1000));
-                        bonusQuokkas.add(new BonusQuokka(1000, 1100));
-                        walls.add(new Wall(850, 1595, "horizontWall.png"));
-                        clouds.add(new EvilCloud(600, 2017));
+                        bonusQuokkas.add(new BonusQuokka(1050, 1050));
+                        walls.add(new Wall(973, 1300, "horizontWall.png"));
+                        clouds.add(new EvilCloud(400, 1717));
                         happyCloud = new HappyCloud(850, 1768);
                         break;
                     case 6:
@@ -3522,7 +3521,7 @@ class PlayState extends State implements InputProcessor{
         collectedQuokkas.setSize(bonusQuokkas.size);
     }
 
-    private void updateBackground(){
+    private void updateBackground(){//moves the backgrounds appropriately so that the quokka never goes off of the background in either the x or y directions
         if(cam.position.x - (cam.viewportWidth / 2) > levelBackgroundPos1.x + levelBackground.getWidth()) {
             levelBackgroundPos1.add(levelBackground.getWidth() * 2, 0);
             levelBackgroundPos3.add(levelBackground.getWidth() * 2, 0);
@@ -3563,7 +3562,7 @@ class PlayState extends State implements InputProcessor{
         }
     }
 
-    private void updateBackgroundPortal(){
+    private void updateBackgroundPortal(){ //moves the backgrounds to the new position when the quokka touches a portal to prevent it from briefly flashing red
         while((cam.position.x +(cam.viewportWidth / 2) < levelBackgroundPos1.x + levelBackground.getWidth())&&(cam.position.x + (cam.viewportWidth / 2) < levelBackgroundPos2.x + levelBackground.getWidth())) {
             levelBackgroundPos2.sub(levelBackground.getWidth() * 2, 0);
             levelBackgroundPos4.sub(levelBackground.getWidth() * 2, 0);
@@ -3600,7 +3599,7 @@ class PlayState extends State implements InputProcessor{
         }
     }
 
-    private Vector3 resultVector(Vector3 velocity, Vector3 point1, Vector3 point2) {
+    private Vector3 resultVector(Vector3 velocity, Vector3 point1, Vector3 point2) { //finds the quokka's new velocity when it collides with the line between point1 and point2 at the given velocity
         velocityTemp.set(velocity);
         normal.set(point1.y-point2.y,point2.x-point1.x,0);
         normal.nor();
@@ -3626,7 +3625,7 @@ class PlayState extends State implements InputProcessor{
         velocityTemp2.scl((float) (1.0/Math.sqrt(currentDT)));
         return velocityTemp2;
     }
-    private Vector3 resultVector(Vector3 velocity, Vector2 point1, Vector2 point2) {
+    private Vector3 resultVector(Vector3 velocity, Vector2 point1, Vector2 point2) {//same as above but using 2d vectors instead of 3d vectors when useful
         velocityTemp.set(velocity);
         normal.set(point1.y-point2.y,point2.x-point1.x,0);
         normal.nor();
@@ -3657,7 +3656,7 @@ class PlayState extends State implements InputProcessor{
     public boolean keyDown(int keycode) {
         return false;
     }
-    private boolean isCollision(Polygon p, Rectangle r) {
+    private boolean isCollision(Polygon p, Rectangle r) { //checks if a given convex polygon and rectangle overlap
         Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width,
                 r.height, 0, r.height });
         rPoly.setPosition(r.x, r.y);
@@ -3665,7 +3664,7 @@ class PlayState extends State implements InputProcessor{
     }
 
 
-    private boolean isConcaveCollision(Polygon p, Rectangle r) {
+    private boolean isConcaveCollision(Polygon p, Rectangle r) { //checks if a given concave polygon and rectangle overlap
         Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width,
                 r.height, 0, r.height });
         rPoly.setPosition(r.x, r.y);
@@ -3688,7 +3687,7 @@ class PlayState extends State implements InputProcessor{
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) { //places the first point at the correct coordinates on the screen when the mouse/finger is pressed down
         if(!respawning) {
             
             touchInput.set(screenX, screenY, 0);
@@ -3725,7 +3724,7 @@ class PlayState extends State implements InputProcessor{
     }
 
     @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {//places the second point at the correct coordinates on the screen and creates the line when the mouse/finger is released
         if(!paused && !justPaused && !clickedWhileSpawning && !respawning) {
             if (lineDraw) {
                 clickPos2.set(screenX, screenY, 0);
@@ -3905,7 +3904,7 @@ class PlayState extends State implements InputProcessor{
     }
 
     @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
+    public boolean touchDragged(int screenX, int screenY, int pointer) { //draws a demo line showing where the line will end up when the mouse/finger is moved while down
         if(lineDraw) {
             clickPosTemp.set(screenX, screenY, 0);
             clickPosTemp.set(cam.unproject(clickPosTemp));
