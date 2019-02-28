@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
@@ -96,7 +97,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     private Vector2 hitSide[];
     private Vector3 tempGrav;
     private String hitCorner;
-    private Texture warningTexture;
+    private Texture warningTexture, canvasRip;
+    private TextureRegion ripRegion;
     private Animation portalAnimation, blackHoleAnimation;
 
     PlayState(GameStateManager gsm, int world, int level) { //more initialization, sets up the camera, creates the level, etc.
@@ -138,6 +140,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         hitSide = new Vector2[2];
         layer = 0;
         warningTexture = new Texture("warning.png");
+        canvasRip = new Texture("canvasRip.png");
+        ripRegion = new TextureRegion(canvasRip);
         finalLayer = 0;
         if(planets.size == 0 && nebulae.size == 0 && blackHoles.size == 0) {
             cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
