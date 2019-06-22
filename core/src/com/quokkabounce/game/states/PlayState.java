@@ -2236,13 +2236,11 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     shapeRenderer.rectLine(clickPos.x, clickPos.y, clickPosTemp.x, clickPosTemp.y, LINEWIDTH);
                 }
             }
-            for (Obstacle nullZone : nullZones) {
-                shapeRenderer.setColor(Color.BLACK);
-                shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.rect(nullZone.getPosObstacle().x, nullZone.getPosObstacle().y, nullZone.getObstacleBounds().getWidth(), nullZone.getObstacleBounds().getHeight());
-            }
             shapeRenderer.end();
             sb.begin();
+            for (Obstacle nullZone : nullZones) {
+                sb.draw(ripRegion, nullZone.getPosObstacle().x, nullZone.getPosObstacle().y, nullZone.getObstacleBounds().getWidth(), nullZone.getObstacleBounds().getHeight());
+            }
             for (Wall wall : walls) {
                 sb.draw(wall.getTexture(), wall.getPosWall().x, wall.getPosWall().y);
             }
@@ -2723,12 +2721,10 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         break;
                     case 9:
                         levelBackground = new Texture("dino1Back.png");
-                        windGusts.add(new Obstacle(150, 200, 250, 600));
                         clouds.add(new EvilCloud(150, 0));
                         meteors.add(new Meteor(450, 780, 0, 0));
                         bonusQuokkas.add(new BonusQuokka(500, 400));
                         walls.add(new Wall(650, 250, "stump.png"));
-                        windGusts.add(new Obstacle(800, 250, 650, 530));
                         tallDinos.add(new TallDino(800, -350, 1300, 200));
                         happyCloud = new HappyCloud(1450, 0);
                         break;
@@ -2957,7 +2953,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         moveSpots.add(new Vector2(550.01f, 350));
                         moveSpots.add(new Vector2(350.01f, 50));
                         brushes.add(new Obstacle("brush.png", moveSpots, 150, 150));
-                        windGusts.add(new Obstacle(300, 400, 300, 400));
                         walls.add(new Wall(700, 300));
                         moveSpots.clear();
                         moveSpots.add(new Vector2(823, 550));
@@ -2971,7 +2966,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         break;
                     case 7:
                         nullZones.add(new Obstacle(250, -300, 350, 1068));
-                        windGusts.add(new Obstacle(250, 400, 350, 368));
                         clouds.add(new EvilCloud(600, 400));
                         bonusQuokkas.add(new BonusQuokka(675, 575));
                         moveSpots.add(new Vector2(850, 0));
@@ -2980,7 +2974,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         moveSpots.add(new Vector2(850.01f, 0));
                         brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
                         nullZones.add(new Obstacle(1100, -300, 350, 1068));
-                        windGusts.add(new Obstacle(1100, 400, 350, 368));
                         walls.add(new Wall(1650, -280));
                         happyCloud= new HappyCloud(1850, 50);
                         break;
