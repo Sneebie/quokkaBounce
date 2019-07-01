@@ -147,8 +147,4 @@ public class Quokka {
     public void setVelocity(Vector3 velocity) {
         this.velocity.set(velocity);
     }
-
-    public void setGravity(float x, float y, float z) {
-        gravity.set(x, y, z);
-    }
 }

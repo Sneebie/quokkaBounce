@@ -1745,7 +1745,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         pointCounter = 0;
                 }
                 for (EvilCloud cloud : clouds) {//kills the quokka and resets the level if the quokka hits an evil cloud
-                    if (cloud.collides(quokka.getQuokkaBounds())) {
+                    if (isCollision(cloud.getCloudPoly(), quokka.getQuokkaBounds())) {
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
@@ -1814,7 +1814,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
             }
             if (layer == finalLayer) { //moves the game back to the menu if the quokka hits the rainbow cloud, increases level by 1 until level 10, then increases the world and sets level back to 1
-                if (happyCloud.collides(quokka.getQuokkaBounds())) {
+                if (isConcaveCollision(happyCloud.getCloudPoly(), quokka.getQuokkaBounds())) {
                     if(bonusQuokkas.size > 0) {
                         if (level == 10) {
                             gsm.set(new MenuState(gsm, world, level+1, collectedQuokkas.get(0)));
@@ -2375,6 +2375,12 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
             sb.end();
             sb.setColor(1f, 1f, 1f, 1f);
+        /*    shapeRenderer.begin();
+        for(EvilCloud evilCloud : clouds){
+            shapeRenderer.polygon(evilCloud.getCloudPoly().getVertices());
+        }
+        shapeRenderer.polygon(happyCloud.getCloudPoly().getVertices());
+        shapeRenderer.end();*/
     }
 
     @Override
@@ -3657,16 +3663,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         return false;
     }
     private boolean isCollision(Polygon p, Rectangle r) { //checks if a given convex polygon and rectangle overlap
-        Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width,
-                r.height, 0, r.height });
+        Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width, r.height, 0, r.height });
         rPoly.setPosition(r.x, r.y);
         return Intersector.overlapConvexPolygons(rPoly, p);
     }
 
 
     private boolean isConcaveCollision(Polygon p, Rectangle r) { //checks if a given concave polygon and rectangle overlap
-        Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width,
-                r.height, 0, r.height });
+        Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width, r.height, 0, r.height });
         rPoly.setPosition(r.x, r.y);
         for(int i = 0; i < rPoly.getTransformedVertices().length; i+=2){
             if(p.contains(rPoly.getTransformedVertices()[i],rPoly.getTransformedVertices()[i+1])){

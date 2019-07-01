@@ -1,6 +1,7 @@
 package com.quokkabounce.game.sprites;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -11,14 +12,14 @@ import com.badlogic.gdx.math.Vector2;
 public class EvilCloud extends Cloud{
     private Texture evilCloud;
     private Vector2 posCloud;
-    private Rectangle cloudBounds;
+    private Polygon cloudPoly;
 
     public EvilCloud(float x, float y){
         setTexture();
 
         posCloud = new Vector2(x, y);
 
-        cloudBounds = new Rectangle(posCloud.x + 20, posCloud.y + 31, 222, 77);
+        cloudPoly = new Polygon(new float[]{posCloud.x, posCloud.y + 100, posCloud.x + 9, posCloud.y + 47, posCloud.x + 26, posCloud.y + 29, posCloud.x + 73, posCloud.y + 13, posCloud.x + 151, posCloud.y, posCloud.x + 222, posCloud.y + 15, posCloud.x + 248, posCloud.y + 45, posCloud.x + evilCloud.getWidth(), posCloud.y + 101, posCloud.x + 208, posCloud.y + 132, posCloud.x + 183, posCloud.y + 138, posCloud.x + 115, posCloud.y + evilCloud.getHeight(), posCloud.x + 59, posCloud.y + 140});
     }
 
     @Override
@@ -26,20 +27,13 @@ public class EvilCloud extends Cloud{
         return posCloud;
     }
 
+    public Polygon getCloudPoly() {
+        return cloudPoly;
+    }
+
     @Override
     public Texture getTexture() {
         return evilCloud;
-    }
-
-    @Override
-    public void reposition(float x, float y) {
-        posCloud.set(x,y);
-        cloudBounds.setPosition(posCloud.x, posCloud.y);
-    }
-
-    @Override
-    public boolean collides(Rectangle player) {
-        return player.overlaps(cloudBounds);
     }
 
     @Override
