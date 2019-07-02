@@ -2375,12 +2375,12 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
             sb.end();
             sb.setColor(1f, 1f, 1f, 1f);
-        /*    shapeRenderer.begin();
+            shapeRenderer.begin();
         for(EvilCloud evilCloud : clouds){
             shapeRenderer.polygon(evilCloud.getCloudPoly().getVertices());
         }
         shapeRenderer.polygon(happyCloud.getCloudPoly().getVertices());
-        shapeRenderer.end();*/
+        shapeRenderer.end();
     }
 
     @Override
