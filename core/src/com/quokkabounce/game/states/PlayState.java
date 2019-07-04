@@ -1745,7 +1745,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         pointCounter = 0;
                 }
                 for (EvilCloud cloud : clouds) {//kills the quokka and resets the level if the quokka hits an evil cloud
-                    if (isCollision(cloud.getCloudPoly(), quokka.getQuokkaBounds())) {
+                    if (isConcaveCollision(cloud.getCloudPoly(), quokka.getQuokkaBounds())) {
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
@@ -2375,12 +2375,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
             sb.end();
             sb.setColor(1f, 1f, 1f, 1f);
-            shapeRenderer.begin();
-        for(EvilCloud evilCloud : clouds){
-            shapeRenderer.polygon(evilCloud.getCloudPoly().getVertices());
-        }
-        shapeRenderer.polygon(happyCloud.getCloudPoly().getVertices());
-        shapeRenderer.end();
     }
 
     @Override
