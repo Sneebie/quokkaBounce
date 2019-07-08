@@ -41,7 +41,7 @@ public class IntroState extends State implements InputProcessor{
         S = new Texture("letters/S.png");
         T = new Texture("letters/T.png");
         U = new Texture("letters/U.png");
-        hawk = new Texture("hawkIdle/hawk5.png");
+        hawk = new Texture("hawk.png");
         quokkbig = new Texture("quokkbig.png");
         evilCloud = new Texture("evilCloud.png");
         quokkaPrisoner = new Texture("quokkaPrisoner.png");
