@@ -3663,7 +3663,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     }
 
 
-    private boolean isConcaveCollision(Polygon p, Rectangle r) { //checks if a given concave polygon and rectangle overlap
+    private boolean isConcaveCollision(Polygon p, Rectangle r) { //checks if a given concave polygon and rectangle overlap //needs fixing
         Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width, r.height, 0, r.height });
         rPoly.setPosition(r.x, r.y);
         for(int i = 0; i < rPoly.getTransformedVertices().length; i+=2){
