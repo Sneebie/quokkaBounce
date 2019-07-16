@@ -25,12 +25,7 @@ public class TallDino{
         posTallDino = new Vector2(x, y);
         velTallDino = new Vector2(speed, 0);
         flipped = false;
-        tallDinoPolygon = new Polygon(new float[]{0,0, 102, 358, 70, 430, 0, 494, 127, 595, 200, 556, 225, 406, 95, 100, 170, 0});
-        for(int i = 0; i < tallDinoPolygon.getVertices().length; i++){
-            if(i % 2 == 0){
-                tallDinoPolygon.getVertices()[i] = 232 - tallDinoPolygon.getVertices()[i];
-            }
-        }
+        tallDinoPolygon = new Polygon(new float[]{230, 2, 141, 350, 152, 406, 228, 476, 229, 504, 211, 540, 173, 567, 159, 580, 125, 592, 101, 593, 45, 574, 30, 559, 17, 518, 10, 468, 3, 441, 4, 370, 25, 321, 91, 176, 112, 71, 105, 17, 109, 2});
     }
 
     public Vector2 getPosTallDino() {

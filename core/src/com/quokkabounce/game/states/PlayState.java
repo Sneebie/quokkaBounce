@@ -2491,7 +2491,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     case 1:
                         levelBackground = new Texture("level1Background.png");
                         bonusQuokkas.add(new BonusQuokka(200, 400));
-                        happyCloud = new HappyCloud(500, 200);
+                        happyCloud = new HappyCloud(600, 250);
                         break;
                     /*case 1:
                         levelBackground = new Texture("level2Background.png");
@@ -3668,6 +3668,11 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         rPoly.setPosition(r.x, r.y);
         for(int i = 0; i < rPoly.getTransformedVertices().length; i+=2){
             if(p.contains(rPoly.getTransformedVertices()[i],rPoly.getTransformedVertices()[i+1])){
+                return true;
+            }
+        }
+        for(int i = 0; i < p.getTransformedVertices().length; i += 2){
+            if(r.contains(p.getTransformedVertices()[i],p.getTransformedVertices()[i+1])){
                 return true;
             }
         }
