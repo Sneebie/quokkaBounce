@@ -169,10 +169,10 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         justHitBrush = false;
         Gdx.input.setInputProcessor(this);
         if(world!= 3) {
-            quokka = new Quokka(50, 650);
+            quokka = new Quokka(57, 650);
         }
         else{
-            quokka = new Quokka(600, 650);
+            quokka = new Quokka(607, 650);
         }
         shapeRenderer = new ShapeRenderer();
         levelBackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, 0);
@@ -2370,7 +2370,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             for (Drone drone : drones) {
                 sb.draw(drone.getDroneRegion(), drone.getPosDrone().x, drone.getPosDrone().y, drone.getDroneRegion().getRegionWidth() / 2, drone.getDroneRegion().getRegionHeight() / 2, drone.getDroneRegion().getRegionWidth(), drone.getDroneRegion().getRegionHeight(), 1, 1, drone.getDroneAngle());
             }
-            sb.draw(quokka.getTexture(), quokka.getPosition().x, quokka.getPosition().y);
+            sb.draw(quokka.getTexture(), quokka.getPosition().x - 7, quokka.getPosition().y);
             sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
             sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
             sb.end();
@@ -2699,7 +2699,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(200, -100, "stump.png"));
                         tallDinos.add(new TallDino(350, -100, 1350, 300));
                         walls.add(new Wall(575, 601, "stump.png"));
-                        meteors.add(new Meteor(720, 780, 0, 0));
+                        meteors.add(new Meteor(820, 780, 0, 0));
                         clouds.add(new EvilCloud(1070, 550));
                         bonusQuokkas.add(new BonusQuokka(1420, 550));
                         happyCloud = new HappyCloud(1600, 100);

@@ -23,7 +23,7 @@ public class Quokka {
 
     public Quokka(float x, float y){
         quokka = new Texture("quokka.png");
-        quokkaBounds = new Rectangle(x, y, quokka.getWidth(), quokka.getHeight());
+        quokkaBounds = new Rectangle(x, y, quokka.getWidth() - 7, quokka.getHeight());
         gravity = new Vector3(0, -13, 0);
         position = new Vector3(x,y,0);
         bottomLeft = new Vector2(x,y);
