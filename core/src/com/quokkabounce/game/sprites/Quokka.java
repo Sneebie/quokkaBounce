@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Quokka {
     private Vector2 bottomLeft, bottomRight, upperLeft, upperRight, bottomLeft2, bottomRight2, upperLeft2, upperRight2;
-    private Vector3 position, velocity, gravity;
+    private Vector3 position, velocity, gravity, lastVelocity;
     private Texture quokka;
     private Rectangle quokkaBounds;
     private boolean touchingPortal;
@@ -35,6 +35,7 @@ public class Quokka {
         upperLeft2 = new Vector2(x, y+quokkaBounds.getHeight());
         upperRight2 = new Vector2(x+quokkaBounds.getWidth(), y+quokkaBounds.getHeight());
         velocity = new Vector3(0,0,0);
+        lastVelocity = new Vector3(0,0,0);
         touchingPortal = false;
     }
 
@@ -142,6 +143,14 @@ public class Quokka {
 
     public Vector3 getVelocity() {
         return velocity;
+    }
+
+    public Vector3 getLastVelocity() {
+        return lastVelocity;
+    }
+
+    public void setLastVelocity(Vector3 lastVelocity) {
+        this.lastVelocity = lastVelocity;
     }
 
     public void setVelocity(Vector3 velocity) {
