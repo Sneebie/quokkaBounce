@@ -53,6 +53,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     private static final float TIMELIMIT = 0.025f;
     private static final float TIMEMINIMUM = 0.0011f;
     private static final float LINEWIDTH = 2.5f;
+    private static final float BOUNCEADJUST = 40;
 
     private Quokka quokka; //initializes variables and arrays
     private Button backButton, pauseButton;
@@ -263,36 +264,81 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     final float perpSlope = slope != 0 ? -1 / slope : -1;
                     Vector2 perpPos = new Vector2(1, perpSlope).nor();
                     Vector2 perpPos2 = new Vector2(1, -perpSlope).nor();
-                    System.out.println(perpPos + "  " + perpPos2);
-                    Vector2 quokkaCenter = new Vector2(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() / 2, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight() / 2);
-                    Vector2 lineMidpoint = new Vector2(clickPos.x + (clickPos2.x - clickPos.x) / 2, clickPos.y + (clickPos2.y - clickPos.y) / 2);
-                    Vector2 quokkaPoint = new Vector2(quokkaCenter.x - lineMidpoint.x, quokkaCenter.y - lineMidpoint.y).nor();
                     Vector2 quokkaVelocity2d = new Vector2(quokka.getLastVelocity().x, quokka.getLastVelocity().y);
-                    System.out.println("quokkaVelocity2d  " + quokkaVelocity2d);
                     Vector2 perpPoint = new Vector2(Math.acos(perpPos.dot(quokkaVelocity2d)) < Math.acos(perpPos2.dot(quokkaVelocity2d)) ? perpPos : perpPos2);
                     if(quokka.getVelocity().x < 0) {
-                        while (quokkaLineHit()) {
-                            clickPos.set(clickPos.x + perpPoint.x, clickPos.y + perpPoint.y, 0);
-                            clickPos2.set(clickPos2.x + perpPoint.x, clickPos2.y + perpPoint.y, 0);
-                            clickPos2d.set(clickPos.x, clickPos.y);
-                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                        if(slope >= 0) {
+                            if(quokka.getLastVelocity().y <= -BOUNCEADJUST) {
+                                while (quokkaLineHit()) {
+                                    clickPos.set(clickPos.x, clickPos.y - perpPoint.y, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                            else{
+                                while (quokkaLineHit()) {
+                                    clickPos.set(clickPos.x, clickPos.y + perpPoint.y, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                        }
+                        else{
+                            if(quokka.getLastVelocity().y <= -BOUNCEADJUST) {
+                                while (quokkaLineHit()) {
+                                    clickPos.set(clickPos.x - perpPoint.x, clickPos.y - perpPoint.y, 0);
+                                    clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y - perpPoint.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                            else{
+                                while (quokkaLineHit()) {
+                                    clickPos.set(clickPos.x, clickPos.y + perpPoint.y, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
                         }
                     }
                     else{
                         if(slope >= 0) {
-                            while (quokkaLineHit()) {
-                                clickPos.set(clickPos.x - perpPoint.x, clickPos.y - perpPoint.y, 0);
-                                clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y - perpPoint.y, 0);
-                                clickPos2d.set(clickPos.x, clickPos.y);
-                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            if(quokka.getLastVelocity().y <= BOUNCEADJUST) {
+                                while (quokkaLineHit()) {
+                                    clickPos.set(clickPos.x, clickPos.y - perpPoint.y, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                            else{
+                                while (quokkaLineHit()) {
+                                    clickPos.set(clickPos.x - perpPoint.x, clickPos.y + perpPoint.y, 0);
+                                    clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y + perpPoint.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
                             }
                         }
                         else{
-                            while (quokkaLineHit()) {
-                                clickPos.set(clickPos.x - Math.abs(perpPoint.x), clickPos.y + Math.abs(perpPoint.y), 0);
-                                clickPos2.set(clickPos2.x - Math.abs(perpPoint.x), clickPos2.y + Math.abs(perpPoint.y), 0);
-                                clickPos2d.set(clickPos.x, clickPos.y);
-                                clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            if(quokka.getLastVelocity().y <= BOUNCEADJUST) {
+                                while (quokkaLineHit()) {
+                                    clickPos.set(clickPos.x - perpPoint.x, clickPos.y + perpPoint.y, 0);
+                                    clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y + perpPoint.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
+                            }
+                            else{
+                                while (quokkaLineHit()) {
+                                    clickPos.set(clickPos.x, clickPos.y - perpPoint.y, 0);
+                                    clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y, 0);
+                                    clickPos2d.set(clickPos.x, clickPos.y);
+                                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                                }
                             }
                         }
                     }
