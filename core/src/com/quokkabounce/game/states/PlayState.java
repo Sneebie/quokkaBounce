@@ -266,7 +266,10 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     Vector2 perpPos2 = new Vector2(1, -perpSlope).nor();
                     Vector2 quokkaVelocity2d = new Vector2(quokka.getLastVelocity().x, quokka.getLastVelocity().y);
                     Vector2 perpPoint = new Vector2(Math.acos(perpPos.dot(quokkaVelocity2d)) < Math.acos(perpPos2.dot(quokkaVelocity2d)) ? perpPos : perpPos2);
-                    if(quokka.getVelocity().x < 0) {
+                    /*if(Math.abs(slope) > 1){
+                        if(doIntersect(quokka))
+                    }*/
+                    if(quokka.getLastVelocity().x < 0) {
                         if(slope >= 0) {
                             if(quokka.getLastVelocity().y <= -BOUNCEADJUST) {
                                 while (quokkaLineHit()) {
@@ -324,7 +327,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                             }
                         }
                         else{
-                            if(quokka.getLastVelocity().y <= BOUNCEADJUST) {
+                            if(quokka.getLastVelocity().y <= -1 * BOUNCEADJUST) {
                                 while (quokkaLineHit()) {
                                     clickPos.set(clickPos.x - perpPoint.x, clickPos.y + perpPoint.y, 0);
                                     clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y + perpPoint.y, 0);
