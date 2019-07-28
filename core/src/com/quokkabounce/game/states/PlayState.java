@@ -1593,6 +1593,23 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
             }
+            if(doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)){
+                while (quokkaLineHit()){
+                    clickPos.set(clickPos.x + perpPoint.x, clickPos.y, 0);
+                    clickPos2.set(clickPos2.x + perpPoint.x, clickPos2.y, 0);
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                }
+            }
+            if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
+                while (quokkaLineHit()){
+                    System.out.println("yarp");
+                    clickPos.set(clickPos.x - perpPoint.x, clickPos.y, 0);
+                    clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y, 0);
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                }
+            }
         }
         else if(slope < - 1){
             System.out.println("oohh");
@@ -1616,23 +1633,28 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
             }
             if(doIntersect(quokka.getBottomLeft(), quokka.getUpperLeft(), clickPos2d, clickPos2d2)){
-                if(quokka.getLastVelocity().y > -BOUNCEADJUST) {
-                    while (quokkaLineHit()) {
-                        System.out.println("raghragh");
-                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y, 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
+                while (quokkaLineHit()) {
+                    clickPos.set(clickPos.x, clickPos.y + perpPoint.y, 0);
+                    clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y, 0);
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
                 }
-                else{
-                    while (quokkaLineHit()) {
-                        System.out.println("yumyum");
-                        clickPos.set(clickPos.x - perpPoint.x, clickPos.y + perpPoint.y, 0);
-                        clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y + perpPoint.y, 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
+            }
+            if(doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)){
+                while (quokkaLineHit()){
+                    clickPos.set(clickPos.x - perpPoint.x, clickPos.y, 0);
+                    clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y, 0);
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                }
+            }
+            if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
+                while (quokkaLineHit()){
+                    System.out.println("harp");
+                    clickPos.set(clickPos.x + perpPoint.x, clickPos.y, 0);
+                    clickPos2.set(clickPos2.x + perpPoint.x, clickPos2.y, 0);
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
                 }
             }
         }
@@ -1667,8 +1689,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
                 else{
                     while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y, 0);
+                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y, 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y, 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
