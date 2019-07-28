@@ -1603,7 +1603,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             }
             if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
                 while (quokkaLineHit()){
-                    System.out.println("yarp");
                     clickPos.set(clickPos.x - perpPoint.x, clickPos.y, 0);
                     clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y, 0);
                     clickPos2d.set(clickPos.x, clickPos.y);
@@ -1612,7 +1611,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             }
         }
         else if(slope < - 1){
-            System.out.println("oohh");
             if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
                 if(quokka.getLastVelocity().y > -BOUNCEADJUST) {
                     while (quokkaLineHit()) {
@@ -1624,7 +1622,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
                 else{
                     while (quokkaLineHit()) {
-                        System.out.println("yumyum");
                         clickPos.set(clickPos.x - perpPoint.x, clickPos.y + perpPoint.y, 0);
                         clickPos2.set(clickPos2.x - perpPoint.x, clickPos2.y + perpPoint.y, 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -1650,7 +1647,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             }
             if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
                 while (quokkaLineHit()){
-                    System.out.println("harp");
                     clickPos.set(clickPos.x + perpPoint.x, clickPos.y, 0);
                     clickPos2.set(clickPos2.x + perpPoint.x, clickPos2.y, 0);
                     clickPos2d.set(clickPos.x, clickPos.y);
@@ -1670,7 +1666,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
                 else{
                     while (quokkaLineHit()){
-                        System.out.println("slam");
                         clickPos.set(clickPos.x, clickPos.y - perpPoint.y, 0);
                         clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y, 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -3716,30 +3711,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                                     }
                                 }
                             }
-                            /*if(lineY(quokka.getPosition().x) < quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()* 0.5) {
-                                while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
-                                    clickPos.set(clickPos.x, clickPos.y - 10, 0);
-                                    clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
-                                }
-                                quokka.getVelocity().scl(currentDT);
-                                quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
-                                while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                                    clickPos.set(clickPos.x, clickPos.y - 10, 0);
-                                    clickPos2.set(clickPos2.x, clickPos2.y - 10, 0);
-                                }
-                            }
-                            else{
-                                while (quokka.getQuokkaBounds().contains(quokka.getPosition().x, lineY(quokka.getPosition().x))) {
-                                    clickPos.set(clickPos.x, clickPos.y + 10, 0);
-                                    clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
-                                }
-                                quokka.getVelocity().scl(currentDT);
-                                quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
-                                while (quokka.getQuokkaBounds().contains(quokka.getPosition().x + quokka.getVelocity().x, lineY(quokka.getPosition().x + quokka.getVelocity().y))) {
-                                    clickPos.set(clickPos.x, clickPos.y + 10, 0);
-                                    clickPos2.set(clickPos2.x, clickPos2.y + 10, 0);
-                                }
-                            }*/
                         }
                     }
                     quokka.getVelocity().scl(1 / currentDT);
@@ -3749,13 +3720,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                             clickPos.set(clickPos.x, clickPos.y- 10, 0);
                             clickPos2.set(clickPos2.x, clickPos2.y- 10, 0);
                         }
-                        quokka.getVelocity().scl(currentDT);
-                        quokka.getQuokkaBounds().set(quokka.getQuokkaBounds().x + quokka.getVelocity().x, quokka.getQuokkaBounds().y + quokka.getVelocity().y, quokka.getQuokkaBounds().width, quokka.getQuokkaBounds().height);
-                        while (quokka.getQuokkaBounds().contains(quokka.getQuokkaBounds().x + quokka.getVelocity().x, lineY(quokka.getQuokkaBounds().x + quokka.getVelocity().y))) {
-                            clickPos.set(clickPos.x, clickPos.y- 10, 0);
-                            clickPos2.set(clickPos2.x, clickPos2.y- 10, 0);
-                        }
-                        quokka.getVelocity().scl(1 / currentDT);
                     }
                     else{
                         if(planets.size > 0) {
