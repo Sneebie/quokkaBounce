@@ -1619,8 +1619,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 if(quokka.getLastVelocity().y > -BOUNCEADJUST) {
                     while (quokkaLineHit()) {
                         System.out.println("raghragh");
-                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y, 0);
+                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y, 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y, 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
@@ -1649,8 +1649,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 else{
                     while (quokkaLineHit()){
                         System.out.println("slam");
-                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y, 0);
+                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y, 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y, 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
