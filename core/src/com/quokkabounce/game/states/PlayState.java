@@ -1842,7 +1842,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
                 else{
                     while (quokkaLineHit()){
-                        System.out.println("YAAAKAKA");
                         clickPos.set(clickPos.x, clickPos.y + perpPoint.y, 0);
                         clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y, 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
@@ -2432,9 +2431,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
             sb.end();
             sb.setColor(1f, 1f, 1f, 1f);
-            shapeRenderer.begin();
-            shapeRenderer.rect(quokka.getQuokkaBounds().x, quokka.getQuokkaBounds().y, quokka.getQuokkaBounds().getWidth(), quokka.getQuokkaBounds().getHeight());
-            shapeRenderer.end();
     }
 
     @Override
