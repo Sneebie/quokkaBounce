@@ -2691,12 +2691,12 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     case 2:
                         levelBackground = new Texture("dino2Back.png");
                         walls.add(new Wall(450, 380, "stump.png"));
-                        switches.add(new Obstacle(650, 120, "wallSwitch.png"));
+                        switches.add(new Obstacle(660, 120, "wallSwitch.png"));
                         bonusQuokkas.add(new BonusQuokka(750, -30));
-                        walls.add(new Wall(450, -445, switches, -215, "stump.png"));
-                        meteors.add(new Meteor(680, 780, 0, 0));
-                        walls.add(new Wall(900, -80, "stump.png"));
-                        happyCloud = new HappyCloud(1200, 50);
+                        walls.add(new Wall(460, -445, switches, -215, "stump.png"));
+                        meteors.add(new Meteor(690, 780, 0, 0));
+                        walls.add(new Wall(910, -80, "stump.png"));
+                        happyCloud = new HappyCloud(1210, 50);
                         break;
                     case 3:
                         levelBackground = new Texture("dino1Back.png");
@@ -2725,10 +2725,18 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         meteors.add(new Meteor(850, 780, 0, 0));
                         meteors.add(new Meteor(1025, 780, 0, 0));
                         meteors.add(new Meteor(1200, 780, 0, 0));
-                        happyCloud = new HappyCloud(1375, 50);
+                        walls.add(new Wall (1375, -150, "stump.png"));
                         meteors.add(new Meteor(1550, 780, 0, 0));
                         meteors.add(new Meteor(1725, 780, 0, 0));
-                        bonusQuokkas.add(new BonusQuokka(1900, 50));
+                        meteors.add(new Meteor(1900, 780, 0, 0));
+                        meteors.add(new Meteor(2075, 780, 0, 0));
+                        meteors.add(new Meteor(2250, 780, 0, 0));
+                        walls.add(new Wall(2425, -150, "stump.png"));
+                        happyCloud = new HappyCloud(2600, 200);
+                        meteors.add(new Meteor(2775, 780, 0, 0));
+                        meteors.add(new Meteor(2950, 780, 0, 0));
+                        meteors.add(new Meteor(3125, 780, 0, 0));
+                        bonusQuokkas.add(new BonusQuokka(3300, 50));
                         break;
                     case 6:
                         levelBackground = new Texture("dino2Back.png");
@@ -2805,7 +2813,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         arrows.add(new Arrow(50, 1650));
                         arrows.add(new Arrow(cam.viewportWidth- 100, 2050));
                         bonusQuokkas.add(new BonusQuokka(200, 1250));
-                        happyCloud = new HappyCloud(50, 2250);
+                        happyCloud = new HappyCloud(700, 2250);
                         break;
                     case 4:
                         for(int i = 0; i < 3; i++) {
@@ -2844,7 +2852,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(678, 595));
                         walls.add(new Wall(93, 1067, "horizontWall.png"));
                         portals.add(new Obstacle(120, 870, "portal.png"));
-                        portals.add(new Obstacle(828, 500, "portal.png"));
+                        portals.add(new Obstacle(828, 870, "portal.png"));
+                        clouds.add(new EvilCloud(828, 600));
                         arrows.add(new Arrow(1150, 700));
                         arrows.add(new Arrow(1150, 1350));
                         walls.add(new Wall(678, 1190));
