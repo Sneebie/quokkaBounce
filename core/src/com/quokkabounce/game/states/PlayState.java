@@ -141,8 +141,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         hitSide = new Vector2[2];
         layer = 0;
         warningTexture = new Texture("warning.png");
-        canvasRip = new Texture("canvasRip.png");
-        ripRegion = new TextureRegion(canvasRip);
         finalLayer = 0;
         if(planets.size == 0 && nebulae.size == 0 && blackHoles.size == 0) {
             cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
@@ -483,6 +481,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 justHit = justHitTemp;
                 if(justHit){
                     quokka.setLastVelocity(tempLastVelocity);
+                    quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                 }
             }
             if(shouldMove) {
@@ -1503,23 +1502,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             }
             if (layer == finalLayer) { //moves the game back to the menu if the quokka hits the rainbow cloud, increases level by 1 until level 10, then increases the world and sets level back to 1
                 if (isConcaveCollision(happyCloud.getCloudPoly(), quokka.getQuokkaBounds())) {
-                    if(bonusQuokkas.size > 0) {
-                        if (level == 10) {
-                            gsm.set(new MenuState(gsm, world, level+1, collectedQuokkas.get(0)));
-                            gsm.set(new MenuState(gsm, world + 1, 1, collectedQuokkas.get(0)));
-                        }
-                        else {
-                            gsm.set(new MenuState(gsm, world, level + 1, collectedQuokkas.get(0)));
-                        }
-                    }
-                    else{
-                        if (level == 10) {
-                            gsm.set(new MenuState(gsm, world + 1, 1, false));
-                        }
-                        else {
-                            gsm.set(new MenuState(gsm, world, level + 1, false));
-                        }
-                    }
+                    gsm.set(new CompleteState(gsm, world, level, bonusQuokkas.size > 0 ? collectedQuokkas.get(0) : false));
                 }
             }
             cam.update();
@@ -1564,7 +1547,26 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         Vector2 perpPoint = new Vector2(Math.acos(perpPos.dot(quokkaVelocity2d)) < Math.acos(perpPos2.dot(quokkaVelocity2d)) ? perpPos : perpPos2);
         clickPos2d.set(clickPos.x, clickPos.y);
         clickPos2d2.set(clickPos2.x, clickPos2.y);
-        if(slope > 1){
+        System.out.println(slope);
+        if(Math.abs(slope) > 8){
+            if(quokka.getVelocity().x > 0){
+                while(quokkaLineHit()) {
+                    clickPos.set(clickPos.x + 1, clickPos.y, 0);
+                    clickPos2.set(clickPos2.x + 1, clickPos2.y, 0);
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                }
+            }
+            else{
+                while (quokkaLineHit()) {
+                    clickPos.set(clickPos.x - 1, clickPos.y, 0);
+                    clickPos2.set(clickPos2.x - 1, clickPos2.y, 0);
+                    clickPos2d.set(clickPos.x, clickPos.y);
+                    clickPos2d2.set(clickPos2.x, clickPos2.y);
+                }
+            }
+        }
+        else if(slope > 1){
             if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
                 if(quokka.getLastVelocity().y <= -BOUNCEADJUST) {
                     while (quokkaLineHit()) {
@@ -1575,13 +1577,11 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     }
                 }
                 else{
-                    while (quokkaLineHit()){
-                        while (quokkaLineHit()) {
-                            clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                            clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                            clickPos2d.set(clickPos.x, clickPos.y);
-                            clickPos2d2.set(clickPos2.x, clickPos2.y);
-                        }
+                    while (quokkaLineHit()) {
+                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
+                        clickPos2d.set(clickPos.x, clickPos.y);
+                        clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
                 }
             }
@@ -1628,11 +1628,21 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
             }
             if(doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)){
+                boolean shiftLeft = false;
                 while (quokkaLineHit()){
+                    shiftLeft = true;
                     clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
                     clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
+                }
+                if(shiftLeft){
+                    for(int i = 0; i < 10; i++){
+                        clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
+                        clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
+                        clickPos2d.set(clickPos.x, clickPos.y);
+                        clickPos2d2.set(clickPos2.x, clickPos2.y);
+                    }
                 }
             }
             if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
@@ -1733,14 +1743,16 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         if(slope > 1){
             if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
                 if(quokka.getVelocity().y <= -BOUNCEADJUST) {
+                    System.out.println("here2");
                     while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
+                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
                 }
                 else{
+                    System.out.println("here");
                     while (quokkaLineHit()){
                         while (quokkaLineHit()) {
                             clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
@@ -2509,18 +2521,18 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
 
     private void levelInit(int world, int level){//initializes the level in the given world, sets the background and adds all of the correct obstacles to their obstacle array at the proper coordinates
         if(world == 1) {
-            walls.add(new Wall(-1000, -220, "wall.png"));
-            walls.add(new Wall(-1000, 375, "wall.png"));
+            walls.add(new Wall(-1000, -220));
+            walls.add(new Wall(-1000, 375));
         }
         else if(world == 2){
             walls.add(new Wall(-1000, -220, "stump.png"));
             walls.add(new Wall(-1000, 375, "stump.png"));
         }
-        else if(world == 5){
+        else if(world == 4){
             walls.add(new Wall(-1000, -220, "asteroidBelt.png"));
             walls.add(new Wall(-1000, 375, "asteroidBelt.png"));
         }
-        else if(world == 6){
+        else if(world == 5){
             walls.add(new Wall(-1000, -220, "futureWall.png"));
             walls.add(new Wall(-1000, 375, "futureWall.png"));
         }
@@ -2908,202 +2920,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
                 break;
             case 4:
-                levelBackground = new Texture("canvasBackground.png");
-                switch(level){
-                    case 1:
-                        nullZones.add(new Obstacle(-100, -300, 350, 1068));
-                        moveSpots.add(new Vector2(-50, 330));
-                        moveSpots.add(new Vector2(250, 70));
-                        moveSpots.add(new Vector2(250.01f, 70));
-                        moveSpots.add(new Vector2(-50.01f, 330));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        walls.add(new Wall(280, 100, "horizontWall.png"));
-                        clouds.add(new EvilCloud(900, 250));
-                        bonusQuokkas.add(new BonusQuokka(975, 50));
-                        walls.add(new Wall(1350, 400));
-                        happyCloud = new HappyCloud(1550, 550);
-                        break;
-                    case 2:
-                        clouds.add(new EvilCloud(450, 600));
-                        clouds.add(new EvilCloud(450, 50));
-                        nullZones.add(new Obstacle(700, -300, 580, 1100));
-                        bonusQuokkas.add(new BonusQuokka(990, 70));
-                        happyCloud = new HappyCloud(1600, 150);
-                        break;
-                    /*case 2:
-                        clouds.add(new EvilCloud(250, 50));
-                        walls.add(new Wall(900, 250));
-                        bonusQuokkas.add(new BonusQuokka(1068, 500));
-                        happyCloud = new HappyCloud(1258, 50);
-                        break;*/
-                    /*case 3:
-                        nullZones.add(new Obstacle(400, 100, 900, 800));
-                        walls.add(new Wall(1300, 200));
-                        bonusQuokkas.add(new BonusQuokka(1100, 200));
-                        happyCloud = new HappyCloud(1450, 350);
-                        break;*/
-                    case 3:
-                        nullZones.add(new Obstacle(400, -300, 300, 1100));
-                        nullZones.add(new Obstacle(900, -300, 300, 1100));
-                        nullZones.add(new Obstacle(1400, -300, 300, 1100));
-                        bonusQuokkas.add(new BonusQuokka(1550, 500));
-                        happyCloud = new HappyCloud(1800, 50);
-                        break;
-                    /*case 4:
-                        moveSpots.add(new Vector2(200, 550));
-                        moveSpots.add(new Vector2(200, 100));
-                        moveSpots.add(new Vector2(200.01f, 100));
-                        moveSpots.add(new Vector2(200.01f, 550));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 400));
-                        clouds.add(new EvilCloud(300, 50));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(600, 600));
-                        moveSpots.add(new Vector2(900, 150));
-                        moveSpots.add(new Vector2(1050, 250));
-                        moveSpots.add(new Vector2(750, 700));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 250, 600));
-                        walls.add(new Wall(1250, 0));
-                        happyCloud = new HappyCloud(1500, 50);
-                        break;*/
-                    case 4:
-                        nullZones.add(new Obstacle(300, 459, 1000, 359));
-                        nullZones.add(new Obstacle(300, -200, 1000, 509));
-                        walls.add(new Wall(1450, 380));
-                        clouds.add(new EvilCloud(1650, 50));
-                        moveSpots.add(new Vector2(1875, 768));
-                        moveSpots.add(new Vector2(2125, 440));
-                        moveSpots.add(new Vector2(2125.01f, 440));
-                        moveSpots.add(new Vector2(1875.01f, 768));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        bonusQuokkas.add(new BonusQuokka(1985, 600));
-                        happyCloud = new HappyCloud(2450, 400);
-                        break;
-                    case 5:
-                        nullZones.add(new Obstacle(200, -300, 600, 1068));
-                        moveSpots.add(new Vector2(250, 300));
-                        moveSpots.add(new Vector2(750, 300));
-                        moveSpots.add(new Vector2(750, 300.01f));
-                        moveSpots.add(new Vector2(250, 300.01f));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 250, 250));
-                        nullZones.add(new Obstacle(1200, -300, 1200, 1068));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(1440, 350));
-                        moveSpots.add(new Vector2(1780, 350));
-                        moveSpots.add(new Vector2(1780, 350.01f));
-                        moveSpots.add(new Vector2(1440, 350.01f));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(1920, 150));
-                        moveSpots.add(new Vector2(2160, 150));
-                        moveSpots.add(new Vector2(2160, 150.01f));
-                        moveSpots.add(new Vector2(1920, 150.01f));
-                        bonusQuokkas.add(new BonusQuokka(1995, 175));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 150, 150));
-                        happyCloud = new HappyCloud(2250, 500);
-                        break;
-                    case 6:
-                        clouds.add(new EvilCloud(-50, 100));
-                        moveSpots.add(new Vector2(350, 50));
-                        moveSpots.add(new Vector2(550, 350));
-                        moveSpots.add(new Vector2(550.01f, 350));
-                        moveSpots.add(new Vector2(350.01f, 50));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 150, 150));
-                        walls.add(new Wall(700, 300));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(823, 550));
-                        moveSpots.add(new Vector2(1123, 550));
-                        moveSpots.add(new Vector2(1123.01f, 550));
-                        moveSpots.add(new Vector2(823.01f, 550));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 150, 150));
-                        bonusQuokkas.add(new BonusQuokka(970, 570));
-                        nullZones.add(new Obstacle(1123, -300, 250, 1068));
-                        happyCloud = new HappyCloud(1450, 50);
-                        break;
-                    case 7:
-                        nullZones.add(new Obstacle(250, -300, 350, 1068));
-                        clouds.add(new EvilCloud(600, 400));
-                        bonusQuokkas.add(new BonusQuokka(675, 575));
-                        moveSpots.add(new Vector2(850, 0));
-                        moveSpots.add(new Vector2(850, 768));
-                        moveSpots.add(new Vector2(850.01f, 768));
-                        moveSpots.add(new Vector2(850.01f, 0));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        nullZones.add(new Obstacle(1100, -300, 350, 1068));
-                        walls.add(new Wall(1650, -280));
-                        happyCloud= new HappyCloud(1850, 50);
-                        break;
-                    case 8:
-                        nullZones.add(new Obstacle(200, -300, 350, 1068));
-                        walls.add(new Wall(300, -250));
-                        walls.add(new Wall(750, -250));
-                        nullZones.add(new Obstacle(873, -300, 175, 1068));
-                        walls.add(new Wall(1048, 400));
-                        nullZones.add(new Obstacle(1271, -300, 350, 1068));
-                        walls.add(new Wall(1371, 450));
-                        walls.add(new Wall(1371, -350));
-                        bonusQuokkas.add(new BonusQuokka(1524, 550));
-                        happyCloud = new HappyCloud(1544, 50);
-                        break;
-                    /*case 9:
-                        moveSpots.add(new Vector2(50,100));
-                        moveSpots.add(new Vector2(250,400));
-                        moveSpots.add(new Vector2(100,600));
-                        moveSpots.add(new Vector2(50.01f,100));
-                        brushes.add(new Obstacle("brush.png", moveSpots,150, 700));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(-400,100));
-                        moveSpots.add(new Vector2(-400,400));
-                        moveSpots.add(new Vector2(-400,600));
-                        moveSpots.add(new Vector2(-400,800));
-                        brushes.add(new Obstacle("brush.png", moveSpots,50, 700));
-                        happyCloud=new HappyCloud(-300, 50);
-                        break;*/
-                    /*case 9:
-                        moveSpots.add(new Vector2(60, 400));
-                        moveSpots.add(new Vector2(60, 100));
-                        moveSpots.add(new Vector2(60.01f, 400));
-                        moveSpots.add(new Vector2(60.01f, 100));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 300));
-                        happyCloud = new HappyCloud(2000, 30);
-                        break;*/
-                    case 9:
-                        walls.add(new Wall(300, 384));
-                        nullZones.add(new Obstacle(523, -200, 342,968));
-                        switches.add(new Obstacle(669, 30, "wallSwitch.png"));
-                        walls.add(new Wall(1665, -325, switches.get(0), 420));
-                        switches.add(new Obstacle(669, 500, "wallSwitch.png"));
-                        walls.add(new Wall(1788, -325, switches.get(1), 420));
-                        clouds.add(new EvilCloud(1165, 200));
-                        bonusQuokkas.add(new BonusQuokka(1240, 30));
-                        walls.add(new Wall(1665, 270));
-                        walls.add(new Wall(1788, 270));
-                        happyCloud = new HappyCloud(2011, 280);
-                        break;
-                    case 10:
-                        moveSpots.add(new Vector2(-150, 0));
-                        moveSpots.add(new Vector2(-150, 758));
-                        moveSpots.add(new Vector2(-150.01f, 758));
-                        moveSpots.add(new Vector2(-150.01f, 0));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 220, 220));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(-75, 100));
-                        moveSpots.add(new Vector2(150, 325));
-                        moveSpots.add(new Vector2(150.01f, 325));
-                        moveSpots.add(new Vector2(-75.01f, 100));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 250, 250));
-                        moveSpots.clear();
-                        moveSpots.add(new Vector2(350, 130));
-                        moveSpots.add(new Vector2(650, 130));
-                        moveSpots.add(new Vector2(650.01f, 130));
-                        moveSpots.add(new Vector2(350.01f, 130));
-                        brushes.add(new Obstacle("brush.png", moveSpots, 200, 200));
-                        bonusQuokkas.add(new BonusQuokka(600, 500));
-                        nullZones.add(new Obstacle(-300, -200, 1000, 968));
-                        happyCloud = new HappyCloud(720, 20);
-                        break;
-                }
-                break;
-            case 5:
                 levelBackground = new Texture("spaceBackground.png");
                 switch(level) {
                     case 1:
@@ -3244,7 +3060,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         break;
                 }
                 break;
-            case 6:
+            case 5:
                 levelBackground = new Texture("futureBackground.png");
                 switch(level){
                     case 1:
@@ -3555,16 +3371,32 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             for(i = -220; i < happyCloud.getPosCloud().y; i+=595){
                 walls.add(new Wall(-30, i));
                 walls.add(new Wall(cam.viewportWidth- 10, i));
-                
+
             }
-            
+
             walls.add(new Wall(93, i - 123, "horizontWall.png"));
             walls.add(new Wall(688, i - 123, "horizontWall.png"));
         }
-        else if(world == 5){
-            for(int i = -877; i < happyCloud.getPosCloud().x + 2000; i+=595){
-                walls.add(new Wall(i, -100, "horizontAsteroidBelt.png"));
-                walls.add(new Wall(i, cam.viewportHeight - 10, "horizontAsteroidBelt.png"));
+        else {
+            if(world == 1) {
+                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, -220));
+                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, 375));
+            }
+            else if(world == 2){
+                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, -220, "stump.png"));
+                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, 375, "stump.png"));
+            }
+            else if(world == 4){
+                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, -220, "asteroidBelt.png"));
+                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, 375, "asteroidBelt.png"));
+                for (int i = -877; i < happyCloud.getPosCloud().x + 2000; i += 595) {
+                    walls.add(new Wall(i, -100, "horizontAsteroidBelt.png"));
+                    walls.add(new Wall(i, cam.viewportHeight - 10, "horizontAsteroidBelt.png"));
+                }
+            }
+            else{
+                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, -220, "futureWall.png"));
+                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, 375, "futureWall.png"));
             }
         }
         if(portals.size > 0){

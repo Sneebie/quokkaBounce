@@ -37,8 +37,8 @@ public class MenuState extends State implements InputProcessor{
             prefs.flush();
             permaWorld = world;
         }
-        if(world > 6){
-            world = 6;
+        if(world > 5){
+            world = 5;
         }
         permaLevel = prefs.getInteger("level" + world, 1);
         currentWorld = world;
@@ -63,7 +63,7 @@ public class MenuState extends State implements InputProcessor{
         buttons = new Array<Button>();
         numbers = new Array<Texture>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
-        if(world==6) {
+        if(world==5) {
             for (int i = 1; i <= 10; i++) {
                 numbers.add(new Texture("numbers/number" + i + "White.png"));
             }
@@ -71,11 +71,6 @@ public class MenuState extends State implements InputProcessor{
         else if(world==1){
             for (int i = 1; i <= 10; i++) {
                 numbers.add(new Texture("numbers/number" + i + "Brown.png"));
-            }
-        }
-        else if(world==4){
-            for (int i = 1; i <= 10; i++) {
-                numbers.add(new Texture("numbers/number" + i + "Small.png"));
             }
         }
         else{

@@ -31,8 +31,8 @@ public class WorldState extends State implements InputProcessor {
             prefs.flush();
             permaWorld = world;
         }
-        if(permaWorld > 6){
-            permaWorld = 6;
+        if(permaWorld > 5){
+            permaWorld = 5;
         }
         buttons = new Array<Button>();
         numbers = new Array<Texture>();
@@ -41,11 +41,8 @@ public class WorldState extends State implements InputProcessor {
             if(i == 1){
                 numbers.add(new Texture("numbers/number" + i + "Brown.png"));
             }
-            else if(i == 6){
+            else if(i == 5){
                 numbers.add(new Texture("numbers/number" + i + "White.png"));
-            }
-            else if(i==4){
-                numbers.add(new Texture("numbers/number" + i + "Small.png"));
             }
             else {
                 numbers.add(new Texture("numbers/number" + i + ".png"));
@@ -60,9 +57,6 @@ public class WorldState extends State implements InputProcessor {
                     buttons.add(new Button(new Texture("levelButton4.png"), 800, 50, 4));
                     if(permaWorld >= 5){
                         buttons.add(new Button(new Texture("levelButton5.png"), 800, 300, 5));
-                        if(permaWorld >= 6){
-                            buttons.add(new Button(new Texture("levelButton6.png"), 800, 550, 6));
-                        }
                     }
                 }
             }
