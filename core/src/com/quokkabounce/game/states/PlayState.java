@@ -380,6 +380,13 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         }
                     }
                 }
+                final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
+                if(Math.abs(slope) > 3.75 && willHit(dt)){
+                    //add nullZone code if nullZone ever gets added
+                    if(!justHitTemp) {
+                        quokka.getVelocity().x *= -1;
+                    }
+                }
                 hasEdgeCollided = false;
                 Vector3 tempLastVelocity = new Vector3(quokka.getVelocity());
                 if (outZone) {
@@ -1537,201 +1544,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         velocityTemp2.scl((float) Math.sqrt(Math.abs(2.0*(iniPot - currentPot))));
         velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
     }
-
     private void lineAdjust(){
-        final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
-        final float perpSlope = slope != 0 ? -1 / slope : -1;
-        Vector2 perpPos = new Vector2(1, perpSlope).nor();
-        Vector2 perpPos2 = new Vector2(1, -perpSlope).nor();
-        Vector2 quokkaVelocity2d = new Vector2(quokka.getLastVelocity().x, quokka.getLastVelocity().y);
-        Vector2 perpPoint = new Vector2(Math.acos(perpPos.dot(quokkaVelocity2d)) < Math.acos(perpPos2.dot(quokkaVelocity2d)) ? perpPos : perpPos2);
-        clickPos2d.set(clickPos.x, clickPos.y);
-        clickPos2d2.set(clickPos2.x, clickPos2.y);
-        System.out.println(slope);
-        if(Math.abs(slope) > 8){
-            if(quokka.getVelocity().x > 0){
-                while(quokkaLineHit()) {
-                    clickPos.set(clickPos.x + 1, clickPos.y, 0);
-                    clickPos2.set(clickPos2.x + 1, clickPos2.y, 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
-            }
-            else{
-                while (quokkaLineHit()) {
-                    clickPos.set(clickPos.x - 1, clickPos.y, 0);
-                    clickPos2.set(clickPos2.x - 1, clickPos2.y, 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
-            }
-        }
-        else if(slope > 1){
-            if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
-                if(quokka.getLastVelocity().y <= -BOUNCEADJUST) {
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-                else{
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-            }
-            if(doIntersect(quokka.getBottomLeft(), quokka.getUpperLeft(), clickPos2d, clickPos2d2)){
-                    while (quokkaLineHit()){
-                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-            }
-            if(doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)){
-                while (quokkaLineHit()){
-                    clickPos.set(clickPos.x + perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
-                    clickPos2.set(clickPos2.x + perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
-            }
-            if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
-                while (quokkaLineHit()){
-                    clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
-                    clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
-            }
-        }
-        else if(slope < - 1){
-            if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
-                while (quokkaLineHit()) {
-                    clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                    clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
-            }
-            if(doIntersect(quokka.getBottomLeft(), quokka.getUpperLeft(), clickPos2d, clickPos2d2)){
-                while (quokkaLineHit()) {
-                    clickPos.set(clickPos.x, clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                    clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
-            }
-            if(doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)){
-                boolean shiftLeft = false;
-                while (quokkaLineHit()){
-                    shiftLeft = true;
-                    clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
-                    clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
-                if(shiftLeft){
-                    for(int i = 0; i < 10; i++){
-                        clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
-                        clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-            }
-            if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
-                while (quokkaLineHit()){
-                    clickPos.set(clickPos.x + perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
-                    clickPos2.set(clickPos2.x + perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
-            }
-        }
-        else if(quokka.getLastVelocity().x < 0) {
-            if(slope >= 0) {
-                if(quokka.getLastVelocity().y <= -BOUNCEADJUST) {
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x + perpPoint.x / Math.abs(perpPoint.x), clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x + perpPoint.x / Math.abs(perpPoint.x), clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-                else{
-                    while (quokkaLineHit()){
-                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-            }
-            else{
-                if(quokka.getLastVelocity().y <= -BOUNCEADJUST) {
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-                else{
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-            }
-        }
-        else{
-            if(slope >= 0) {
-                if(quokka.getLastVelocity().y <= BOUNCEADJUST) {
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-                else{
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-            }
-            else{
-                if(quokka.getLastVelocity().y <= BOUNCEADJUST) {
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-                else{
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-            }
-        }
-    }
-    private void lineAdjustTouchUp(){
         final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
         final float perpSlope = slope != 0 ? -1 / slope : -1;
         Vector2 perpPos = new Vector2(1, perpSlope).nor();
@@ -1743,7 +1556,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         if(slope > 1){
             if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
                 if(quokka.getVelocity().y <= -BOUNCEADJUST) {
-                    System.out.println("here2");
                     while (quokkaLineHit()) {
                         clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
                         clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
@@ -1752,7 +1564,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     }
                 }
                 else{
-                    System.out.println("here");
                     while (quokkaLineHit()){
                         while (quokkaLineHit()) {
                             clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
@@ -1908,6 +1719,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
             }
         }
+        hasCollided = false;
     }
     private float lineY(float x){ //finds the y value of the drawn line at a given x coordinate
         if(clickPos2.x > clickPos.x) {
@@ -2153,6 +1965,34 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
 
         // p2, q2 and q1 are colinear and q1 lies on segment p2q2
         return (o4 == 0 && onSegment(p2, q1, q2));
+    }
+    private boolean willHit(float dt){
+        quokka.getVelocity().scl(dt);
+        if(doIntersect(clickPos2d, clickPos2d2, new Vector2(quokka.getPosition().x, quokka.getPosition().y), new Vector2(quokka.getPosition().x + quokka.getVelocity().x, quokka.getPosition().y + quokka.getVelocity().y))){
+            quokka.getVelocity().scl(1/dt);
+            return true;
+        }
+        if(doIntersect(clickPos2d, clickPos2d2, new Vector2(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()), new Vector2(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() + quokka.getVelocity().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight() + quokka.getVelocity().y))){
+            quokka.getVelocity().scl(1/dt);
+            return true;
+        }
+        if(doIntersect(clickPos2d, clickPos2d2, new Vector2(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth(), quokka.getPosition().y), new Vector2(quokka.getPosition().x + quokka.getQuokkaBounds().getWidth() + quokka.getVelocity().x, quokka.getPosition().y + quokka.getVelocity().y))){
+            quokka.getVelocity().scl(1/dt);
+            return true;
+        }
+        if(doIntersect(clickPos2d, clickPos2d2, new Vector2(quokka.getPosition().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight()), new Vector2(quokka.getPosition().x + quokka.getVelocity().x, quokka.getPosition().y + quokka.getQuokkaBounds().getHeight() + quokka.getVelocity().y))){
+            quokka.getVelocity().scl(1/dt);
+            return true;
+        }
+        Rectangle testBounds = new Rectangle(quokka.getQuokkaBounds());
+        testBounds.setX(testBounds.getX() + quokka.getVelocity().x);
+        testBounds.setY(testBounds.getY() + quokka.getVelocity().y);
+        if(testBounds.contains(clickPos2d) || testBounds.contains(clickPos2d2)){
+            quokka.getVelocity().scl(1/dt);
+            return true;
+        }
+        quokka.getVelocity().scl(1/dt);
+        return false;
     }
 
     private Vector2 pointBetween(Vector2 p1, Vector2 p2, float distanceBetween){ //finds a point located on the line between p1 and p2 at a given distance from p2
@@ -2752,12 +2592,12 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         break;
                     case 6:
                         levelBackground = new Texture("dino2Back.png");
-                        switches.add(new Obstacle(400, 0,"wallSwitch.png"));
-                        bonusQuokkas.add(new BonusQuokka(525, 70));
-                        walls.add(new Wall(200, 300, "horizontStump.png"));
-                        walls.add(new Wall(672, 422, switches, 1000, "stump.png"));
-                        tallDinos.add(new TallDino(250, -305, 722, 200));
-                        meteors.add(new Meteor(810, 780, 0, 0));
+                        switches.add(new Obstacle(400, 50,"wallSwitch.png"));
+                        bonusQuokkas.add(new BonusQuokka(525, 120));
+                        walls.add(new Wall(200, 350, "horizontStump.png"));
+                        walls.add(new Wall(672, 472, switches, 1000, "stump.png"));
+                        //tallDinos.add(new TallDino(250, -255, 822, 200));
+                        meteors.add(new Meteor(915, 780, 0, 0));
                         happyCloud = new HappyCloud(1200, 150);
                         break;
                     case 7:
@@ -3591,8 +3431,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 vineDraw = true;
                 vineCheck = true;
                 lineDraw = true;
-                shouldFall = true;
-                shouldMove = true;
+                //shouldFall = true;
+                //shouldMove = true;
                 hasCollided = false;
                 lineCheck = false;
                 paused = false;
@@ -3620,11 +3460,15 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 clickPos2.set(cam.unproject(clickPos2));
                 clickPosNo.set(clickPos.x, clickPos.y);
                 clickPosNo2.set(clickPos2.x, clickPos2.y);
-                justTouchUp = true;
-                justTouchedUp = true;
-                lineAdjustTouchUp();
+                //justTouchUp = true;
+                //justTouchedUp = true;
+                if(quokkaLineHit()) {
+                    lineAdjust();
+                }
                 clickPosTemp.set(0, -100, 0);
                 vineDraw = true;
+                shouldFall = true;
+                shouldMove = true;
                 lineCheck = true;
             }
         }
