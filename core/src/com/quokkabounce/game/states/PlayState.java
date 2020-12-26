@@ -382,9 +382,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     }
                 }
                 final float slope = (clickPos2.x != clickPos.x) ? (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x) : 5000;
-                quokka.getVelocity().scl(dt);
-                System.out.println(quokka.getVelocity().x);
-                quokka.getVelocity().scl(1/dt);
+                System.out.println(slope);
                 if(Math.abs(slope) > 3.75 && willHit(dt)){
                     //add nullZone code if nullZone ever gets added
                     if(!justHitTemp) {
@@ -1554,7 +1552,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         velocityTemp2.scl((float) (1/Math.sqrt(currentDT)));
     }
     private void lineAdjust(){
-        final float slope = (clickPos2.x != clickPos.x) ? (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x) : 5000;
+        final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
         final float perpSlope = slope != 0 ? -1 / slope : -1;
         Vector2 perpPos = new Vector2(1, perpSlope).nor();
         Vector2 perpPos2 = new Vector2(1, -perpSlope).nor();
@@ -1562,17 +1560,18 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         Vector2 perpPoint = new Vector2(Math.acos(perpPos.dot(quokkaVelocity2d)) < Math.acos(perpPos2.dot(quokkaVelocity2d)) ? perpPos : perpPos2);
         clickPos2d.set(clickPos.x, clickPos.y);
         clickPos2d2.set(clickPos2.x, clickPos2.y);
-        if(slope > 0.6) {
-            if (doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)) {
-                if (quokka.getVelocity().y <= -BOUNCEADJUST) {
+        if(slope > 0.7){
+            if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
+                //if(quokka.getVelocity().y <= -BOUNCEADJUST) {
                     while (quokkaLineHit()) {
                         clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
                         clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
-                } else {
-                    while (quokkaLineHit()) {
+                /*}
+                else{
+                    while (quokkaLineHit()){
                         while (quokkaLineHit()) {
                             clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
                             clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
@@ -1580,42 +1579,27 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                             clickPos2d2.set(clickPos2.x, clickPos2.y);
                         }
                     }
-                }
+                }*/
             }
-            if (doIntersect(quokka.getBottomLeft(), quokka.getUpperLeft(), clickPos2d, clickPos2d2)) {
-                if (doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)) {
-                    if (quokka.getVelocity().y < 0 && quokka.getVelocity().x > 0) {
-                        while (quokkaLineHit()) {
-                            clickPos.set(clickPos.x, clickPos.y - 1, 0);
-                            clickPos2.set(clickPos2.x, clickPos2.y - 1, 0);
-                            clickPos2d.set(clickPos.x, clickPos.y);
-                            clickPos2d2.set(clickPos2.x, clickPos2.y);
-                        }
-                    }
-                }
-                while (quokkaLineHit()) {
+            if(doIntersect(quokka.getBottomLeft(), quokka.getUpperLeft(), clickPos2d, clickPos2d2)){
+                while (quokkaLineHit()){
                     clickPos.set(clickPos.x, clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
                     clickPos2.set(clickPos2.x, clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                 }
             }
-            if (doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)) {
-                if(quokkaLineHit()) {
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x + perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
-                        clickPos2.set(clickPos2.x + perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
+            if(doIntersect(quokka.getBottomLeft(), quokka.getBottomRight(), clickPos2d, clickPos2d2)){
+                while (quokkaLineHit()){
                     clickPos.set(clickPos.x + perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
                     clickPos2.set(clickPos2.x + perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                 }
                 //paused = true;
-            } else if (doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)) {
-                while (quokkaLineHit()) {
+            }
+            else if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
+                while (quokkaLineHit()){
                     clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y, 0);
                     clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y, 0);
                     clickPos2d.set(clickPos.x, clickPos.y);
@@ -1623,22 +1607,24 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
             }
         }
-        else if(slope < -0.6){
+        else if(slope < -0.7){
             if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
-                if(quokka.getVelocity().y < 0 && quokka.getVelocity().x < 0){
+                //if(quokka.getVelocity().y > -BOUNCEADJUST) {
                     while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y - 1, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y - 1, 0);
+                        clickPos.set(clickPos.x, clickPos.y - perpPoint.y / Math.abs(perpPoint.y), 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - perpPoint.y / Math.abs(perpPoint.y), 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
-                }
-                while (quokkaLineHit()) {
-                    clickPos.set(clickPos.x, clickPos.y + 1, 0);
-                    clickPos2.set(clickPos2.x, clickPos2.y + 1, 0);
-                    clickPos2d.set(clickPos.x, clickPos.y);
-                    clickPos2d2.set(clickPos2.x, clickPos2.y);
-                }
+                /*}
+                else{
+                    while (quokkaLineHit()) {
+                        clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
+                        clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
+                        clickPos2d.set(clickPos.x, clickPos.y);
+                        clickPos2d2.set(clickPos2.x, clickPos2.y);
+                    }
+                }*/
             }
             if(doIntersect(quokka.getBottomLeft(), quokka.getUpperLeft(), clickPos2d, clickPos2d2)){
                 while (quokkaLineHit()) {
@@ -1655,6 +1641,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                 }
+                //paused = true;
             }
             if(doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
                 while (quokkaLineHit()){
