@@ -1689,20 +1689,30 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
             }
             else{
-                if(quokka.getVelocity().y > 0) {
-                    while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x, clickPos.y + 1, 0);
-                        clickPos2.set(clickPos2.x, clickPos2.y + 1, 0);
-                        clickPos2d.set(clickPos.x, clickPos.y);
-                        clickPos2d2.set(clickPos2.x, clickPos2.y);
-                    }
-                }
-                else{
+                if(quokka.getVelocity().y <= 0) {
                     while (quokkaLineHit()) {
                         clickPos.set(clickPos.x, clickPos.y - 1, 0);
                         clickPos2.set(clickPos2.x, clickPos2.y - 1, 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
+                    }
+                }
+                else{
+                    if(slope > -0.2) {
+                        while (quokkaLineHit()) {
+                            clickPos.set(clickPos.x + perpPoint.x / Math.abs(perpPoint.x), clickPos.y + 1, 0);
+                            clickPos2.set(clickPos2.x + perpPoint.x / Math.abs(perpPoint.x), clickPos2.y + 1, 0);
+                            clickPos2d.set(clickPos.x, clickPos.y);
+                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                        }
+                    }
+                    else{
+                        while (quokkaLineHit()) {
+                            clickPos.set(clickPos.x, clickPos.y - 1, 0);
+                            clickPos2.set(clickPos2.x, clickPos2.y - 1, 0);
+                            clickPos2d.set(clickPos.x, clickPos.y);
+                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                        }
                     }
                 }
             }
@@ -1717,10 +1727,18 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
                 }
+                else if(slope < 0.2){
+                    while (quokkaLineHit()) {
+                        clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y + 1, 0);
+                        clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y + 1, 0);
+                        clickPos2d.set(clickPos.x, clickPos.y);
+                        clickPos2d2.set(clickPos2.x, clickPos2.y);
+                    }
+                }
                 else{
                     while (quokkaLineHit()) {
-                        clickPos.set(clickPos.x - perpPoint.x / Math.abs(perpPoint.x), clickPos.y + perpPoint.y / Math.abs(perpPoint.y), 0);
-                        clickPos2.set(clickPos2.x - perpPoint.x / Math.abs(perpPoint.x), clickPos2.y + perpPoint.y / Math.abs(perpPoint.y), 0);
+                        clickPos.set(clickPos.x, clickPos.y - 1, 0);
+                        clickPos2.set(clickPos2.x, clickPos2.y - 1, 0);
                         clickPos2d.set(clickPos.x, clickPos.y);
                         clickPos2d2.set(clickPos2.x, clickPos2.y);
                     }
@@ -2932,6 +2950,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         portals.add(new Obstacle(3955, 510, "portal.png"));
                         planets.add(new Obstacle(3930, 260, "greenPlanet.png"));
                         planets.add(new Obstacle(4580, 260, "greenPlanet.png"));
+                        walls.add(new Wall(5073, -220, "asteroidBelt.png"));
+                        walls.add(new Wall(5073, 375, "asteroidBelt.png"));
                         break;
                     case 7:
                         planets.add(new Obstacle(350, 400, "greenPlanet.png"));
