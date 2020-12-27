@@ -2235,6 +2235,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
             }
             shapeRenderer.end();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            if(world == 5 && level == 8){
+                shapeRenderer.setColor(Color.YELLOW);
+                for(Hawk hawk : hawks) {
+                    shapeRenderer.rect(hawk.getHawkBounds().x, hawk.getHawkBounds().y, hawk.getHawkBounds().width, hawk.getHawkBounds().height);
+                }
+            }
+            shapeRenderer.end();
             sb.begin();
             for (Obstacle nullZone : nullZones) {
                 sb.draw(ripRegion, nullZone.getPosObstacle().x, nullZone.getPosObstacle().y, nullZone.getObstacleBounds().getWidth(), nullZone.getObstacleBounds().getHeight());
@@ -3090,7 +3098,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(2190, 0);
                         break;
                     case 8:
-                        walls.add(new Wall(150, 350, "futureWall.png"));
+                        /*walls.add(new Wall(150, 350, "futureWall.png"));
                         portals.add(new Obstacle(300, 600, "portal.png"));
                         walls.add(new Wall(475, -175, "futureWall.png"));
                         switches.add(new Obstacle(625, 0, "wallSwitch.png"));
@@ -3101,7 +3109,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(1518, 375, "futureWall.png"));
                         bonusQuokkas.add(new BonusQuokka(2100, 580));
                         clouds.add(new EvilCloud(2050, 380));
-                        walls.add(new Wall(2300, 250, "futureWall.png"));
+                        walls.add(new Wall(2300, 250, "futureWall.png"));*/
+                        hawks.add(new Hawk(1000, 400));
                         happyCloud = new HappyCloud(2500, 450);
                         break;
                     case 9:
