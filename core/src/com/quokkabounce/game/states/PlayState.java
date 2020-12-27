@@ -500,10 +500,10 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             }
             if(shouldMove) {
                 for (Hawk hawk : hawks) { //checks hawk collision, and if there is none sees if the hawk spots the quokka, causing it to dive, or otherwise moves it in circles more (hawk not shown in demo video)
-                    if (hawk.collides(quokka.getQuokkaBounds())) {
-                        respawning = true;
+                    if (isConcaveCollision(hawk.getHawkPolygon(), quokka.getQuokkaBounds())) {
+                        /*respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
-                        break;
+                        break;*/
                     }
                     if (Math.sqrt(Math.pow(hawk.getHawkBounds().x + hawk.getHawkBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(hawk.getHawkBounds().y + hawk.getHawkBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT) {
                         hawk.move(true, dt, quokka.getPosition());
@@ -2239,7 +2239,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             if(world == 5 && level == 8){
                 shapeRenderer.setColor(Color.YELLOW);
                 for(Hawk hawk : hawks) {
-                    shapeRenderer.rect(hawk.getHawkBounds().x, hawk.getHawkBounds().y, hawk.getHawkBounds().width, hawk.getHawkBounds().height);
+                    shapeRenderer.polygon(hawk.getHawkPolygon().getTransformedVertices());
                 }
             }
             shapeRenderer.end();
@@ -2329,7 +2329,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             sb.draw(tallDino.getTexture(), tallDino.getPosTallDino().x, tallDino.getPosTallDino().y);
         }
             for (Hawk hawk : hawks) {
-                sb.draw(hawk.getTexture(), hawk.getPosHawk().x, hawk.getPosHawk().y);
+                sb.draw(hawk.getTexture(), hawk.getPosHawk().x + (hawk.getFirstWidth() - hawk.getTexture().getWidth()) / 2, hawk.getPosHawk().y);
             }
             for (Meteor meteor : meteors) {
                 sb.draw(meteor.getTexture(), meteor.getPosMeteor().x, meteor.getPosMeteor().y);

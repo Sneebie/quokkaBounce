@@ -65,4 +65,8 @@ public class Animation {
     public Texture getFrame(){
         return frames.get(frame);
     }
+
+    public int getFrameNumber() {
+        return frame;
+    }
 }
