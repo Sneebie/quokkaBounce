@@ -19,7 +19,7 @@ public class MenuState extends State implements InputProcessor{
     private Texture levelSelectBackground, greyQuokka, bonusQuokka;
     private Array<Button> buttons;
     private Array<Texture> numbers;
-    private Button backButton;
+    private Button backButton, hawkButton;
     private static final double VIEWPORT_SCALER = 1.6;
     private int permaLevel, currentWorld, permaWorld;
     private boolean[] collectedQuokkas;
@@ -48,7 +48,7 @@ public class MenuState extends State implements InputProcessor{
             permaLevel = level;
         }
         boolean currentQuokka;
-        for(int i = 0; i < permaLevel - 1; i++) {
+        for(int i = 0; i < ((permaLevel < 11) ? (permaLevel - 1) : 10); i++) {
             currentQuokka = prefs.getBoolean("collectedQuokka" + world + i, false);
             if((i == level - 2) && collectedQuokka){
                 collectedQuokkas[i] = true;
@@ -60,6 +60,12 @@ public class MenuState extends State implements InputProcessor{
             }
         }
         backButton = new Button(new Texture("back.png"), 15, 703, 0);
+        if(world == 1) {
+            hawkButton = new Button(new Texture("hawk.png"), 965, 300, 11);
+        }
+        else {
+            hawkButton = new Button(new Texture("hawk.png"), 930, 300, 11);
+        }
         buttons = new Array<Button>();
         numbers = new Array<Texture>();
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
@@ -124,11 +130,14 @@ public class MenuState extends State implements InputProcessor{
         sb.begin();
         sb.draw(levelSelectBackground, cam.position.x - cam.viewportWidth / 2, 0, cam.viewportWidth, cam.viewportHeight);
         sb.draw(backButton.getTexture(), backButton.getPosButton().x, backButton.getPosButton().y);
-        for (int i = 0; i < (permaLevel > 10 ? permaLevel - 1 : permaLevel); i++){
+        for (int i = 0; i < (permaLevel > 10 ? 10 : permaLevel); i++){
             Button button = buttons.get(i);
             sb.draw(button.getTexture(), button.getPosButton().x, button.getPosButton().y);
             sb.draw(numbers.get(i), button.getPosButton().x + button.getTexture().getWidth() / 2 - numbers.get(i).getWidth() / 2, button.getPosButton().y + button.getTexture().getHeight() / 2 - numbers.get(i).getHeight() / 2);
             sb.draw(collectedQuokkas[i] ? bonusQuokka : greyQuokka, button.getPosButton().x + button.getButtonBounds().getWidth() - bonusQuokka.getWidth(), button.getPosButton().y + button.getButtonBounds().getHeight() / 2 - bonusQuokka.getHeight());
+        }
+        if(permaLevel >= 11){
+            sb.draw(hawkButton.getTexture(), hawkButton.getPosButton().x, hawkButton.getPosButton().y);
         }
         sb.end();
     }
@@ -169,6 +178,9 @@ public class MenuState extends State implements InputProcessor{
                 gsm.set(new PlayState(gsm, currentWorld, menuButton.getLevel()));
                 break;
             }
+        }
+        if(permaLevel >= 11 && hawkButton.getButtonBounds().contains(touchInput.x, touchInput.y)){
+            gsm.set(new PlayState(gsm, currentWorld, hawkButton.getLevel()));
         }
         return false;
     }

@@ -40,7 +40,6 @@ import com.quokkabounce.game.sprites.Wall;
  */
 
 class PlayState extends State implements InputProcessor{ //This is the largest part of the program, containing the main gameplay loop, the level creation, and input handling. outside of this, I created the classes for obstacles like the Arrow, Stoplight, and Wall classes, and the Quokka, as well as the menus, world selection, etc.
-    private static final int HAWKSIGHT = 400; //constant declarations
     private static final int ARROWHEIGHT = 150;
     private static final float GOODGRAV = -500000000f;
     private static final float DEPTHSCALER = 0.0001f;
@@ -501,15 +500,11 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             if(shouldMove) {
                 for (Hawk hawk : hawks) { //checks hawk collision, and if there is none sees if the hawk spots the quokka, causing it to dive, or otherwise moves it in circles more (hawk not shown in demo video)
                     if (isConcaveCollision(hawk.getHawkPolygon(), quokka.getQuokkaBounds())) {
-                        /*respawning = true;
+                        respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
-                        break;*/
+                        break;
                     }
-                    if (Math.sqrt(Math.pow(hawk.getHawkBounds().x + hawk.getHawkBounds().width / 2 - quokka.getQuokkaBounds().x - quokka.getQuokkaBounds().width / 2, 2) + Math.pow(hawk.getHawkBounds().y + hawk.getHawkBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2, 2)) <= HAWKSIGHT) {
-                        hawk.move(true, dt, quokka.getPosition());
-                    } else {
-                        hawk.move(false, dt, quokka.getPosition());
-                    }
+                    hawk.move(quokka.getQuokkaBounds(), dt, quokka.getPosition());
                 }
                 for(Drone drone : drones){ //Starts drone movement once close enough, moves the drone, and checks collision
                     if(drone.isStartMove() && isCollision(drone.getPolygon(), quokka.getQuokkaBounds())){
@@ -2235,14 +2230,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
             }
             shapeRenderer.end();
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            if(world == 5 && level == 8){
-                shapeRenderer.setColor(Color.YELLOW);
-                for(Hawk hawk : hawks) {
-                    shapeRenderer.polygon(hawk.getHawkPolygon().getTransformedVertices());
-                }
-            }
-            shapeRenderer.end();
             sb.begin();
             for (Obstacle nullZone : nullZones) {
                 sb.draw(ripRegion, nullZone.getPosObstacle().x, nullZone.getPosObstacle().y, nullZone.getObstacleBounds().getWidth(), nullZone.getObstacleBounds().getHeight());
@@ -2381,6 +2368,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             sb.draw(pauseButton.getTexture(), pauseButton.getPosButton().x, pauseButton.getPosButton().y);
             sb.end();
             sb.setColor(1f, 1f, 1f, 1f);
+        /*shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        if(world == 5 && level == 8){
+            shapeRenderer.setColor(Color.YELLOW);
+            for(Hawk hawk : hawks) {
+                shapeRenderer.polygon(hawk.getHawkPolygon().getTransformedVertices());
+            }
+        }
+        shapeRenderer.end();*/
     }
 
     @Override
@@ -2469,8 +2464,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
 
     private void levelInit(int world, int level){//initializes the level in the given world, sets the background and adds all of the correct obstacles to their obstacle array at the proper coordinates
         if(world == 1) {
-            walls.add(new Wall(-1000, -220));
-            walls.add(new Wall(-1000, 375));
+            if(level < 11) {
+                walls.add(new Wall(-1000, -220));
+                walls.add(new Wall(-1000, 375));
+            }
+            else{
+                walls.add(new Wall(-945, -220));
+                walls.add(new Wall(-945, 375));
+            }
         }
         else if(world == 2){
             walls.add(new Wall(-1000, -220, "stump.png"));
@@ -2557,10 +2558,12 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     case 7:
                         levelBackground = new Texture("level2Background.png");
                         clouds.add(new EvilCloud(200, 50));
-                        walls.add(new Wall (750, 300));
-                        walls.add(new Wall(1150, -130));
-                        bonusQuokkas.add(new BonusQuokka(1320, 30));
-                        happyCloud = new HappyCloud(1550, 200);
+                        walls.add(new Wall (750, -130));
+                        switches.add(new Obstacle(530, 20, "wallSwitch.png"));
+                        walls.add(new Wall(750, 465, switches, 800));
+                        walls.add(new Wall(1150, 350));
+                        bonusQuokkas.add(new BonusQuokka(1320, 500));
+                        happyCloud = new HappyCloud(1550, 500);
                         break;
                     /*case 8:
                         levelBackground = new Texture("level2Background.png");
@@ -2607,6 +2610,15 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(1700, 500, "wall.png"));
                         walls.add(new Wall(1700, -380, "wall.png"));
                         bonusQuokkas.add(new BonusQuokka(1900, 300));
+                        break;
+                    case 11:
+                        levelBackground = new Texture("level2Background.png");
+                        walls.add(new Wall(-822,377, "horizontWall.png"));
+                        hawks.add(new Hawk(500, 200));
+                        walls.add(new Wall(1300, -200));
+                        switches.add(new Obstacle(1800, 300, "wallSwitch.png"));
+                        walls.add(new Wall(-350, 500, switches.get(0), 800));
+                        happyCloud = new HappyCloud(-660, 550);
                         break;
                     /*case 10:
                         levelBackground = new Texture("level3Background.png");
@@ -2750,6 +2762,9 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         tallDinos.add(new TallDino(600, -150, 1000, 200));
                         bonusQuokkas.add(new BonusQuokka(630, 50));
                         happyCloud = new HappyCloud(1350, 50);
+                        break;
+                    case 11:
+                        levelBackground = new Texture("dino2Back.png");
                         break;
                 }
                 break;
@@ -3110,7 +3125,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         bonusQuokkas.add(new BonusQuokka(2100, 580));
                         clouds.add(new EvilCloud(2050, 380));
                         walls.add(new Wall(2300, 250, "futureWall.png"));*/
-                        hawks.add(new Hawk(1000, 400));
+                        hawks.add(new Hawk(300, 250));
                         happyCloud = new HappyCloud(2500, 450);
                         break;
                     case 9:
@@ -3331,8 +3346,13 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         }
         else {
             if(world == 1) {
-                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, -220));
-                walls.add(new Wall(happyCloud.getPosCloud().x + 1000, 375));
+                if(level < 11) {
+                    walls.add(new Wall(happyCloud.getPosCloud().x + 1000, -220));
+                    walls.add(new Wall(happyCloud.getPosCloud().x + 1000, 375));
+                }
+                else{
+                    //checkPoint
+                }
             }
             else if(world == 2){
                 walls.add(new Wall(happyCloud.getPosCloud().x + 1000, -220, "stump.png"));
@@ -3546,7 +3566,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 vineCheck = true;
                 lineDraw = true;
                 //shouldFall = true;
-                //shouldMove = true;
                 hasCollided = false;
                 lineCheck = false;
                 paused = false;

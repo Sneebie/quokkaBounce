@@ -20,8 +20,10 @@ public class Animation {
         frames = new Array<Texture>();
         if(folderName == "hawkIdle"){
             hawkAnimation = true;
+            frame = 10;
         }else{
             hawkAnimation = false;
+            frame = 0;
         }
         frameChange = 1;
         for(int i = 0; i < frameCount; i++){
@@ -29,7 +31,6 @@ public class Animation {
         }
         this.frameCount = frameCount;
         maxFrameTime = cycleTime / frameCount;
-        frame = 0;
     }
 
     public Array<Texture> getFrames() {
