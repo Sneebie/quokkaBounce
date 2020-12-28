@@ -5,23 +5,16 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by Eric on 9/6/2017.
  */
 
 public class Hawk {
-    private static final int HAWKSIGHT = 400;
-    private static final int LOCKDISTANCE = 300;
-    private static final int SWITCHDISTANCE = 600;
-    private static final float SPEED = 2;
-    private static final float RADIUS = 200;
-    private static final float ATTACKSPEED = 500;
-    private static final int ATTACKDELAY = 17;
 
-    private int t, loopTime, firstWidth, headHeight, relativePos;
-    private boolean alreadySpotted, loopFirst, curSpotted, switchPast;
+    private int t, loopTime, firstWidth, headHeight, relativePos, HAWKSIGHT, LOCKDISTANCE, SWITCHDISTANCE, ATTACKDELAY;
+    private boolean alreadySpotted, loopFirst, curSpotted, switchPast, XLOCK;
+    private float SPEED, RADIUS, ATTACKSPEED;
 
     private Rectangle hawkBounds;
     private Polygon hawkPolygon;
@@ -29,7 +22,15 @@ public class Hawk {
     private Animation hawkAnimation;
     private Vector2 posHawk, velHawk;
 
-    public Hawk(float x, float y){
+    public Hawk(float x, float y, int hawkSight, int lockDistance, int switchDistance, float speed, float radius, float attackSpeed, int attackDelay, boolean xLock){
+        HAWKSIGHT = hawkSight;
+        LOCKDISTANCE = lockDistance;
+        SWITCHDISTANCE = switchDistance;
+        SPEED = speed;
+        RADIUS = radius;
+        ATTACKSPEED = attackSpeed;
+        ATTACKDELAY = attackDelay;
+        XLOCK = xLock;
         loopTime = 0;
         t = 0;
         hawkAnimation = new Animation("hawkIdle", "hawk", 11, 0.5f);
@@ -133,22 +134,40 @@ public class Hawk {
                             switchPast = true;
                         }
                     }
-                    if(posHawk.y < 0){
-                        posHawk.y = 0;
-                        t = 0;
-                        alreadySpotted = false;
-                        loopFirst = false;
-                    }
-                    else if(posHawk.y + headHeight > 750){
-                        posHawk.y = 750 - headHeight;
-                        t = 180;
-                        alreadySpotted = false;
-                        loopFirst = false;
+                    if(XLOCK) {
+                        if (posHawk.x < 0) {
+                            posHawk.x = 0;
+                            t = 270;
+                            alreadySpotted = false;
+                            loopFirst = false;
+                        } else if (posHawk.x + firstWidth > 1200) {
+                            posHawk.x = 1200 - firstWidth;
+                            t = 90;
+                            alreadySpotted = false;
+                            loopFirst = false;
+                        }
+                        else {
+                            velHawk.scl(dt);
+                            posHawk.set(posHawk.x + velHawk.x, posHawk.y + velHawk.y);
+                            velHawk.scl(1 / dt);
+                        }
                     }
                     else {
-                        velHawk.scl(dt);
-                        posHawk.set(posHawk.x + velHawk.x, posHawk.y + velHawk.y);
-                        velHawk.scl(1 / dt);
+                        if (posHawk.y < 0) {
+                            posHawk.y = 0;
+                            t = 0;
+                            alreadySpotted = false;
+                            loopFirst = false;
+                        } else if (posHawk.y + headHeight > 750) {
+                            posHawk.y = 750 - headHeight;
+                            t = 180;
+                            alreadySpotted = false;
+                            loopFirst = false;
+                        } else {
+                            velHawk.scl(dt);
+                            posHawk.set(posHawk.x + velHawk.x, posHawk.y + velHawk.y);
+                            velHawk.scl(1 / dt);
+                        }
                     }
                 }
             }

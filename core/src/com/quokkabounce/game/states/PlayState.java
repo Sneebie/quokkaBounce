@@ -1244,20 +1244,18 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                             }
                         }
                         meteor.move(dt);
-                        if (((meteor.getPosMeteor().x > clickPos.x) && (meteor.getPosMeteor().x < clickPos2.x)) || ((meteor.getPosMeteor().x < clickPos.x) && (meteor.getPosMeteor().x > clickPos2.x))) {
-                            if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x, lineY(meteor.getPosMeteor().x))) {
+                        if(lineCheck) {
+                            if (meteor.getMeteorCircle().contains(clickPos.x, clickPos.y) || meteor.getMeteorCircle().contains(clickPos2.x, clickPos2.y)) {
                                 meteors.removeValue(meteor, true);
                                 meteor.dispose();
                             }
-                        } else if ((((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos2.x)) || (((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) < clickPos.x) && ((meteor.getPosMeteor().x + meteor.getTexture().getWidth()) > clickPos2.x))) {
-                            if (meteor.getMeteorBounds().contains(meteor.getPosMeteor().x + meteor.getTexture().getWidth(), lineY(meteor.getPosMeteor().x + meteor.getTexture().getWidth()))) {
+                            clickPos2d.set(clickPos.x, clickPos.y);
+                            clickPos2d2.set(clickPos2.x, clickPos2.y);
+                            if (Intersector.intersectSegmentCircle(clickPos2d, clickPos2d2, new Vector2(meteor.getMeteorCircle().x, meteor.getMeteorCircle().y), (float) Math.pow(meteor.getMeteorCircle().radius, 2))) {
+                                System.out.println("THIS");
                                 meteors.removeValue(meteor, true);
                                 meteor.dispose();
                             }
-                        }
-                        else if(meteor.getMeteorBounds().contains(clickPos.x, clickPos.y) || meteor.getMeteorBounds().contains(clickPos2.x, clickPos2.y)){
-                            meteors.removeValue(meteor, true);
-                            meteor.dispose();
                         }
                     }
                 }
@@ -2369,11 +2367,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             sb.end();
             sb.setColor(1f, 1f, 1f, 1f);
         /*shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.YELLOW);
         if(world == 5 && level == 8){
-            shapeRenderer.setColor(Color.YELLOW);
             for(Hawk hawk : hawks) {
                 shapeRenderer.polygon(hawk.getHawkPolygon().getTransformedVertices());
             }
+        }
+        for(Meteor meteor : meteors){
+            shapeRenderer.circle(meteor.getMeteorCircle().x, meteor.getMeteorCircle().y, meteor.getMeteorCircle().radius);
         }
         shapeRenderer.end();*/
     }
@@ -2614,7 +2615,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     case 11:
                         levelBackground = new Texture("level2Background.png");
                         walls.add(new Wall(-822,377, "horizontWall.png"));
-                        hawks.add(new Hawk(500, 200));
+                        hawks.add(new Hawk(500, 200, 400, 300, 600, 2, 200, 500, 17, false));
                         walls.add(new Wall(1300, -200));
                         switches.add(new Obstacle(1800, 300, "wallSwitch.png"));
                         walls.add(new Wall(-350, 500, switches.get(0), 800));
@@ -2765,6 +2766,12 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         break;
                     case 11:
                         levelBackground = new Texture("dino2Back.png");
+                        walls.add(new Wall(500, 400, "stump.png"));
+                        tallDinos.add(new TallDino(750, -200, -50, 200));
+                        hawks.add(new Hawk(1150, 150, 400, 300, 400, 2, 200, 500, 17, false));
+                        walls.add(new Wall(1800, 400, "stump.png"));
+                        tallDinos.add(new TallDino(1250, -200, 2050, 200));
+                        happyCloud = new HappyCloud(2600, 350);
                         break;
                 }
                 break;
@@ -2880,6 +2887,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(330, 1620));
                         bonusQuokkas.add(new BonusQuokka(480, 1795));
                         happyCloud = new HappyCloud(-50, 1645);
+                        break;
+                    case 11:
+                        switches.add(new Obstacle(150, 1600, "wallSwitch.png"));
+                        walls.add(new Wall(-50, 900, "horizontWall.png"));
+                        hawks.add(new Hawk(600, 1300, 400, 300, 400, 2, 200, 500, 17, true));
+                        walls.add(new Wall(93, 1900, "horizontWall.png"));
+                        walls.add(new Wall(688, 1900, switches, 1300, 0, "horizontWall.png"));
+                        happyCloud = new HappyCloud(170, 2173);
                         break;
                 }
                 break;
@@ -3024,6 +3039,9 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         nebulae.add(new Obstacle(2950, 400, "nebula.png"));
                         nebulae.add(new Obstacle(2950, 100, "nebula.png"));
                         break;
+                    case 11:
+                        hawks.add(new Hawk(1150, 150, 400, 300, 400, 2, 200, 500, 17, false));
+                        break;
                 }
                 break;
             case 5:
@@ -3125,7 +3143,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         bonusQuokkas.add(new BonusQuokka(2100, 580));
                         clouds.add(new EvilCloud(2050, 380));
                         walls.add(new Wall(2300, 250, "futureWall.png"));*/
-                        hawks.add(new Hawk(300, 250));
+                        //hawks.add(new Hawk(300, 250));
                         happyCloud = new HappyCloud(2500, 450);
                         break;
                     case 9:
@@ -3340,7 +3358,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 walls.add(new Wall(cam.viewportWidth- 10, i));
 
             }
-
             walls.add(new Wall(93, i - 123, "horizontWall.png"));
             walls.add(new Wall(688, i - 123, "horizontWall.png"));
         }

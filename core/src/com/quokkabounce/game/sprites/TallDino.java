@@ -24,7 +24,7 @@ public class TallDino{
         dir = 1;
         posTallDino = new Vector2(x, y);
         velTallDino = new Vector2(speed, 0);
-        flipped = false;
+        flipped = x > endX;
         tallDinoPolygon = new Polygon(new float[]{230, 2, 141, 350, 152, 406, 228, 476, 229, 504, 211, 540, 173, 567, 159, 580, 125, 592, 101, 593, 45, 574, 30, 559, 17, 518, 10, 468, 3, 441, 4, 370, 25, 321, 91, 176, 112, 71, 105, 17, 109, 2});
     }
 
