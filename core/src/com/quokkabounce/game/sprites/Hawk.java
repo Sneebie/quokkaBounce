@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Hawk {
 
-    private int t, loopTime, firstWidth, headHeight, relativePos, HAWKSIGHT, LOCKDISTANCE, SWITCHDISTANCE, ATTACKDELAY;
+    private int t, loopTime, firstWidth, headHeight, relativePos, HAWKSIGHT, LOCKDISTANCE, SWITCHDISTANCE, ATTACKDELAY, TDIR;
     private boolean alreadySpotted, loopFirst, curSpotted, switchPast, XLOCK;
     private float SPEED, RADIUS, ATTACKSPEED;
 
@@ -22,7 +22,7 @@ public class Hawk {
     private Animation hawkAnimation;
     private Vector2 posHawk, velHawk;
 
-    public Hawk(float x, float y, int hawkSight, int lockDistance, int switchDistance, float speed, float radius, float attackSpeed, int attackDelay, boolean xLock){
+    public Hawk(float x, float y, int hawkSight, int lockDistance, int switchDistance, float speed, float radius, float attackSpeed, int attackDelay, boolean xLock, int tDir, int startT){
         HAWKSIGHT = hawkSight;
         LOCKDISTANCE = lockDistance;
         SWITCHDISTANCE = switchDistance;
@@ -31,8 +31,9 @@ public class Hawk {
         ATTACKSPEED = attackSpeed;
         ATTACKDELAY = attackDelay;
         XLOCK = xLock;
+        TDIR = tDir;
         loopTime = 0;
-        t = 0;
+        t = startT;
         hawkAnimation = new Animation("hawkIdle", "hawk", 11, 0.5f);
         alreadySpotted = false;
         loopFirst = false;
@@ -51,8 +52,8 @@ public class Hawk {
         hawkPolygons[8] = new Polygon(new float[]{35, 154, 24, 135, 124, 52, 128, 38, 104, 7, 187, 7, 155, 43, 159, 55, 255, 132, 261, 153, 162, 95, 158, 99, 166, 116, 165, 132, 157, 142, 139, 142, 124, 130, 123, 114, 129, 102, 121, 92});
         hawkPolygons[9] = hawkPolygons[10] = new Polygon(new float[]{61, 165, 43, 154, 124, 52, 128, 38, 104, 7, 187, 7, 155, 43, 159, 55, 240, 141, 241, 161, 162, 95, 158, 99, 166, 116, 165, 132, 157, 142, 139, 142, 124, 130, 123, 114, 129, 102, 121, 92});
         hawkPolygon = hawkPolygons[0];
-        firstWidth = hawkAnimation.getFrame().getWidth();
-        headHeight = hawkAnimation.getFrame().getHeight();
+        firstWidth = hawkAnimation.getFrames().get(0).getWidth();
+        headHeight = hawkAnimation.getFrames().get(0).getHeight();
     }
 
     public Rectangle getHawkBounds() {
@@ -97,7 +98,7 @@ public class Hawk {
             alreadySpotted = false;
             loopFirst = false;
             for(int i = 0; i < SPEED; i++) {
-                t += 1;
+                t += TDIR;
                 if (t > 360) {
                     t -= 360;
                 }
