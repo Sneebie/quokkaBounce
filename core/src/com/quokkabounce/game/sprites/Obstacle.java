@@ -41,6 +41,9 @@ public class Obstacle {
         else if(textureString == "blackHole.png"){
             obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() * 0.38f);
         }
+        else if(textureString == "portal.png"){
+            obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, 59);
+        }
         else{
             obstacleCircle = new Circle(posObstacle.x + obstacleBounds.getWidth() / 2, posObstacle.y + obstacleBounds.getHeight() / 2, obstacleBounds.getWidth() / 2);
         }

@@ -134,7 +134,12 @@ public class MenuState extends State implements InputProcessor{
             Button button = buttons.get(i);
             sb.draw(button.getTexture(), button.getPosButton().x, button.getPosButton().y);
             sb.draw(numbers.get(i), button.getPosButton().x + button.getTexture().getWidth() / 2 - numbers.get(i).getWidth() / 2, button.getPosButton().y + button.getTexture().getHeight() / 2 - numbers.get(i).getHeight() / 2);
-            sb.draw(collectedQuokkas[i] ? bonusQuokka : greyQuokka, button.getPosButton().x + button.getButtonBounds().getWidth() - bonusQuokka.getWidth(), button.getPosButton().y + button.getButtonBounds().getHeight() / 2 - bonusQuokka.getHeight());
+            if(i == 9 && currentWorld != 1){
+                sb.draw(collectedQuokkas[i] ? bonusQuokka : greyQuokka, button.getPosButton().x + button.getButtonBounds().getWidth()  - bonusQuokka.getWidth() / 2, button.getPosButton().y + button.getButtonBounds().getHeight() / 2 - bonusQuokka.getHeight());
+            }
+            else {
+                sb.draw(collectedQuokkas[i] ? bonusQuokka : greyQuokka, button.getPosButton().x + button.getButtonBounds().getWidth() - bonusQuokka.getWidth(), button.getPosButton().y + button.getButtonBounds().getHeight() / 2 - bonusQuokka.getHeight());
+            }
         }
         if(permaLevel >= 11){
             sb.draw(hawkButton.getTexture(), hawkButton.getPosButton().x, hawkButton.getPosButton().y);
