@@ -18,6 +18,9 @@ public class LaserGun {
     private static final float CENTERY = 30;
     private static final float YREMOVAL = 30;
     private static final float XREMOVAL = 30;
+    private static final int QUOKKAWIDTH = 46;
+    private static final int QUOKKAHEIGHT = 109;
+    private static final float SHOOTMINIMUM = 300;
 
     private Texture gunTexture;
     private TextureRegion gunRegion;
@@ -84,7 +87,14 @@ public class LaserGun {
             angleAdjuster = -90;
         }
         gunAngle = (float) ((Math.atan((posQuokka.y - posGun.y - gunBounds.getWidth() / 2) / (posQuokka.x - posGun.x - gunBounds.getWidth() / 2)) * 180 / Math.PI) + angleAdjuster);
-        if(!alreadyShot) {
+        float gunDistance = (float) Math.sqrt(Math.pow(gunBounds.x + gunBounds.width / 2 - posQuokka.x - QUOKKAWIDTH / 2, 2) + Math.pow(gunBounds.y + gunBounds.height / 2 - posQuokka.y - QUOKKAHEIGHT / 2, 2));
+        if(!alreadyShot && gunDistance > SHOOTMINIMUM) {
+            tempBeam.set(centerPoint.x, centerPoint.y+ gunBounds.getHeight() / 2);
+            gunAngle *= Math.PI / 180;
+            tempPos.x = (float) (Math.cos(gunAngle + ANGLEADJUSTER) * (tempBeam.x - centerPoint.x) - Math.sin(gunAngle + ANGLEADJUSTER) * (tempBeam.y - centerPoint.y) + centerPoint.x) - XREMOVAL;
+            tempPos.y = (float) (Math.sin(gunAngle + ANGLEADJUSTER) * (tempBeam.x - centerPoint.x) + Math.cos(gunAngle + ANGLEADJUSTER) * (tempBeam.y - centerPoint.y) + centerPoint.y) - YREMOVAL;
+            gunAngle *= 180/ Math.PI;
+            myBeam.getPosBeam().set(tempPos);
             velGun.set(Math.round((posQuokka.x - myBeam.getPosBeam().x)), Math.round((posQuokka.y - myBeam.getPosBeam().y))).scl(1/velGun.len());
             velGun.scl(ATTACKSPEED);
             beamAngle = (float) (Math.atan((posQuokka.y - myBeam.getPosBeam().y) / (posQuokka.x - myBeam.getPosBeam().x)) * 180 / Math.PI);
@@ -92,7 +102,9 @@ public class LaserGun {
             alreadyShot = true;
             drawLaser = true;
         }
-        myBeam.move(dt, velGun);
+        if(drawLaser) {
+            myBeam.move(dt, velGun);
+        }
     }
 
     public boolean isDrawLaser() {
@@ -109,12 +121,6 @@ public class LaserGun {
 
     public void resetShot(){
         drawLaser = false;
-        tempBeam.set(centerPoint.x, centerPoint.y+ gunBounds.getHeight() / 2);
-        gunAngle *= Math.PI / 180;
-        tempPos.x = (float) (Math.cos(gunAngle + ANGLEADJUSTER) * (tempBeam.x - centerPoint.x) - Math.sin(gunAngle + ANGLEADJUSTER) * (tempBeam.y - centerPoint.y) + centerPoint.x) - XREMOVAL;
-        tempPos.y = (float) (Math.sin(gunAngle + ANGLEADJUSTER) * (tempBeam.x - centerPoint.x) + Math.cos(gunAngle + ANGLEADJUSTER) * (tempBeam.y - centerPoint.y) + centerPoint.y) - YREMOVAL;
-        gunAngle *= 180/ Math.PI;
-        myBeam.getPosBeam().set(tempPos);
         alreadyShot=false;
     }
 

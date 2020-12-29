@@ -535,7 +535,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     }
                 }
                 for(LaserGun laserGun : laserGuns){ //rotates laser gun towards the quokka, checks if the laser beam hits the quokka, and shoots another beam if the previous one has gone off screen
-                    if(isCollision(laserGun.getMyBeam().getPolygon(), quokka.getQuokkaBounds())){
+                    if(laserGun.isDrawLaser() && isCollision(laserGun.getMyBeam().getPolygon(), quokka.getQuokkaBounds())){
                         respawning = true;
                         gsm.set(new PlayState(gsm, world, level));
                         break;
