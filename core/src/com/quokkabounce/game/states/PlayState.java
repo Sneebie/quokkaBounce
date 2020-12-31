@@ -3026,9 +3026,9 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         bonusQuokkas.add(new BonusQuokka(3030, 400));
                         walls.add(new Wall(3280, -211, switches.get(1), 384, "asteroidBelt.png"));
                         walls.add(new Wall(3280, 384, "asteroidBelt.png"));
-                        portals.add(new Obstacle(3955, 510, "portal.png"));
-                        planets.add(new Obstacle(3930, 260, "greenPlanet.png"));
-                        planets.add(new Obstacle(4580, 260, "greenPlanet.png"));
+                        portals.add(new Obstacle(3955, 500, "portal.png"));
+                        planets.add(new Obstacle(3930, 250, "greenPlanet.png"));
+                        planets.add(new Obstacle(4580, 250, "greenPlanet.png"));
                         walls.add(new Wall(5073, -220, "asteroidBelt.png"));
                         walls.add(new Wall(5073, 375, "asteroidBelt.png"));
                         break;
