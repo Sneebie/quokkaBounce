@@ -25,6 +25,9 @@ public class CompleteState extends State implements InputProcessor {
         else */if(world == 3){
             completeBackground = new Texture("levelCompletes/1.jpg");
         }
+        else if(world == 5 && level == 11){
+            completeBackground = new Texture("winBackground.png");
+        }
         else{
             completeBackground = new Texture("levelCompletes/" + world + ".jpg");
         }

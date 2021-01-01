@@ -1555,7 +1555,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     }
     private void lineAdjust(){
         final float slope = (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x);
-        System.out.println(slope);
         final float perpSlope = slope != 0 ? -1 / slope : -1;
         Vector2 perpPos = new Vector2(1, perpSlope).nor();
         Vector2 perpPos2 = new Vector2(1, -perpSlope).nor();
@@ -1620,9 +1619,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         }
         else if(slope < -0.7){
             if(doIntersect(quokka.getBottomRight(), quokka.getUpperRight(), clickPos2d, clickPos2d2)){
-                System.out.println("HERE1");
                 if(quokka.getVelocity().y <= 0 && (doIntersect(quokka.getUpperLeft(), quokka.getUpperRight(), clickPos2d, clickPos2d2) || doIntersect(quokka.getBottomLeft(), quokka.getUpperLeft(), clickPos2d, clickPos2d2))) {
-                    System.out.println("HERE");
                     while (quokkaLineHit()) {
                         clickPos.set(clickPos.x, clickPos.y - 1, 0);
                         clickPos2.set(clickPos2.x, clickPos2.y - 1, 0);
