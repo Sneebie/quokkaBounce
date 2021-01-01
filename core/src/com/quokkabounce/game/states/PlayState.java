@@ -2686,7 +2686,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     case 2:
                         levelBackground = new Texture("dino2Back.png");
                         walls.add(new Wall(450, 380, "stump.png"));
-                        switches.add(new Obstacle(660, 120, "wallSwitch.png"));
+                        switches.add(new Obstacle(660, 120, "stumpSwitch.png"));
                         bonusQuokkas.add(new BonusQuokka(750, -30));
                         walls.add(new Wall(450, -445, switches, -215, "stump.png"));
                         meteors.add(new Meteor(690, 780, 0, 0));
@@ -2735,7 +2735,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         break;
                     case 6:
                         levelBackground = new Texture("dino2Back.png");
-                        switches.add(new Obstacle(400, 50,"wallSwitch.png"));
+                        switches.add(new Obstacle(400, 50,"stumpSwitch.png"));
                         bonusQuokkas.add(new BonusQuokka(525, 120));
                         walls.add(new Wall(200, 350, "horizontStump.png"));
                         walls.add(new Wall(672, 472, switches, 1000, "stump.png"));
@@ -2816,7 +2816,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(675, 450, "horizontWall.png"));
                         walls.add(new Wall(93, 1000, "horizontWall.png"));
                         walls.add(new Wall(565, 1123));
-                        switches.add(new Obstacle(798, 1868, "wallSwitch.png"));
+                        switches.add(new Obstacle(798, 1868, "stumpSwitch.png"));
                         walls.add(new Wall(93, 1718, switches, -718, 0,"horizontWall.png"));
                         walls.add(new Wall(675, 2200, "horizontWall.png"));
                         walls.add(new Wall(552, 2200, switches, -400, 1));
@@ -2914,7 +2914,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(120, 1845);
                         break;
                     case 11:
-                        switches.add(new Obstacle(250, 1200, "wallSwitch.png"));
+                        switches.add(new Obstacle(250, 1200, "stumpSwitch.png"));
                         //walls.add(new Wall(-200, 1150, "horizontWall.png"));
                         hawks.add(new Hawk(125, 150, 5000, 300, 650, 2, 200, 400, 17, 550, 1, 0));
                         walls.add(new Wall(-200, 1700, "horizontWall.png"));
@@ -3183,7 +3183,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(831, 437, "horizontFutureWall.png"));
                         bonusQuokkas.add(new BonusQuokka(500, 150));
                         portals.add(new Obstacle(600, 550, "portal.png"));
-                        switches.add(new Obstacle(4000, 100, "wallSwitch.png"));
+                        switches.add(new Obstacle(4000, 100, "futureSwitch.png"));
                         walls.add(new Wall(770,560, switches, 900, "futureWall.png"));
                         walls.add(new Wall(770, -158, "futureWall.png"));
                         portals.add(new Obstacle(5000, 550, "portal.png"));
@@ -3238,12 +3238,12 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(3871, -220, "futureWall.png"));
                         walls.add(new Wall(3871,375, "futureWall.png"));
                         portals.add(new Obstacle(4000, 350, "portal.png"));
-                        switches.add(new Obstacle(4480, 275, "wallSwitch.png"));
+                        switches.add(new Obstacle(4480, 275, "futureSwitch.png"));
                         walls.add(new Wall(4300, 610, switches.get(0), 225, "futureWall.png"));
                         walls.add(new Wall(4300, -370, "futureWall.png"));
                         hawks.add(new Hawk(5300, 500, 5000, 200, 475, 3, 200, 750, 15, 415, -1,0, 450, 20));
                         walls.add(new Wall(6050, -125, "futureWall.png"));
-                        switches.add(new Obstacle(7380, 275, "wallSwitch.png"));
+                        switches.add(new Obstacle(7380, 275, "futureSwitch.png"));
                         walls.add(new Wall(7200, 610, switches.get(1), 225, "futureWall.png"));
                         walls.add(new Wall(7200, -370, "futureWall.png"));
                         walls.add(new Wall(8950, -125, "futureWall.png"));
