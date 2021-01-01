@@ -21,7 +21,7 @@ public class LaserBeam {
         posBeam = new Vector2(x, y);
 
         beamBounds = new Rectangle(posBeam.x, posBeam.y, beamTexture.getWidth(), beamTexture.getHeight());
-        polygon = new Polygon(new float[]{0,0,beamBounds.width,0,beamBounds.width,beamBounds.height,0,beamBounds.height});
+        polygon = new Polygon(new float[]{1,8, 9, 2, 100, 2, 108, 8, 108, 14, 101, 20, 9, 20, 1, 14});
         polygon.setOrigin(beamBounds.width/2, beamBounds.height/2);
     }
 

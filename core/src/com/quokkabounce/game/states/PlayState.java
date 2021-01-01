@@ -2395,6 +2395,9 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         for(Obstacle portal : portals){
             shapeRenderer.circle(portal.getObstacleCircle().x, portal.getObstacleCircle().y, portal.getObstacleCircle().radius);
         }
+        for(LaserGun laserGun : laserGuns){
+            shapeRenderer.polygon(laserGun.getMyBeam().getPolygon().getTransformedVertices());
+        }
         shapeRenderer.end();*/
     }
 
