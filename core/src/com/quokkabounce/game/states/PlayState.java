@@ -52,8 +52,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     private static final float TIMELIMIT = 0.025f;
     private static final float TIMEMINIMUM = 0.0011f;
     private static final float LINEWIDTH = 2.5f;
-    private static final float BOUNCEADJUST = 0;
-    private static final float TIMEADJUST = 1;
 
     private Quokka quokka; //initializes variables and arrays
     private Button backButton, pauseButton;
@@ -62,7 +60,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     private Vector3 clickPos, clickPos2, velocityTemp, velocityTemp2, normal, clickPosTemp, planetDistance, gradientVector, touchInput, towerVel;
     private ShapeRenderer shapeRenderer;
     private HappyCloud happyCloud;
-    private float currentDT, iniPot, shortestDistance;
+    private float currentDT, iniPot, shortestDistance, TIMEADJUST;
     private int layer, finalLayer, pointCounter, world;
     private boolean shouldFall, clickedWhileSpawning, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, respawning, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, camUpdate, justWall, justTouchUp, justTouchedUp, hasBounced, portalContact;
 
@@ -2211,7 +2209,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             yesLine = true;
             for(int i = 750; i <= 1250; i+=50) {
                 if(yesLine) {
-                    shapeRenderer.rectLine(i, (float)(-0.104*i + 400), i + 50, (float)(-0.104*(i+50) + 400), LINEWIDTH);
+                    shapeRenderer.rectLine(i, (float)(0.025*i + 100), i + 50, (float)(0.025*(i+50) + 100), LINEWIDTH);
                 }
                 yesLine = !yesLine;
             }
@@ -2398,6 +2396,10 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         for(LaserGun laserGun : laserGuns){
             shapeRenderer.polygon(laserGun.getMyBeam().getPolygon().getTransformedVertices());
         }
+        for(EvilCloud evilCloud : clouds){
+            shapeRenderer.polygon(evilCloud.getCloudPoly().getTransformedVertices());
+        }
+        shapeRenderer.polygon(happyCloud.getCloudPoly().getTransformedVertices());
         shapeRenderer.end();*/
     }
 
@@ -2486,6 +2488,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     }
 
     private void levelInit(int world, int level){//initializes the level in the given world, sets the background and adds all of the correct obstacles to their obstacle array at the proper coordinates
+        TIMEADJUST = ((world == 4) ? 0 : 1);
         if(world == 1) {
             if(level < 11) {
                 walls.add(new Wall(-1000, -220));
@@ -2537,16 +2540,36 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     case 2:
                         levelBackground = new Texture("level2Background.png");
                         walls.add(new Wall(500,-180, "wall.png"));
-                        happyCloud = new HappyCloud(1710, 100);
+                        happyCloud = new HappyCloud(1310, 250);
                         bonusQuokkas.add(new BonusQuokka(20,200));
                         break;
                     case 3:
+                        levelBackground = new Texture("level2Background.png");
+                        walls.add(new Wall(350, 300, "wall.png"));
+                        bonusQuokkas.add(new BonusQuokka(500, 400));
+                        walls.add(new Wall(750,300, "wall.png"));
+                        happyCloud = new HappyCloud(1250, 200);
+                        break;
+                    case 4:
+                        levelBackground = new Texture("level1Background.png");
+                        walls.add(new Wall(300,600, "wall.png"));
+                        walls.add(new Wall(300, -280, "wall.png"));
+                        walls.add(new Wall(700, 700, "wall.png"));
+                        walls.add(new Wall(700, -180, "wall.png"));
+                        walls.add(new Wall(1100, 500, "wall.png"));
+                        walls.add(new Wall(1100, -380, "wall.png"));
+                        happyCloud = new HappyCloud(1300, 5);
+                        walls.add(new Wall(1700, 500, "wall.png"));
+                        walls.add(new Wall(1700, -380, "wall.png"));
+                        bonusQuokkas.add(new BonusQuokka(1900, 300));
+                        break;
+                    case 5:
                         levelBackground = new Texture("level1Background.png");
                         clouds.add(new EvilCloud(350, 400));
                         bonusQuokkas.add(new BonusQuokka(350, 50));
                         happyCloud = new HappyCloud(850, 350);
                         break;
-                    case 4:
+                    case 6:
                         levelBackground = new Texture("level2Background.png");
                         walls.add(new Wall(350, -80, "wall.png"));
                         walls.add(new Wall(850, -230, "wall.png"));
@@ -2554,7 +2577,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         bonusQuokkas.add(new BonusQuokka(650, 50));
                         happyCloud = new HappyCloud(1200, 10);
                         break;
-                    case 5:
+                    case 7:
                         levelBackground = new Texture("level1Background.png");
                         clouds.add(new EvilCloud(200, 300));
                         walls.add(new Wall(900, 450));
@@ -2562,7 +2585,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         bonusQuokkas.add(new BonusQuokka(1825, 120));
                         happyCloud = new HappyCloud(1730,350);
                         break;
-                    case 6:
+                    case 8:
                         levelBackground = new Texture("level1Background.png");
                         walls.add(new Wall(300,500, "wall.png"));
                         walls.add(new Wall(300, -380, "wall.png"));
@@ -2578,7 +2601,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         hawks.add(new Hawk(400,150));
                         happyCloud = new HappyCloud(850, 300);
                         break;*/
-                    case 7:
+                    case 9:
                         levelBackground = new Texture("level2Background.png");
                         clouds.add(new EvilCloud(200, 50));
                         walls.add(new Wall (750, -130));
@@ -2605,14 +2628,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(1650, 150);
                         break;
                         */
-                    case 8:
-                        levelBackground = new Texture("level2Background.png");
-                        walls.add(new Wall(350, 300, "wall.png"));
-                        bonusQuokkas.add(new BonusQuokka(500, 400));
-                        walls.add(new Wall(750,300, "wall.png"));
-                        happyCloud = new HappyCloud(1250, 200);
-                        break;
-                    case 9:
+                    case 10:
                         levelBackground = new Texture("level1Background.png");
                         clouds.add(new EvilCloud(250, 200));
                         bonusQuokkas.add(new BonusQuokka(650, 10));
@@ -2620,19 +2636,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         clouds.add(new EvilCloud(1050, 300));
                         walls.add(new Wall(1500, 400));
                         happyCloud = new HappyCloud(1700, 500);
-                        break;
-                    case 10:
-                        levelBackground = new Texture("level1Background.png");
-                        walls.add(new Wall(300,600, "wall.png"));
-                        walls.add(new Wall(300, -280, "wall.png"));
-                        walls.add(new Wall(700, 700, "wall.png"));
-                        walls.add(new Wall(700, -180, "wall.png"));
-                        walls.add(new Wall(1100, 500, "wall.png"));
-                        walls.add(new Wall(1100, -380, "wall.png"));
-                        happyCloud = new HappyCloud(1300, 5);
-                        walls.add(new Wall(1700, 500, "wall.png"));
-                        walls.add(new Wall(1700, -380, "wall.png"));
-                        bonusQuokkas.add(new BonusQuokka(1900, 300));
                         break;
                     case 11:
                         levelBackground = new Texture("level2Background.png");
@@ -2708,15 +2711,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(1750, 300);
                         break;
                     case 4:
-                        levelBackground = new Texture("dino2Back.png");
-                        walls.add(new Wall(350, 500, "stump.png"));
-                        tallDinos.add(new TallDino(923, -195, -223, 400));
-                        bonusQuokkas.add(new BonusQuokka(0, 50));
-                        walls.add(new Wall(1000, 500, "stump.png"));
-                        tallDinos.add(new TallDino(1573, -195, 427, 400));
-                        happyCloud = new HappyCloud(1000, 0);
-                        break;
-                    case 5:
                         levelBackground = new Texture("dino1Back.png");
                         meteors.add(new Meteor(500, 780, 0, 0));
                         meteors.add(new Meteor(675, 780, 0, 0));
@@ -2736,7 +2730,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         meteors.add(new Meteor(3125, 780, 0, 0));
                         bonusQuokkas.add(new BonusQuokka(3300, 50));
                         break;
-                    case 6:
+                    case 5:
                         levelBackground = new Texture("dino2Back.png");
                         switches.add(new Obstacle(400, 50,"stumpSwitch.png"));
                         bonusQuokkas.add(new BonusQuokka(525, 120));
@@ -2746,7 +2740,25 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         meteors.add(new Meteor(915, 780, 0, 0));
                         happyCloud = new HappyCloud(1200, 150);
                         break;
+                    case 6:
+                        levelBackground = new Texture("dino1Back.png");
+                        walls.add(new Wall(330, -200, "stump.png"));
+                        meteors.add(new Meteor(600, 880, 0, 0));
+                        tallDinos.add(new TallDino(600, -150, 1000, 200));
+                        bonusQuokkas.add(new BonusQuokka(630, 50));
+                        happyCloud = new HappyCloud(1350, 50);
+                        break;
                     case 7:
+                        levelBackground = new Texture("dino1Back.png");
+                        clouds.add(new EvilCloud(150, 50));
+                        meteors.add(new Meteor(450, 780, 0, 0));
+                        bonusQuokkas.add(new BonusQuokka(500, 450));
+                        walls.add(new Wall(650, 350, "stump.png"));
+                        tallDinos.add(new TallDino(450, -250, 1200, 250));
+                        happyCloud = new HappyCloud(1450, 50);
+                        tallDinos.add(new TallDino(1750, -250, 2000, 250));
+                        break;
+                    case 8:
                         levelBackground = new Texture("dino1Back.png");
                         walls.add(new Wall(200, -100, "stump.png"));
                         tallDinos.add(new TallDino(350, -100, 1350, 300));
@@ -2756,7 +2768,16 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         bonusQuokkas.add(new BonusQuokka(1420, 550));
                         happyCloud = new HappyCloud(1600, 100);
                         break;
-                    case 8:
+                    case 9:
+                        levelBackground = new Texture("dino2Back.png");
+                        walls.add(new Wall(350, 500, "stump.png"));
+                        tallDinos.add(new TallDino(923, -195, -223, 400));
+                        bonusQuokkas.add(new BonusQuokka(0, 50));
+                        walls.add(new Wall(1000, 500, "stump.png"));
+                        tallDinos.add(new TallDino(1573, -195, 427, 400));
+                        happyCloud = new HappyCloud(1000, 0);
+                        break;
+                    case 10:
                         levelBackground = new Texture("dino2Back.png");
                         meteors.add(new Meteor(400, 880, 0, 0));
                         meteors.add(new Meteor(600, 880, 0, 0));
@@ -2770,24 +2791,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         tallDinos.add(new TallDino(1528, -250, 1960, 150));
                         bonusQuokkas.add(new BonusQuokka(1878, 80));
                         happyCloud = new HappyCloud(2192, 150);
-                        break;
-                    case 9:
-                        levelBackground = new Texture("dino1Back.png");
-                        clouds.add(new EvilCloud(150, 50));
-                        meteors.add(new Meteor(450, 780, 0, 0));
-                        bonusQuokkas.add(new BonusQuokka(500, 450));
-                        walls.add(new Wall(650, 350, "stump.png"));
-                        tallDinos.add(new TallDino(450, -250, 1200, 250));
-                        happyCloud = new HappyCloud(1450, 50);
-                        tallDinos.add(new TallDino(1750, -250, 2000, 250));
-                        break;
-                    case 10:
-                        levelBackground = new Texture("dino1Back.png");
-                        walls.add(new Wall(330, -200, "stump.png"));
-                        meteors.add(new Meteor(600, 880, 0, 0));
-                        tallDinos.add(new TallDino(600, -150, 1000, 200));
-                        bonusQuokkas.add(new BonusQuokka(630, 50));
-                        happyCloud = new HappyCloud(1350, 50);
                         break;
                     case 11:
                         levelBackground = new Texture("dino2Back.png");
@@ -2809,13 +2812,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(300, 1650);
                         break;
                     case 2:
-                        arrows.add(new Arrow(50, 850));
-                        arrows.add(new Arrow(50, 1250));
-                        bonusQuokkas.add(new BonusQuokka(300, 1250));
-                        clouds.add(new EvilCloud(250, 1500));
-                        happyCloud = new HappyCloud(700,1800);
-                        break;
-                    case 3:
                         walls.add(new Wall(675, 450, "horizontWall.png"));
                         walls.add(new Wall(93, 1000, "horizontWall.png"));
                         walls.add(new Wall(565, 1123));
@@ -2826,6 +2822,13 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         bonusQuokkas.add(new BonusQuokka(376, 1500));
                         happyCloud = new HappyCloud(820, 2373);
                         break;
+                    case 3:
+                        arrows.add(new Arrow(50, 850));
+                        arrows.add(new Arrow(50, 1250));
+                        bonusQuokkas.add(new BonusQuokka(300, 1250));
+                        clouds.add(new EvilCloud(250, 1500));
+                        happyCloud = new HappyCloud(700,1800);
+                        break;
                     case 4:
                         walls.add(new Wall(-50, 850, "horizontWall.png"));
                         arrows.add(new Arrow (cam.viewportWidth- 100, 1250));
@@ -2835,20 +2838,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(700, 2250);
                         break;
                     case 5:
-                        clouds.add(new EvilCloud(500, 1000));
-                        walls.add(new Wall(595, 1200));
-                        walls.add(new Wall(595, 1795));
-                        walls.add(new Wall(718, 2267, "horizontWall.png"));
-                        clouds.add(new EvilCloud(750, 1323));
-                        portals.add(new Obstacle(900, 2067, "portal.png"));
-                        bonusQuokkas.add(new BonusQuokka(900, 1870));
-                        walls.add(new Wall(595, 2267));
-                        walls.add(new Wall(595, 2862));
-                        walls.add(new Wall(718, 3334, "horizontWall.png"));
-                        portals.add(new Obstacle(400, 2067, "portal.png"));
-                        portals.add(new Obstacle(400, 2610, "portal.png"));
-                        portals.add(new Obstacle(720, 2610, "portal.png"));
-                        happyCloud = new HappyCloud(850, 2860);
+                        arrows.add(new Arrow(0, 1000));
+                        arrows.add(new Arrow(0, 300));
+                        walls.add(new Wall(0, 1300, "horizontWall.png"));
+                        walls.add(new Wall(850, 1000));
+                        bonusQuokkas.add(new BonusQuokka(1050, 1050));
+                        walls.add(new Wall(973, 1300, "horizontWall.png"));
+                        clouds.add(new EvilCloud(300, 1617));
+                        happyCloud = new HappyCloud(850, 1768);
                         break;
                     case 6:
                         for(int i = 0; i < 3; i++) {
@@ -2863,14 +2860,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(490, 1300);
                         break;
                     case 7:
-                        arrows.add(new Arrow(0, 1000));
-                        arrows.add(new Arrow(0, 300));
-                        walls.add(new Wall(0, 1300, "horizontWall.png"));
-                        walls.add(new Wall(850, 1000));
-                        bonusQuokkas.add(new BonusQuokka(1050, 1050));
-                        walls.add(new Wall(973, 1300, "horizontWall.png"));
-                        clouds.add(new EvilCloud(300, 1617));
-                        happyCloud = new HappyCloud(850, 1768);
+                        walls.add(new Wall(-342, 875, "horizontWall.png"));
+                        walls.add(new Wall(253, 875, "horizontWall.png"));
+                        arrows.add(new Arrow(-50, 900));
+                        walls.add(new Wall(848, 875));
+                        arrows.add(new Arrow(1180, 1270));
+                        walls.add(new Wall(490, 1570));
+                        bonusQuokkas.add(new BonusQuokka(300, 1130));
+                        happyCloud = new HappyCloud(120, 1845);
                         break;
                     case 8:
                         walls.add(new Wall(678, 0));
@@ -2907,14 +2904,20 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(223, 2843);
                         break;
                     case 10:
-                        walls.add(new Wall(-342, 875, "horizontWall.png"));
-                        walls.add(new Wall(253, 875, "horizontWall.png"));
-                        arrows.add(new Arrow(-50, 900));
-                        walls.add(new Wall(848, 875));
-                        arrows.add(new Arrow(1180, 1270));
-                        walls.add(new Wall(490, 1570));
-                        bonusQuokkas.add(new BonusQuokka(300, 1130));
-                        happyCloud = new HappyCloud(120, 1845);
+                        clouds.add(new EvilCloud(500, 1000));
+                        walls.add(new Wall(595, 1200));
+                        walls.add(new Wall(595, 1795));
+                        walls.add(new Wall(718, 2267, "horizontWall.png"));
+                        clouds.add(new EvilCloud(750, 1323));
+                        portals.add(new Obstacle(900, 2067, "portal.png"));
+                        bonusQuokkas.add(new BonusQuokka(900, 1870));
+                        walls.add(new Wall(595, 2267));
+                        walls.add(new Wall(595, 2862));
+                        walls.add(new Wall(718, 3334, "horizontWall.png"));
+                        portals.add(new Obstacle(400, 2067, "portal.png"));
+                        portals.add(new Obstacle(400, 2610, "portal.png"));
+                        portals.add(new Obstacle(720, 2610, "portal.png"));
+                        happyCloud = new HappyCloud(850, 2860);
                         break;
                     case 11:
                         switches.add(new Obstacle(250, 1200, "stumpSwitch.png"));
@@ -2967,6 +2970,30 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(2050, 250);
                         break;
                     case 4:
+                        nebulae.add(new Obstacle(300, 350, "nebula.png"));
+                        clouds.add(new EvilCloud(500, 50));
+                        planets.add(new Obstacle(1200, 20, "greenPlanet.png"));
+                        blackHoles.add(new Obstacle(1200, 500, "blackHole.png"));
+                        nebulae.add(new Obstacle(1750, 300, "nebula.png"));
+                        happyCloud = new HappyCloud(2300, 350);
+                        bonusQuokkas.add(new BonusQuokka(950, 70));
+                        planets.add(new Obstacle(2700, 500, "greenPlanet.png"));
+                        planets.add(new Obstacle(2700, 30, "greenPlanet.png"));
+                        nebulae.add(new Obstacle(2950, 400, "nebula.png"));
+                        nebulae.add(new Obstacle(2950, 100, "nebula.png"));
+                        break;
+                    case 5:
+                        clouds.add(new EvilCloud(300, 20));
+                        clouds.add(new EvilCloud(600, 550));
+                        clouds.add(new EvilCloud(900, 30));
+                        clouds.add(new EvilCloud(1200, 343));
+                        bonusQuokkas.add(new BonusQuokka(1275, 60));
+                        clouds.add(new EvilCloud(1500, 30));
+                        clouds.add(new EvilCloud(1800, 560));
+                        nebulae.add(new Obstacle(2100, 256, "nebula.png"));
+                        happyCloud = new HappyCloud(2450, 308);
+                        break;
+                    case 6:
                         blackHoles.add(new Obstacle(300, 500, "blackHole.png"));
                         blackHoles.add(new Obstacle(725, 30, "blackHole.png"));
                         nebulae.add(new Obstacle(1150, 320, "nebula.png"));
@@ -2980,7 +3007,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         nebulae.add(new Obstacle(3775, 50, "nebula.png"));
                         nebulae.add(new Obstacle(3975, 350, "nebula.png"));
                         break;
-                    case 5:
+                    case 7:
                         planets.add(new Obstacle(350, 400, "greenPlanet.png"));
                         drones.add(new Drone(750, 550));
                         planets.add(new Obstacle(1000, 30, "greenPlanet.png"));
@@ -2992,7 +3019,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         planets.add(new Obstacle(3400, 500, "greenPlanet.png"));
                         planets.add(new Obstacle(3400, 30, "greenPlanet.png"));
                         break;
-                    case 6:
+                    case 8:
                         nebulae.add(new Obstacle(250, 300, "nebula.png"));
                         switches.add(new Obstacle(900, 500, "asteroidSwitch.png"));
                         nebulae.add(new Obstacle(850, 125, "nebula.png"));
@@ -3009,7 +3036,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         blackHoles.add(new Obstacle(3600, 500, "blackHole.png"));
                         blackHoles.add(new Obstacle(3600, 50, "blackHole.png"));
                         break;
-                    case 7:
+                    case 9:
                         planets.add(new Obstacle(350, 250, "greenPlanet.png"));
                         portals.add(new Obstacle(375, 500, "portal.png"));
                         planets.add(new Obstacle(900, 50, "greenPlanet.png"));
@@ -3032,7 +3059,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(5073, -220, "asteroidBelt.png"));
                         walls.add(new Wall(5073, 375, "asteroidBelt.png"));
                         break;
-                    case 8:
+                    case 10:
                         nebulae.add(new Obstacle(350, 500, "nebula.png"));
                         planets.add(new Obstacle(800, 300, "greenPlanet.png"));
                         laserGuns.add(new LaserGun(820, 540));
@@ -3043,30 +3070,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(2220, 300);
                         planets.add(new Obstacle(2490, 500, "greenPlanet.png"));
                         planets.add(new Obstacle(2490, 30, "greenPlanet.png"));
-                        break;
-                    case 9:
-                        clouds.add(new EvilCloud(300, 20));
-                        clouds.add(new EvilCloud(600, 550));
-                        clouds.add(new EvilCloud(900, 30));
-                        clouds.add(new EvilCloud(1200, 343));
-                        bonusQuokkas.add(new BonusQuokka(1275, 60));
-                        clouds.add(new EvilCloud(1500, 30));
-                        clouds.add(new EvilCloud(1800, 560));
-                        nebulae.add(new Obstacle(2100, 256, "nebula.png"));
-                        happyCloud = new HappyCloud(2450, 308);
-                        break;
-                    case 10:
-                        nebulae.add(new Obstacle(300, 350, "nebula.png"));
-                        clouds.add(new EvilCloud(500, 50));
-                        planets.add(new Obstacle(1200, 20, "greenPlanet.png"));
-                        blackHoles.add(new Obstacle(1200, 500, "blackHole.png"));
-                        nebulae.add(new Obstacle(1750, 300, "nebula.png"));
-                        happyCloud = new HappyCloud(2300, 350);
-                        bonusQuokkas.add(new BonusQuokka(950, 70));
-                        planets.add(new Obstacle(2700, 500, "greenPlanet.png"));
-                        planets.add(new Obstacle(2700, 30, "greenPlanet.png"));
-                        nebulae.add(new Obstacle(2950, 400, "nebula.png"));
-                        nebulae.add(new Obstacle(2950, 100, "nebula.png"));
                         break;
                     case 11:
                         planets.add(new Obstacle(200, 500, "greenPlanet.png"));
@@ -3106,6 +3109,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         happyCloud = new HappyCloud(1650, 50);
                         break;
                     case 3:
+                        walls.add(new Wall(200, -130, "futureWall.png"));
+                        bonusQuokkas.add(new BonusQuokka(600, 200));
+                        laserGuns.add(new LaserGun(950, 550));
+                        laserGuns.add(new LaserGun(1250, 0));
+                        walls.add(new Wall(1750,300, "futureWall.png"));
+                        happyCloud = new HappyCloud(2200, 500);
+                        break;
+                    case 4:
                         drones.add(new Drone(400, 600));
                         walls.add(new Wall(652, 350, "futureWall.png"));
                         walls.add(new Wall(950, -150, "futureWall.png"));
@@ -3115,60 +3126,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         clouds.add(new EvilCloud(1750, 250));
                         happyCloud = new HappyCloud(1950, 20);
                         break;
-                    case 4:
-                        walls.add(new Wall(200, -130, "futureWall.png"));
-                        bonusQuokkas.add(new BonusQuokka(600, 200));
-                        laserGuns.add(new LaserGun(950, 550));
-                        laserGuns.add(new LaserGun(1100, 0));
-                        happyCloud = new HappyCloud(1050, 250);
-                        break;
                     case 5:
-                        walls.add(new Wall(0, 427, "horizontFutureWall.png"));
-                        walls.add(new Wall(-595, 427, "horizontFutureWall.png"));
-                        portals.add(new Obstacle(781, 600, "portal.png"));
-                        portals.add(new Obstacle(-500, 266, "portal.png"));
-                        portals.add(new Obstacle(331, 266, "portal.png"));
-                        walls.add(new Wall(-718, -220, "futureWall.png"));
-                        walls.add(new Wall(-718, 375, "futureWall.png"));
-                        walls.add(new Wall(595, -45, "futureWall.png"));
-                        clouds.add(new EvilCloud(751, 350));
-                        clouds.add(new EvilCloud(1250, 400));
-                        bonusQuokkas.add(new BonusQuokka(1100, 400));
-                        portals.add(new Obstacle(1050, 175, "portal.png"));
-                        portals.add(new Obstacle(1200, 600, "portal.png"));
-                        clouds.add(new EvilCloud(1850, 595));
-                        walls.add(new Wall(2100, 0, "futureWall.png"));
-                        portals.add(new Obstacle(2243, 350, "portal.png"));
-                        happyCloud = new HappyCloud(2483, 100);
-                        break;
-                    case 6:
-                        walls.add(new Wall(660, 250, "futureWall.png"));
-                        laserGuns.add(new LaserGun(450, 500));
-                        portals.add(new Obstacle(800, 600, "portal.png"));
-                        walls.add(new Wall(990, -211, "futureWall.png"));
-                        walls.add(new Wall(990, 384, "futureWall.png"));
-                        portals.add(new Obstacle(1140, 50, "portal.png"));
-                        drones.add(new Drone(1800, 650));
-                        walls.add(new Wall(2050, -100, "futureWall.png"));
-                        bonusQuokkas.add(new BonusQuokka(2250, 50));
-                        clouds.add(new EvilCloud(2700, 550));
-                        walls.add(new Wall(3200, -50, "futureWall.png"));
-                        happyCloud = new HappyCloud(3400, 50);
-                        break;
-                    case 7:
-                        drones.add(new Drone(-250, 450));
-                        clouds.add(new EvilCloud(250, 500));
-                        portals.add(new Obstacle(500, 250, "portal.png"));
-                        clouds.add(new EvilCloud(450, 0));
-                        bonusQuokkas.add(new BonusQuokka(770, 250));
-                        portals.add(new Obstacle(600, 550, "portal.png"));
-                        walls.add(new Wall(1020, -95, "futureWall.png"));
-                        drones.add(new Drone(1170, 50));
-                        clouds.add(new EvilCloud(1470, 550));
-                        clouds.add(new EvilCloud(1720, 150));
-                        happyCloud = new HappyCloud(2190, 0);
-                        break;
-                    case 8:
                         /*walls.add(new Wall(150, 350, "futureWall.png"));
                         portals.add(new Obstacle(300, 600, "portal.png"));
                         walls.add(new Wall(475, -175, "futureWall.png"));
@@ -3200,6 +3158,52 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         clouds.add(new EvilCloud(4200, 0));
                         walls.add(new Wall(4600, 560, switches, 900, "futureWall.png"));
                         happyCloud = new HappyCloud(1000, 150);
+                        break;
+                    case 6:
+                        walls.add(new Wall(0, 427, "horizontFutureWall.png"));
+                        walls.add(new Wall(-595, 427, "horizontFutureWall.png"));
+                        portals.add(new Obstacle(781, 600, "portal.png"));
+                        portals.add(new Obstacle(-500, 266, "portal.png"));
+                        portals.add(new Obstacle(331, 266, "portal.png"));
+                        walls.add(new Wall(-718, -220, "futureWall.png"));
+                        walls.add(new Wall(-718, 375, "futureWall.png"));
+                        walls.add(new Wall(595, -45, "futureWall.png"));
+                        clouds.add(new EvilCloud(751, 350));
+                        clouds.add(new EvilCloud(1250, 400));
+                        bonusQuokkas.add(new BonusQuokka(1100, 400));
+                        portals.add(new Obstacle(1050, 175, "portal.png"));
+                        portals.add(new Obstacle(1200, 600, "portal.png"));
+                        clouds.add(new EvilCloud(1850, 595));
+                        walls.add(new Wall(2100, 0, "futureWall.png"));
+                        portals.add(new Obstacle(2243, 350, "portal.png"));
+                        happyCloud = new HappyCloud(2483, 100);
+                        break;
+                    case 7:
+                        drones.add(new Drone(-250, 450));
+                        clouds.add(new EvilCloud(250, 500));
+                        portals.add(new Obstacle(500, 250, "portal.png"));
+                        clouds.add(new EvilCloud(450, 0));
+                        bonusQuokkas.add(new BonusQuokka(770, 250));
+                        portals.add(new Obstacle(600, 550, "portal.png"));
+                        walls.add(new Wall(1020, -95, "futureWall.png"));
+                        drones.add(new Drone(1170, 50));
+                        clouds.add(new EvilCloud(1470, 550));
+                        clouds.add(new EvilCloud(1720, 150));
+                        happyCloud = new HappyCloud(2190, 0);
+                        break;
+                    case 8:
+                        walls.add(new Wall(660, 250, "futureWall.png"));
+                        laserGuns.add(new LaserGun(450, 500));
+                        portals.add(new Obstacle(800, 600, "portal.png"));
+                        walls.add(new Wall(990, -211, "futureWall.png"));
+                        walls.add(new Wall(990, 384, "futureWall.png"));
+                        portals.add(new Obstacle(1140, 50, "portal.png"));
+                        drones.add(new Drone(1900, 600));
+                        walls.add(new Wall(2050, -100, "futureWall.png"));
+                        bonusQuokkas.add(new BonusQuokka(2250, 50));
+                        clouds.add(new EvilCloud(2700, 550));
+                        walls.add(new Wall(3200, -50, "futureWall.png"));
+                        happyCloud = new HappyCloud(3400, 50);
                         break;
                     case 9:
                         drones.add(new Drone(150, 10));
