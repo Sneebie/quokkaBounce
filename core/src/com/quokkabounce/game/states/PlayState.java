@@ -3199,7 +3199,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(990, -211, "futureWall.png"));
                         walls.add(new Wall(990, 384, "futureWall.png"));
                         portals.add(new Obstacle(1140, 50, "portal.png"));
-                        drones.add(new Drone(1900, 600));
+                        drones.add(new Drone(1800, 650));
                         walls.add(new Wall(2050, -100, "futureWall.png"));
                         bonusQuokkas.add(new BonusQuokka(2250, 50));
                         clouds.add(new EvilCloud(2700, 550));
@@ -3246,9 +3246,9 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(3871, -220, "futureWall.png"));
                         walls.add(new Wall(3871,375, "futureWall.png"));
                         portals.add(new Obstacle(4000, 350, "portal.png"));
-                        switches.add(new Obstacle(4480, 275, "futureSwitch.png"));
-                        walls.add(new Wall(4300, 610, switches.get(0), 225, "futureWall.png"));
-                        walls.add(new Wall(4300, -370, "futureWall.png"));
+                        switches.add(new Obstacle(4330, 275, "futureSwitch.png"));
+                        walls.add(new Wall(4150, 610, switches.get(0), 225, "futureWall.png"));
+                        walls.add(new Wall(4150, -370, "futureWall.png"));
                         hawks.add(new Hawk(5300, 500, 5000, 200, 475, 3, 200, 750, 15, 415, -1,0, 450, 20));
                         walls.add(new Wall(6050, -125, "futureWall.png"));
                         switches.add(new Obstacle(7380, 275, "futureSwitch.png"));
