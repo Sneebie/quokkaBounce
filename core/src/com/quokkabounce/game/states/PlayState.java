@@ -390,7 +390,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
                 hasEdgeCollided = false;
                 Vector3 tempLastVelocity = new Vector3(quokka.getVelocity());
-                if (outZone) {
+                if (outZone && !justPlanet) {
                     quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                     hasBounced = true;
                     hasCollided = true;
@@ -412,7 +412,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                             }
                         }
                         justTouchUp = false;
-                        if(shouldBounce && !doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)) {
+                        if(shouldBounce && !doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)  && !justPlanet) {
                             hasCollided = true;
                             hasEdgeCollided = true;
                             tempWall.set(intersectionPoint(quokka.getBottomLeft(), quokka.getBottomLeft2(), clickPos2d, clickPos2d2));
@@ -434,7 +434,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                             }
                         }
                         justTouchUp = false;
-                        if(shouldBounce && !doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)) {
+                        if(shouldBounce && !doIntersect(quokka.getUpperLeft2(), quokka.getUpperRight2(), clickPos2d, clickPos2d2)  && !justPlanet) {
                             hasCollided = true;
                             hasEdgeCollided = true;
                             tempWall.set(intersectionPoint(quokka.getBottomRight(), quokka.getBottomRight2(), clickPos2d, clickPos2d2));
@@ -456,7 +456,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                             }
                         }
                         justTouchUp = false;
-                        if(shouldBounce) {
+                        if(shouldBounce && !justPlanet) {
                             hasCollided = true;
                             hasEdgeCollided = true;
                             tempWall.set(intersectionPoint(quokka.getUpperLeft(), quokka.getUpperLeft2(), clickPos2d, clickPos2d2));
@@ -478,7 +478,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                             }
                         }
                         justTouchUp = false;
-                        if(shouldBounce) {
+                        if(shouldBounce && !justPlanet) {
                             hasCollided = true;
                             hasEdgeCollided = true;
                             tempWall.set(intersectionPoint(quokka.getUpperRight(), quokka.getUpperRight2(), clickPos2d, clickPos2d2));
@@ -492,7 +492,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     lineAdjust();
                 }
                 justHit = justHitTemp;
-                if(justHit){
+                if(justHit && !justPlanet){
                     quokka.setLastVelocity(tempLastVelocity);
                     quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
                     hasBounced = true;
