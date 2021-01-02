@@ -2815,7 +2815,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(675, 450, "horizontWall.png"));
                         walls.add(new Wall(93, 1000, "horizontWall.png"));
                         walls.add(new Wall(565, 1123));
-                        switches.add(new Obstacle(798, 1868, "stumpSwitch.png"));
+                        switches.add(new Obstacle(798, 1868, "wallSwitch.png"));
                         walls.add(new Wall(93, 1718, switches, -718, 0,"horizontWall.png"));
                         walls.add(new Wall(675, 2200, "horizontWall.png"));
                         walls.add(new Wall(552, 2200, switches, -400, 1));
