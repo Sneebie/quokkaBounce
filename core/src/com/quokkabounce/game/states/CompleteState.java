@@ -74,8 +74,13 @@ public class CompleteState extends State implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (level == 11) {
-            gsm.set(new MenuState(gsm, world, level+1, collectedQuokka));
-            gsm.set(new MenuState(gsm, world + 1, 1, collectedQuokka));
+            if(world == 5){
+                gsm.set(new IntroState(gsm, 1, 1));
+            }
+            else {
+                gsm.set(new MenuState(gsm, world, level + 1, collectedQuokka));
+                gsm.set(new MenuState(gsm, world + 1, 1, collectedQuokka));
+            }
         }
         else {
             gsm.set(new MenuState(gsm, world, level + 1, collectedQuokka));
