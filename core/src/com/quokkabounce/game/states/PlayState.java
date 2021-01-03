@@ -533,9 +533,6 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     }
                 }
                 final float slope = (clickPos2.x != clickPos.x) ? (clickPos2.y - clickPos.y) / (clickPos2.x - clickPos.x) : 5000;
-                quokka.getVelocity().scl(dt);
-                System.out.println(quokka.getVelocity().y);
-                quokka.getVelocity().scl(1/dt);
                 if(Math.abs(slope) > 3.75 && willHit(dt)){
                     //add nullZone code if nullZone ever gets added
                     if(!justHitTemp) {
@@ -3871,6 +3868,9 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             if (lineDraw) {
                 clickPos2.set(screenX, screenY, 0);
                 clickPos2.set(cam.unproject(clickPos2));
+                if(clickPos2.x == clickPos.x && clickPos2.y == clickPos.y){
+                    clickPos2.x += 0.0001f;
+                }
                 clickPosNo.set(clickPos.x, clickPos.y);
                 clickPosNo2.set(clickPos2.x, clickPos2.y);
                 //justTouchUp = true;
