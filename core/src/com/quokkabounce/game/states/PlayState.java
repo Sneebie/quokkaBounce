@@ -2801,7 +2801,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(-822,377, "horizontWall.png"));
                         hawks.add(new Hawk(500, 200, 600, 300, 500, 2, 200, 500, 17, 0, 1, 0, 600, 25));
                         walls.add(new Wall(1300, -200));
-                        switches.add(new Obstacle(1700, 200, "wallSwitch.png"));
+                        walls.add(new Wall(1300, 395));
+                        switches.add(new Obstacle(1150, 460, "wallSwitch.png"));
                         walls.add(new Wall(-350, 500, switches.get(0), 800));
                         walls.add(new Wall(2350, -220));
                         walls.add(new Wall(2350, 375));
@@ -2850,13 +2851,14 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         break;
                     case 2:
                         levelBackground = new Texture("dino2Back.png");
+                        walls.add(new Wall(450, -100, "horizontStump.png"));
                         walls.add(new Wall(450, 380, "stump.png"));
                         switches.add(new Obstacle(590, 120, "stumpSwitch.png"));
                         bonusQuokkas.add(new BonusQuokka(750, -30));
                         walls.add(new Wall(450, -445, switches, -215, "stump.png"));
                         meteors.add(new Meteor(690, 780, 0, 0));
-                        walls.add(new Wall(910, -80, "stump.png"));
-                        happyCloud = new HappyCloud(1210, 50);
+                        walls.add(new Wall(922, -80, "stump.png"));
+                        happyCloud = new HappyCloud(1222, 50);
                         break;
                     case 3:
                         levelBackground = new Texture("dino1Back.png");
