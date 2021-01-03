@@ -62,7 +62,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     private HappyCloud happyCloud;
     private float currentDT, iniPot, shortestDistance, TIMEADJUST;
     private int layer, finalLayer, pointCounter, world;
-    private boolean shouldFall, clickedWhileSpawning, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, respawning, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, camUpdate, justWall, justTouchUp, justTouchedUp, hasBounced, portalContact;
+    private boolean shouldFall, clickedWhileSpawning, touchingWall, lineCheck, lineDraw, justHit, vineDraw, justHitTemp, respawning, justHitBrush, justHitBrushTemp, outZone, justPlanet, justPlanetTemp, paused, justPaused, vineCheck, hasCollided, smallBounce, hitWall, firstSide, shouldMove, hasEdgeCollided, camUpdate, justWall, justTouchUp, justTouchedUp, hasBounced, portalContact, setPortal, resetting;
 
     private Array<EvilCloud> clouds;
     private Array<Hawk> hawks;
@@ -96,9 +96,9 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     private Vector2 hitSide[];
     private Vector3 tempGrav;
     private String hitCorner;
-    private Texture warningTexture, canvasRip;
+    private Texture warningTexture;
     private TextureRegion ripRegion;
-    private Animation portalAnimation, blackHoleAnimation;
+    private Animation portalAnimation;
 
     PlayState(GameStateManager gsm, int world, int level) { //more initialization, sets up the camera, creates the level, etc.
         super(gsm, world, level);
@@ -156,6 +156,145 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         justHit = false;
         justPlanet = false;
         paused = false;
+        smallBounce = false;
+        resetting = false;
+        shouldMove = false;
+        portalContact = false;
+        justPaused = false;
+        hasCollided = false;
+        hasBounced = false;
+        hasEdgeCollided = false;
+        setPortal = false;
+        camUpdate = false;
+        vineCheck = true;
+        clickedWhileSpawning = true;
+        justHitBrush = false;
+        Gdx.input.setInputProcessor(this);
+        if(world!= 3) {
+            quokka = new Quokka(57, 650);
+        }
+        else{
+            quokka = new Quokka(607, 650);
+        }
+        shapeRenderer = new ShapeRenderer();
+        levelBackgroundPos1= new Vector2(cam.position.x - cam.viewportWidth, 0);
+        levelBackgroundPos3 = new Vector2(cam.position.x - cam.viewportWidth, -1 * levelBackground.getHeight());
+        levelBackgroundPos2 = new Vector2((cam.position.x - cam.viewportWidth) + levelBackground.getWidth(), 0);
+        levelBackgroundPos4 = new Vector2((cam.position.x - cam.viewportWidth) + levelBackground.getWidth(), -1 * levelBackground.getHeight());
+        intersectionPoint = new Vector2();
+        intersectionPointTemp = new Vector2();
+        circleCenter = new Vector2();
+        quokkaSide = new Vector2();
+        adjustedCenter = new Vector2();
+        planetProj = new Vector2();
+        tempBack = new Vector2();
+        gradientVector = new Vector3();
+        clickPosNo = new Vector2();
+        clickPosNo2 = new Vector2();
+        touchInput = new Vector3();
+        tempGrav = new Vector3();
+        xdiff = new Vector2();
+        ydiff = new Vector2();
+        tempDet = new Vector2();
+        tempWall = new Vector2();
+        temp2 = new Vector2();
+        clickPos = new Vector3(0,0,0);
+        clickPos2d = new Vector2(0,0);
+        clickPos2 = new Vector3(0,-100,0);
+        clickPos2d2 = new Vector2(0,-100);
+        clickPosTemp = new Vector3(0,-100,0);
+        velocityTemp = new Vector3(0,0,0);
+        velocityTemp2 = new Vector3(0,0,0);
+        normal = new Vector3(0,0,0);
+        planetDistance = new Vector3(0,0,0);
+        towerVel = new Vector3(0, TOWERFALL, 0);
+        iniPot = 0f;
+        if(planets.size>0 || nebulae.size > 0 || blackHoles.size > 0){
+            tempGrav.set(0, 0, 0);
+            for(Obstacle planet : planets){
+                planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
+                double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                iniPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+            }
+            for(Obstacle planet : blackHoles){
+                planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - planet.getPosObstacle().x - planet.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - planet.getPosObstacle().y - planet.getTexture().getHeight() / 2), 0);
+                double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                iniPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+            }
+            for(Obstacle nebula : nebulae){
+                planetDistance.set(Math.abs(quokka.getPosition().x + quokka.getTexture().getWidth() / 2 - nebula.getPosObstacle().x - nebula.getTexture().getWidth() / 2), Math.abs(quokka.getPosition().y + quokka.getTexture().getHeight() / 2 - nebula.getPosObstacle().y - nebula.getTexture().getHeight() / 2), 0);
+                double planetMagnitude = MAGSCALER * Math.sqrt(Math.pow(planetDistance.x, 2) + Math.pow(planetDistance.y, 2));
+                iniPot += GOODGRAV / Math.pow(planetMagnitude, GRAVPOW - 1);
+            }
+        }
+        else{
+            iniPot = -1 * quokka.getGravity().y * quokka.getPosition().y;
+        }
+        cam.position.x = quokka.getPosition().x + 80;
+        camUpdate = true;
+        backButton = new Button(new Texture("back.png"), cam.position.x - cam.viewportWidth / 2 + 15, cam.position.y + cam.viewportHeight / 2 - 65, 0);
+        pauseButton = new Button(new Texture("pause.png"), cam.position.x - cam.viewportWidth / 2 + 80, cam.position.y + cam.viewportHeight / 2 - 65, 0);
+    }
+
+    PlayState(GameStateManager gsm, int world, int level, Animation portalAnimation) { //more initialization, sets up the camera, creates the level, etc.
+        super(gsm, world, level);
+        this.world = world;
+        this.portalAnimation = portalAnimation;
+        setPortal = true;
+        respawning = true;
+        levelBackground = new Texture("level2Background.png");
+        clouds = new Array<EvilCloud>();
+        walls = new Array<Wall>();
+        hawks = new Array<Hawk>();
+        laserGuns = new Array<LaserGun>();
+        drones = new Array<Drone>();
+        bonusQuokkas = new Array<BonusQuokka>();
+        collectedQuokkas = new BooleanArray();
+        switches = new Array<Obstacle>();
+        planets = new Array<Obstacle>();
+        nebulae = new Array<Obstacle>();
+        blackHoles = new Array<Obstacle>();
+        nullZones = new Array<Obstacle>();
+        arrows = new Array<Arrow>();
+        brushes = new Array<Obstacle>();
+        stoplights = new Array<Stoplight>();
+        portals = new Array<Obstacle>();
+        windGusts = new Array<Obstacle>();
+        moveWalls = new Array<MoveWall>();
+        moveSpots = new Array<Vector2>();
+        vines = new Array<Vine>();
+        meteors = new Array<Meteor>();
+        airplanes = new Array<Airplane>();
+        tropicBirds = new Array<Airplane>();
+        tropicFish = new Array<Airplane>();
+        jumpFishes = new Array<JumpFish>();
+        tallDinos = new Array<TallDino>();
+        layerTextures = new Array<Texture>();
+        layerVines = new Array<Array<Vine>>();
+        hitLeft = new boolean[4];
+        hitRight = new boolean[4];
+        hitBottom = new boolean[4];
+        hitTop = new boolean[4];
+        hitSide = new Vector2[2];
+        layer = 0;
+        warningTexture = new Texture("warning.png");
+        finalLayer = 0;
+        if(planets.size == 0 && nebulae.size == 0 && blackHoles.size == 0) {
+            cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
+        }
+        else{
+            cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
+        }
+        levelInit(world, level);
+        shouldFall = false;
+        lineDraw = false;
+        vineDraw = true;
+        lineCheck = false;
+        touchingWall = false;
+        justHit = false;
+        justPlanet = false;
+        paused = false;
+        resetting = false;
         smallBounce = false;
         shouldMove = false;
         portalContact = false;
@@ -238,6 +377,16 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
     public void pause(){
         paused = true;
     } //pauses the game, called when pause button is clicked
+
+    private void resetState(){
+        resetting = true;
+        if(portals.size == 0){
+            gsm.set(new PlayState(gsm, world, level));
+        }
+        else{
+            gsm.set(new PlayState(gsm, world, level, portalAnimation));
+        }
+    }
 
     @Override
     public void update(float dt) { //this is the main loop that moves everything, updates the physics, and checks collisions
@@ -502,7 +651,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 for (Hawk hawk : hawks) { //checks hawk collision, and if there is none sees if the hawk spots the quokka, causing it to dive, or otherwise moves it in circles more (hawk not shown in demo video)
                     if (isConcaveCollision(hawk.getHawkPolygon(), quokka.getQuokkaBounds())) {
                         respawning = true;
-                        gsm.set(new PlayState(gsm, world, level));
+                        resetState();
                         break;
                     }
                     hawk.move(quokka.getQuokkaBounds(), dt, quokka.getPosition());
@@ -510,7 +659,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 for(Drone drone : drones){ //Starts drone movement once close enough, moves the drone, and checks collision
                     if(drone.isStartMove() && isCollision(drone.getPolygon(), quokka.getQuokkaBounds())){
                         respawning = true;
-                        gsm.set(new PlayState(gsm, world, level));
+                        resetState();
                         break;
                     }
                     if(drone.getPosDrone().x < (cam.position.x + cam.viewportWidth * VIEWPORT_SCALER / 2)){
@@ -523,7 +672,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 for(JumpFish jumpFish : jumpFishes){//moves fish, causes them to jump if close enough to quokka, and checks collision (not in demo video)
                     if(isCollision(jumpFish.getPolygon(), quokka.getQuokkaBounds())){
                         respawning = true;
-                        gsm.set(new PlayState(gsm, world, level));
+                        resetState();
                     }
                     if(jumpFish.getPosJumpFish().x > (cam.position.x - cam.viewportWidth * VIEWPORT_SCALER / 2)){
                         jumpFish.setStartFall(true);
@@ -535,7 +684,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 for(LaserGun laserGun : laserGuns){ //rotates laser gun towards the quokka, checks if the laser beam hits the quokka, and shoots another beam if the previous one has gone off screen
                     if(laserGun.isDrawLaser() && isCollision(laserGun.getMyBeam().getPolygon(), quokka.getQuokkaBounds())){
                         respawning = true;
-                        gsm.set(new PlayState(gsm, world, level));
+                        resetState();
                         break;
                     }
                     laserGun.shoot(dt, quokka.getPosition()); //this is called shoot but it actually controls all of the laser gun's movement in addition to firing the beam
@@ -546,7 +695,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 for (TallDino tallDino : tallDinos) { //checks dinosaur collision with quokka, moves and flips dinosaur when necessary
                     if (isConcaveCollision(tallDino.getTallDinoPolygon(), quokka.getQuokkaBounds())) {
                         respawning = true;
-                        gsm.set(new PlayState(gsm, world, level));
+                        resetState();
                         break;
                     }
                     tallDino.move(dt);
@@ -554,7 +703,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 for (Arrow arrow : arrows) { //shoots the arrows once the quokka is close enough, checks collision with the quokka
                     if (arrow.collides(quokka.getQuokkaBounds())) {
                         respawning = true;
-                        gsm.set(new PlayState(gsm, world, level));
+                        resetState();
                         break;
                     }
                     if ((arrow.getArrowBounds().y + arrow.getArrowBounds().height / 2 - quokka.getQuokkaBounds().y - quokka.getQuokkaBounds().height / 2) <= ARROWHEIGHT) {
@@ -1204,7 +1353,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                                 if (justPlanetTemp) {
                                     //coachLandmark
                                     respawning = true;
-                                    gsm.set(new PlayState(gsm, world, level));
+                                    resetState();
                                     break;
                                 }
                             }
@@ -1240,7 +1389,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         if (Intersector.overlaps(meteor.getMeteorCircle(), quokka.getQuokkaBounds())) {
                             if (meteors.contains(meteor, true)) {
                                 respawning = true;
-                                gsm.set(new PlayState(gsm, world, level));
+                                resetState();
                                 break;
                             }
                         }
@@ -1267,7 +1416,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         if (airplane.collides(quokka.getQuokkaBounds())) {
                             if (airplanes.contains(airplane, true)) {
                                 respawning = true;
-                                gsm.set(new PlayState(gsm, world, level));
+                                resetState();
                                 break;
                             }
                         }
@@ -1282,7 +1431,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         if (airplane.collides(quokka.getQuokkaBounds())) {
                             if (airplanes.contains(airplane, true)) {
                                 respawning = true;
-                                gsm.set(new PlayState(gsm, world, level));
+                                resetState();
                                 break;
                             }
                         }
@@ -1297,7 +1446,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         if (airplane.collides(quokka.getQuokkaBounds())) {
                             if (airplanes.contains(airplane, true)) {
                                 respawning = true;
-                                gsm.set(new PlayState(gsm, world, level));
+                                resetState();
                                 break;
                             }
                         }
@@ -1449,7 +1598,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 for (EvilCloud cloud : clouds) {//kills the quokka and resets the level if the quokka hits an evil cloud
                     if (isConcaveCollision(cloud.getCloudPoly(), quokka.getQuokkaBounds())) {
                         respawning = true;
-                        gsm.set(new PlayState(gsm, world, level));
+                        resetState();
                         break;
                     }
                 }
@@ -1512,7 +1661,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
             if (quokka.getPosition().y + quokka.getTexture().getHeight() <= cam.position.y - cam.viewportHeight / 2) {
                 if (moveWalls.size == 0) {
                     respawning = true;
-                    gsm.set(new PlayState(gsm, world, level));
+                    resetState();
                 }
             }
             if (layer == finalLayer) { //moves the game back to the menu if the quokka hits the rainbow cloud, increases level by 1 until level 10, then increases the world and sets level back to 1
@@ -2482,6 +2631,11 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
         for(Obstacle portal : portals){
             portal.dispose();
         }
+        if(portals.size > 0 && !resetting) {
+            for (Texture frame : portalAnimation.getFrames()) {
+                frame.dispose();
+            }
+        }
         backButton.dispose();
         pauseButton.dispose();
         shapeRenderer.dispose();
@@ -2841,8 +2995,8 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         arrows.add(new Arrow(0, 1000));
                         arrows.add(new Arrow(0, 300));
                         walls.add(new Wall(0, 1300, "horizontWall.png"));
-                        walls.add(new Wall(850, 1025));
-                        bonusQuokkas.add(new BonusQuokka(1050, 1040));
+                        walls.add(new Wall(850, 1090));
+                        bonusQuokkas.add(new BonusQuokka(1050, 1105));
                         walls.add(new Wall(973, 1300, "horizontWall.png"));
                         clouds.add(new EvilCloud(300, 1617));
                         happyCloud = new HappyCloud(850, 1768);
@@ -2866,7 +3020,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(848, 875));
                         arrows.add(new Arrow(1180, 1270));
                         walls.add(new Wall(490, 1570));
-                        bonusQuokkas.add(new BonusQuokka(280, 1160));
+                        bonusQuokkas.add(new BonusQuokka(210, 1240));
                         happyCloud = new HappyCloud(120, 1845);
                         break;
                     case 8:
@@ -3482,12 +3636,12 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 walls.add(new Wall(happyCloud.getPosCloud().x + 1000, 375, "futureWall.png"));
             }
         }
-        if(portals.size > 0){
+        if(portals.size > 0 && !setPortal){
             portalAnimation = new Animation("portalFrames", "Portal_Final00", 100, 1.5f);
         }
-        if(blackHoles.size > 0){
+        /*if(blackHoles.size > 0){
             //blackHoleAnimation = new Animation("blackHoleFrames", "Blackhole_Final00", 100, 0.5f);
-        }
+        }*/
         collectedQuokkas.setSize(bonusQuokkas.size);
     }
 
