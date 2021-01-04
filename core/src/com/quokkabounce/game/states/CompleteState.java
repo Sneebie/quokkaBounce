@@ -2,7 +2,6 @@ package com.quokkabounce.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.quokkabounce.game.QuokkaBounce;
@@ -19,26 +18,6 @@ public class CompleteState extends State implements InputProcessor {
         this.collectedQuokka = collectedQuokka;
         this.world = world;
         this.level = level;
-        Preferences prefs = Gdx.app.getPreferences("saveData");
-        int permaWorld = prefs.getInteger("world", 1);
-        if(world > permaWorld){
-            prefs.putInteger("world", world);
-            prefs.flush();
-        }
-        if(world > 5){
-            world = 5;
-        }
-        int permaLevel = prefs.getInteger("level" + world, 1);
-        if(level > permaLevel){
-            prefs.putInteger("level" + world, level);
-            prefs.flush();
-        }
-        for(int i = 0; i < ((permaLevel < 11) ? (permaLevel - 1) : 10); i++) {
-            if((i == level - 2) && collectedQuokka){
-                prefs.putBoolean("collectedQuokka" + world + i, true);
-                prefs.flush();
-            }
-        }
         cam.setToOrtho(false, Math.round(QuokkaBounce.WIDTH * VIEWPORT_SCALER), Math.round(QuokkaBounce.HEIGHT * VIEWPORT_SCALER));
         /*if(level == 10){
             completeBackground = new Texture("");
