@@ -541,8 +541,10 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                 }
                 hasEdgeCollided = false;
                 Vector3 tempLastVelocity = new Vector3(quokka.getVelocity());
-                if (outZone && !justPlanet) {
-                    quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                if (outZone) {
+                    if(!justPlanet) {
+                        quokka.setVelocity(resultVector(quokka.getVelocity(), clickPos, clickPos2));
+                    }
                     hasBounced = true;
                     hasCollided = true;
                     justHitTemp = true;
