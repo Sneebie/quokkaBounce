@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.quokkabounce.game" >
 
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="30" android:compileSdkVersion="30"/>
+    <uses-sdk android:minSdkVersion="1" android:targetSdkVersion="30" android:compileSdkVersion="30"/>
 
     <application
         android:allowBackup="true"
