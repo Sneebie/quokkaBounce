@@ -2787,7 +2787,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         levelBackground = new Texture("level2Background.png");
                         clouds.add(new EvilCloud(200, 50));
                         walls.add(new Wall (750, -130));
-                        switches.add(new Obstacle(530, 20, "wallSwitch.png"));
+                        switches.add(new Obstacle(580, 20, "wallSwitch.png"));
                         walls.add(new Wall(750, 465, switches, 800));
                         walls.add(new Wall(1150, 350));
                         bonusQuokkas.add(new BonusQuokka(1320, 500));
@@ -2852,7 +2852,7 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                         walls.add(new Wall(450, -100, "horizontStump.png"));
                         walls.add(new Wall(450, 380, "stump.png"));
                         switches.add(new Obstacle(590, 120, "stumpSwitch.png"));
-                        bonusQuokkas.add(new BonusQuokka(750, -30));
+                        bonusQuokkas.add(new BonusQuokka(810, 30));
                         walls.add(new Wall(450, -445, switches, -215, "stump.png"));
                         meteors.add(new Meteor(690, 780, 0, 0));
                         walls.add(new Wall(922, -80, "stump.png"));
