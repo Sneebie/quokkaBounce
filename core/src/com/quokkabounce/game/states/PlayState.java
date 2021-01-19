@@ -1940,13 +1940,21 @@ class PlayState extends State implements InputProcessor{ //This is the largest p
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                 }
             }
-            if(quokka.getVelocity().x < 0){
+            else{
                 while (quokkaLineHit()) {
                     clickPos.set(clickPos.x - 1, clickPos.y, 0);
                     clickPos2.set(clickPos2.x - 1, clickPos2.y, 0);
                     clickPos2d.set(clickPos.x, clickPos.y);
                     clickPos2d2.set(clickPos2.x, clickPos2.y);
                 }
+            }
+        }
+        else if(quokka.getVelocity().x == 0 && (quokka.getQuokkaBounds().contains(clickPos2d) || quokka.getQuokkaBounds().contains(clickPos2d2))){
+            while(quokkaLineHit()){
+                clickPos.set(clickPos.x, clickPos.y - 1, 0);
+                clickPos2.set(clickPos2.x, clickPos2.y - 1, 0);
+                clickPos2d.set(clickPos.x, clickPos.y);
+                clickPos2d2.set(clickPos2.x, clickPos2.y);
             }
         }
         else {
